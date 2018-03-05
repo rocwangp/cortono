@@ -15,11 +15,11 @@
 #include <cstring>
 #include <cerrno>
 
-#include "buffer.h"
-#include "poller.h"
-#include "../ip/sockets.h"
-#include "../util/util.h"
-#include "../util/noncopyable.h"
+#include "buffer.hpp"
+#include "poller.hpp"
+#include "../ip/sockets.hpp"
+#include "../util/util.hpp"
+#include "../util/noncopyable.hpp"
 
 namespace cortono::net
 {
@@ -145,15 +145,13 @@ namespace cortono::net
 
             bool recv_to_buffer() {
                 if(int bytes = ip::tcp::sockets::readable(fd_); bytes > 0) {
-                    std::cout << read_buffer_.get() << std::endl;
                     read_buffer_->enable_bytes(bytes);
-                    std::cout << read_buffer_.get() << std::endl;
                     if(int read_bytes = ip::tcp::sockets::recv(fd_, read_buffer_->end(), bytes); read_bytes > 0) {
                         read_buffer_->append_bytes(read_bytes);
                         return true;
                     }
                 }
-                log_info("read error, close connection");
+                log_info("read 0 bytes or error, close connection");
                 poller_cbs_->close_cb();
                 return false;
             }

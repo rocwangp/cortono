@@ -7,8 +7,8 @@
 #include <cstdint>
 #include <sys/epoll.h>
 
-#include "../util/util.h"
-#include "../util/noncopyable.h"
+#include "../util/util.hpp"
+#include "../util/noncopyable.hpp"
 
 namespace cortono::net
 {
@@ -65,7 +65,6 @@ namespace cortono::net
                     events_.resize(event_nums_);
                 int n = ::epoll_wait(epollfd_, &events_[0], events_.size(), timeout);
                 /* util::exitif(n == -1, std::strerror(errno), epollfd_, event_nums_); */
-                log_debug(n);
                 for(int i = 0; i < n; ++i) {
                     if(read_event(events_[i].events))
                         static_cast<CB*>(events_[i].data.ptr)->read_cb();

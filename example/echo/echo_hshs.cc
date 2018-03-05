@@ -1,26 +1,26 @@
-#include "/home/roc/unix/cortono/cortono.h"
-
+#include "/home/roc/unix/cortono/cortono.hpp"
 using namespace cortono::net;
 
-class EchoSession : public SessionBase
+class echo_session : public cort_session
 {
     public:
-        EchoSession(std::shared_ptr<Socket> socket)
-            : SessionBase(socket)
+        echo_session(std::shared_ptr<cort_socket> socket)
+            : cort_session(socket)
         {
 
         }
 
-        virtual void on_read(std::shared_ptr<Socket> socket) override
-        {
-            socket->send(socket->recv_all());
+        void on_read() {
+            socket_->write(socket_->read_all());
         }
-
 };
 
 int main()
 {
-    HSHA<EchoSession> hsha("localhost", 9999);
+    cort_hsha<echo_session> hsha("localhost", 9999);
+    hsha.on_conn([&hsha](auto socket) {
+        hsha.register_session(socket, std::make_shared<echo_session>(socket));
+    });
     hsha.start();
     return 0;
 }

@@ -7,11 +7,11 @@
 #include <unordered_map>
 #include <mutex>
 
-#include "socket.h"
-#include "eventloop.h"
-#include "session.h"
-#include "../util/noncopyable.h"
-#include "../util/threadpool.h"
+#include "socket.hpp"
+#include "eventloop.hpp"
+#include "session.hpp"
+#include "../util/noncopyable.hpp"
+#include "../util/threadpool.hpp"
 
 namespace cortono::net
 {
@@ -40,7 +40,6 @@ namespace cortono::net
 
         public:
             void start(int thread_nums = std::thread::hardware_concurrency()) {
-                log_debug(thread_nums);
                 while(thread_nums--) {
                     util::threadpool::instance().async([this] {
                         auto loop_ptr = std::make_shared<cort_eventloop>();
@@ -51,37 +50,41 @@ namespace cortono::net
                 util::threadpool::instance().start();
             }
 
-            void on_read(callback_type cb) {
-                read_cb_ = cb;
-            }
+            /* 考虑到session_type构造函数的参数可以有多个，无法由内部网络库构造，
+             * 同时为了便于对socket设置更多的选项
+             * 采用外加服务器调用on_conn的方法构造session_type并调用register_session传递回cort_service
+             * 使用方法如下：
+             *
+             * template <typename session_type>
+             * class echo_server{
+             *     public:
+             *        echo_server(std::string_view ip, unsigned short port)
+             *            : service_(ip, port)
+             *        {
+             *            service_.on_conn([this](auto socket) {
+             *                socket->enable_option(...); # 自定义外加选项，如no_delay
+             *                auto session = std::make_shared<session_type>(socket, ...); #可能存在多个参数
+             *                service_.register_session(socket, session);
+             *            });
+             *        }
+             *
+             *        ...
+             *
+             *     private:
+             *         cort_eventloop base_;
+             *         cort_service<session_type> service_;
+             * }; */
             void on_conn(callback_type cb) {
                 conn_cb_ = cb;
             }
-            void on_write(callback_type cb) {
-                write_cb_ = cb;
-            }
-
 
             void register_session(std::shared_ptr<cort_socket> socket, std::shared_ptr<session_type> session) {
                 sessions_[socket.get()] = session;
             }
-
-            std::shared_ptr<session_type> session(std::shared_ptr<cort_socket> socket) {
-                if(auto it = sessions_.find(socket.get()); it != sessions_.end()) {
-                    return sessions_[socket.get()];
-                }
-                else {
-                    log_fatal("no socket in service");
-                    return nullptr;
-                }
-            }
-
         private:
             void handle_accept() {
-                log_trace;
                 while(true) {
                     int fd = acceptor_->accept();
-                    log_debug(fd);
                     if(fd == -1)
                         return;
                     auto loop = event_loops_.empty()
@@ -93,7 +96,6 @@ namespace cortono::net
                         socket->enable_option(cort_socket::NON_BLOCK);
                         std::weak_ptr weak_socket { socket };
                         socket->enable_read([this, weak_socket] {
-                            log_trace;
                             if(auto strong_socket = weak_socket.lock(); strong_socket) {
                                 if(strong_socket->recv_to_buffer()) {
                                     sessions_[strong_socket.get()]->on_read();
@@ -101,7 +103,6 @@ namespace cortono::net
                             }
                         });
                         socket->enable_close([this, weak_socket] {
-                            log_trace;
                             if(auto strong_socket = weak_socket.lock(); strong_socket) {
                                 strong_socket->disable_all();
                                 sessions_[strong_socket.get()]->on_close();
@@ -119,7 +120,7 @@ namespace cortono::net
             }
 
         private:
-            callback_type conn_cb_, read_cb_, write_cb_, close_cb_;
+            callback_type conn_cb_;
 
             cort_eventloop *loop_;
             int loop_idx_;

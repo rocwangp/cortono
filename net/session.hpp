@@ -1,8 +1,8 @@
 #pragma once
 
 #include <memory>
-#include "socket.h"
-#include "../util/noncopyable.h"
+#include "socket.hpp"
+#include "../util/noncopyable.hpp"
 
 namespace cortono::net
 {

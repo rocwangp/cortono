@@ -6,10 +6,10 @@
 #include <thread>
 #include <mutex>
 
-#include "watcher.h"
-#include "poller.h"
-#include "socket.h"
-#include "../util/noncopyable.h"
+#include "watcher.hpp"
+#include "poller.hpp"
+#include "socket.hpp"
+#include "../util/noncopyable.hpp"
 
 namespace cortono::net
 {

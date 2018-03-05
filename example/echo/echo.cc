@@ -1,4 +1,4 @@
-#include "/home/roc/unix/cortono/cortono.h"
+#include "/home/roc/unix/cortono/cortono.hpp"
 using namespace cortono::net;
 
 class echo_session : public cort_session
@@ -6,9 +6,7 @@ class echo_session : public cort_session
     public:
         echo_session(std::shared_ptr<cort_socket> socket)
             : cort_session(socket)
-        {
-
-        }
+        { }
 
         void on_read() {
             socket_->write(socket_->read_all());

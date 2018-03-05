@@ -7,12 +7,12 @@
 #include <cstring>
 #include <cerrno>
 
-#include "socket.h"
-#include "session.h"
-#include "poller.h"
-#include "../util/util.h"
-#include "../util/noncopyable.h"
-#include "../util/threadpool.h"
+#include "socket.hpp"
+#include "session.hpp"
+#include "poller.hpp"
+#include "../util/util.hpp"
+#include "../util/noncopyable.hpp"
+#include "../util/threadpool.hpp"
 
 namespace cortono::net
 {
@@ -20,6 +20,8 @@ namespace cortono::net
     class cort_hsha : private util::noncopyable
     {
         public:
+            typedef std::function<void(std::shared_ptr<cort_socket>)> callback_type;
+
             cort_hsha(const std::string& ip = "localhost", unsigned short port = 9999)
                 : poller_(std::make_shared<cort_poller>()),
                   acceptor_(std::make_shared<cort_socket>())
@@ -39,6 +41,14 @@ namespace cortono::net
                 }
             }
 
+            void on_conn(callback_type cb){
+                conn_cb_ = std::move(cb);
+            }
+
+            void register_session(std::shared_ptr<cort_socket> socket,
+                                  std::shared_ptr<session_type> session) {
+                sessions_[socket.get()] = session;
+            }
         private:
             void handle_accept() {
                 while(true) {
@@ -46,41 +56,37 @@ namespace cortono::net
                     if(fd == -1)
                         return;
                     auto socket = std::make_shared<cort_socket>(fd);
-                    auto session = custom_session(socket);
                     socket->tie(poller_);
                     socket->enable_option(cort_socket::REUSE_ADDR, cort_socket::REUSE_POST, cort_socket::NON_BLOCK);
-                    {
-                        std::unique_lock lock { mutex_ };
-                        sessions_[socket.get()] = session;
-                    }
-                    std::weak_ptr weak_session { session };
-                    socket->enable_read([socket, weak_session] {
-                        if(auto strong_session = weak_session.lock(); strong_session) {
-                            util::threadpool::instance().async([socket, strong_session] {
+                    std::weak_ptr weak_socket { socket };
+                    socket->enable_read([this, weak_socket] {
+                        util::threadpool::instance().async([this, weak_socket] {
+                            if(auto socket = weak_socket.lock(); socket) {
                                 socket->recv_to_buffer();
-                                strong_session->on_read(socket);
-                            });
-                        }
+                                sessions_[socket.get()]->on_read();
+                            }
+                        });
                     });
 
-                    socket->enable_close([weak_session, socket, this] {
-                        if(weak_session.lock()) {
-                            util::threadpool::instance().async([socket, this] {
+                    socket->enable_close([this, weak_socket] {
+                        util::threadpool::instance().async([this, weak_socket] {
+                            if(auto socket = weak_socket.lock(); socket) {
+                                socket->disable_all();
+                                sessions_[socket.get()]->on_close();
                                 {
                                     std::unique_lock lock { mutex_ };
                                     sessions_.erase(socket.get());
                                 }
-                                socket->disable_all();
-                            });
-                        }
+                            }
+                        });
                     });
+                    if(conn_cb_) {
+                        conn_cb_(socket);
+                    }
                 }
             }
-        protected:
-            auto custom_session(std::shared_ptr<cort_socket> socket) {
-                return std::make_shared<session_type>(socket);
-            }
         private:
+            callback_type conn_cb_ = nullptr;
             std::shared_ptr<cort_poller> poller_;
             std::shared_ptr<cort_socket> acceptor_;
             std::unordered_map<cort_socket*, std::shared_ptr<session_type>> sessions_;
