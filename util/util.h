@@ -11,6 +11,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "noncopyable.h"
 
 namespace cortono
 {
@@ -24,9 +25,8 @@ namespace cortono
     namespace util
     {
 
-        template <int inst = 0>
-        std::string current_time()
-        {
+        template <typename T = int>
+        std::string current_time() {
             auto t = std::chrono::system_clock::now();
             std::time_t tt = std::chrono::system_clock::to_time_t(t);
             char *tc = std::ctime(&tt);
@@ -34,9 +34,8 @@ namespace cortono
             return std::string(tc);
         }
 
-        template <int inst = 0>
-        std::string current_thread()
-        {
+        template <typename T = int>
+        std::string current_thread() {
             std::stringstream oss;
             oss << std::this_thread::get_id();
             return oss.str();
@@ -45,18 +44,16 @@ namespace cortono
         class io
         {
             public:
-                static int open(const std::string& filename)
-                {
+                static int open(const std::string& filename) {
                     return ::open(filename.c_str(), O_RDONLY);
                 }
 
-                static void close(int fd)
-                {
+                static void close(int fd) {
                     ::close(fd);
                 }
         };
 
-        class logger
+        class logger : private util::noncopyable
         {
             public:
                 enum level
@@ -77,8 +74,7 @@ namespace cortono
                             << " [" << format_level() << "] ";
                 }
 
-                ~logger()
-                {
+                ~logger() {
                     buffer_ << std::endl;
                     auto msg(buffer_.str());
                     std::fwrite(msg.c_str(), 1, msg.size(), ::stdout);
@@ -88,24 +84,22 @@ namespace cortono
                 }
 
                 template <typename T>
-                logger& operator()(T msg)
-                {
+                logger& operator()(T msg) {
                     buffer_ << msg;
                     return *this;
                 }
 
                 template <typename T, typename... Args>
-                logger& operator()(T msg, Args... args)
-                {
+                logger& operator()(T msg, Args... args) {
                     buffer_ << msg << " ";
                     return operator()(args...);
                 }
 
+
            private:
                 std::string format_level()
                 {
-                    switch(l_)
-                    {
+                    switch(l_) {
                         case level::trace:
                             return "trace";
                         case level::debug:
@@ -130,22 +124,28 @@ namespace cortono
 
 
         template <class... Args>
-        static std::string format(const std::string& f, Args... args)
-        {
+        static std::string format(const std::string& f, Args... args) {
             char buffer[1024];
             std::sprintf(buffer, f.c_str(), std::forward<Args>(args)...);
             return std::string(buffer);
         }
 
         template <typename... Args>
-        void exitif(bool condition, Args... args)
-        {
-            if(condition)
-            {
+        void exitif(bool condition, Args... args) {
+            if(condition) {
                 log_fatal(std::strerror(errno), args...);
             }
         }
 
+        template <typename Function, typename... Args>
+        auto invoke_if(Function&& f, Args... args, bool condition)
+            -> std::pair<bool, typename std::invoke_result<Function>::type> {
+            using result_type = typename std::invoke_result<Function>::type;
+            if(condition) {
+                return {true, f(std::forward<Args>(args)...)};
+            }
+            return {false, result_type{}};
+        }
     }
 
 }

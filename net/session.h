@@ -2,33 +2,26 @@
 
 #include <memory>
 #include "socket.h"
+#include "../util/noncopyable.h"
 
-namespace cortono
+namespace cortono::net
 {
-    namespace net
+    class cort_session : public std::enable_shared_from_this<cort_session>,
+                         private util::noncopyable
     {
-        class Socket;
+        public:
+            cort_session(std::shared_ptr<cort_socket> socket)
+                : socket_(socket)
+            {
+            }
 
-        class SessionBase : public std::enable_shared_from_this<SessionBase>
-        {
-            public:
-                SessionBase(std::shared_ptr<Socket> socket)
-                    : socket_(socket)
-                {
+            ~cort_session() {}
 
-                }
+            void on_read()  {}
+            void on_close() {}
+            void on_build() {}
 
-                virtual ~SessionBase() {}
-
-                virtual void on_recv(std::shared_ptr<Socket>) {}
-                virtual void on_close() {}
-                virtual void on_build() {}
-
-            public:
-                std::string name() const { return socket_->local_address() + socket_->peer_address(); }
-
-            protected:
-                std::shared_ptr<Socket> socket_;
-        };
-    }
+        protected:
+            std::shared_ptr<cort_socket> socket_;
+    };
 }

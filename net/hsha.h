@@ -8,97 +8,82 @@
 #include <cerrno>
 
 #include "socket.h"
-#include "poller.h"
 #include "session.h"
+#include "poller.h"
 #include "../util/util.h"
+#include "../util/noncopyable.h"
 #include "../util/threadpool.h"
 
-namespace cortono
+namespace cortono::net
 {
-    namespace net
+    template <typename session_type>
+    class cort_hsha : private util::noncopyable
     {
-        template <class Session>
-        class HSHA
-        {
-            public:
-                HSHA(const std::string& ip = "localhost", unsigned short port = 9999)
-                    : poller_(std::make_shared<Poller>()),
-                      acceptor_(std::make_shared<Socket>())
-                {
-                    acceptor_->tie(poller_);
-                    acceptor_->enable_option(Socket::REUSE_ADDR, Socket::REUSE_POST, Socket::NON_BLOCK);
-                    acceptor_->enable_read(std::bind(&HSHA::handle_accept, this));
-                    util::exitif(!acceptor_->bind(ip, port), "bind error");
-                    util::exitif(!acceptor_->listen(), "listen error");
-                }
-                ~HSHA() {}
+        public:
+            cort_hsha(const std::string& ip = "localhost", unsigned short port = 9999)
+                : poller_(std::make_shared<cort_poller>()),
+                  acceptor_(std::make_shared<cort_socket>())
+            {
+                acceptor_->tie(poller_);
+                acceptor_->enable_option(cort_socket::REUSE_ADDR, cort_socket::REUSE_POST, cort_socket::NON_BLOCK);
+                acceptor_->enable_read(std::bind(&cort_hsha::handle_accept, this));
+                util::exitif(!acceptor_->bind(ip, port), "bind error");
+                util::exitif(!acceptor_->listen(), "listen error");
+            }
+            ~cort_hsha() {}
 
-                void start()
-                {
-                    util::ThreadPool::Instance().start();
-                    while(true)
+            void start() {
+                util::threadpool::instance().start();
+                while(true) {
+                    poller_->wait();
+                }
+            }
+
+        private:
+            void handle_accept() {
+                while(true) {
+                    int fd = acceptor_->accept();
+                    if(fd == -1)
+                        return;
+                    auto socket = std::make_shared<cort_socket>(fd);
+                    auto session = custom_session(socket);
+                    socket->tie(poller_);
+                    socket->enable_option(cort_socket::REUSE_ADDR, cort_socket::REUSE_POST, cort_socket::NON_BLOCK);
                     {
-                        poller_->wait();
+                        std::unique_lock lock { mutex_ };
+                        sessions_[socket.get()] = session;
                     }
-                }
-
-            private:
-                void handle_accept()
-                {
-                    while(true)
-                    {
-                        int fd = acceptor_->accept();
-                        if(fd == -1)
-                            return;
-                        auto socket = std::make_shared<Socket>(fd);
-                        auto session = std::make_shared<Session>(socket);
-                        socket->tie(poller_);
-                        socket->enable_option(Socket::REUSE_ADDR, Socket::REUSE_POST, Socket::NON_BLOCK);
-                        {
-                            std::unique_lock<std::mutex> lock(mutex_);
-                            sessions_[socket.get()] = session;
+                    std::weak_ptr weak_session { session };
+                    socket->enable_read([socket, weak_session] {
+                        if(auto strong_session = weak_session.lock(); strong_session) {
+                            util::threadpool::instance().async([socket, strong_session] {
+                                socket->recv_to_buffer();
+                                strong_session->on_read(socket);
+                            });
                         }
-                        std::weak_ptr<Session> weak_session = session;
-                        socket->enable_read(
-                                [socket, weak_session]
+                    });
+
+                    socket->enable_close([weak_session, socket, this] {
+                        if(weak_session.lock()) {
+                            util::threadpool::instance().async([socket, this] {
                                 {
-                                    if(auto strong_session = weak_session.lock(); strong_session)
-                                    {
-                                        util::ThreadPool::Instance().async(
-                                                [socket, strong_session]
-                                                {
-                                                    socket->recv_to_buffer();
-                                                    strong_session->on_recv(socket);
-                                                }
-                                            );
-                                    }
+                                    std::unique_lock lock { mutex_ };
+                                    sessions_.erase(socket.get());
                                 }
-                            );
-                        socket->enable_close(
-                                [weak_session, socket, this]
-                                {
-                                    if(weak_session.lock())
-                                    {
-                                        util::ThreadPool::Instance().async(
-                                                [socket, this]
-                                                {
-                                                    {
-                                                        std::unique_lock<std::mutex> lock(mutex_);
-                                                        sessions_.erase(socket.get());
-                                                    }
-                                                    socket->disable_all();
-                                                }
-                                            );
-                                    }
-                                }
-                            );
-                    }
+                                socket->disable_all();
+                            });
+                        }
+                    });
                 }
-            private:
-                std::shared_ptr<Poller> poller_;
-                std::shared_ptr<Socket> acceptor_;
-                std::unordered_map<Socket*, std::shared_ptr<Session>> sessions_;
-                std::mutex mutex_;
-        };
-    }
+            }
+        protected:
+            auto custom_session(std::shared_ptr<cort_socket> socket) {
+                return std::make_shared<session_type>(socket);
+            }
+        private:
+            std::shared_ptr<cort_poller> poller_;
+            std::shared_ptr<cort_socket> acceptor_;
+            std::unordered_map<cort_socket*, std::shared_ptr<session_type>> sessions_;
+            std::mutex mutex_;
+    };
 }
