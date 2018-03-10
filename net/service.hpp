@@ -1,15 +1,9 @@
 #pragma once
 
-#include <thread>
-#include <string>
-#include <vector>
-#include <memory>
-#include <unordered_map>
-#include <mutex>
-
 #include "socket.hpp"
 #include "eventloop.hpp"
 #include "session.hpp"
+#include "../std.hpp"
 #include "../util/noncopyable.hpp"
 #include "../util/threadpool.hpp"
 
@@ -19,7 +13,6 @@ namespace cortono::net
     class cort_service : private util::noncopyable
     {
         public:
-            typedef std::function<void(std::shared_ptr<cort_socket>)> callback_type;
 
             cort_service(cort_eventloop* loop, std::string_view ip, unsigned short port)
                 : loop_(loop),
@@ -27,10 +20,8 @@ namespace cortono::net
                   acceptor_(std::make_unique<cort_socket>())
             {
                 acceptor_->tie(loop_->poller());
-                acceptor_->enable_option(cort_socket::REUSE_ADDR, cort_socket::REUSE_POST, cort_socket::NON_BLOCK);
                 acceptor_->enable_read(std::bind(&cort_service::handle_accept, this));
-                util::exitif(!acceptor_->bind(ip, port), "fail to bind <", ip, port, ">", std::strerror(errno));
-                util::exitif(!acceptor_->listen(), "fail to listen");
+                acceptor_->bind_and_listen(ip, port);
             }
 
             ~cort_service()
@@ -74,12 +65,12 @@ namespace cortono::net
              *         cort_eventloop base_;
              *         cort_service<session_type> service_;
              * }; */
-            void on_conn(callback_type cb) {
+            void on_conn(std::function<void(std::shared_ptr<cort_socket>)> cb) {
                 conn_cb_ = cb;
             }
 
             void register_session(std::shared_ptr<cort_socket> socket, std::shared_ptr<session_type> session) {
-                sessions_[socket.get()] = session;
+                sessions_.emplace(socket.get(), session);
             }
         private:
             void handle_accept() {
@@ -120,7 +111,6 @@ namespace cortono::net
             }
 
         private:
-            callback_type conn_cb_;
 
             cort_eventloop *loop_;
             int loop_idx_;
@@ -128,6 +118,7 @@ namespace cortono::net
             std::unique_ptr<cort_socket> acceptor_;
             std::vector<std::shared_ptr<cort_eventloop>> event_loops_;
             std::unordered_map<cort_socket*, std::shared_ptr<session_type>> sessions_;
+            std::function<void(std::shared_ptr<cort_socket>)> conn_cb_;
 
     };
 }

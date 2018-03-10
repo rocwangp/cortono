@@ -1,16 +1,6 @@
 #pragma once
 
-#include <thread>
-#include <chrono>
-#include <string>
-#include <sstream>
-#include <stdexcept>
-#include <cerrno>
-#include <cstring>
-
-#include <fcntl.h>
-#include <unistd.h>
-
+#include "../std.hpp"
 #include "noncopyable.hpp"
 
 namespace cortono
@@ -25,8 +15,7 @@ namespace cortono
     namespace util
     {
 
-        template <typename T = int>
-        std::string current_time() {
+        inline std::string current_time() {
             auto t = std::chrono::system_clock::now();
             std::time_t tt = std::chrono::system_clock::to_time_t(t);
             char *tc = std::ctime(&tt);
@@ -34,8 +23,7 @@ namespace cortono
             return std::string(tc);
         }
 
-        template <typename T = int>
-        std::string current_thread() {
+        inline std::string current_thread() {
             std::stringstream oss;
             oss << std::this_thread::get_id();
             return oss.str();
@@ -46,6 +34,10 @@ namespace cortono
             public:
                 static int open(const std::string& filename) {
                     return ::open(filename.c_str(), O_RDONLY);
+                }
+
+                static int open(std::string_view filename) {
+                    return ::open(std::string{ filename.data(), filename.length() }.c_str(), O_RDONLY);
                 }
 
                 static void close(int fd) {
@@ -145,6 +137,26 @@ namespace cortono
                 return {true, f(std::forward<Args>(args)...)};
             }
             return {false, result_type{}};
+        }
+
+        inline auto from_chars(const std::string& str) {
+            return std::strtol(str.c_str(), nullptr, 10);
+        }
+
+        template <typename T>
+        inline auto to_chars(const T& value) {
+            std::stringstream oss;
+            oss << value;
+            return oss.str();
+        }
+
+        inline auto to_lower(std::string_view s) {
+            std::string ls;
+            ls.reserve(s.length());
+            for(auto &ch : s) {
+                ls.append(1, std::tolower(ch));
+            }
+            return ls;
         }
     }
 

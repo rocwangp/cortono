@@ -1,12 +1,7 @@
 #pragma once
 
-#include <cstdint>
-#include <cstring>
-#include <vector>
-#include <string>
-#include <string_view>
-#include <algorithm>
 
+#include "../std.hpp"
 #include "../util/util.hpp"
 
 namespace cortono::net
@@ -43,7 +38,16 @@ namespace cortono::net
             int writeable() {
                 return buffer_.size() - write_idx_;
             }
-            void append_bytes(int bytes) {
+
+            void clear() {
+                read_idx_ = write_idx_ = 0;
+            }
+
+            void retrieve_read_bytes(int bytes) {
+                read_idx_ += bytes;
+            }
+
+            void retrieve_write_bytes(int bytes) {
                 write_idx_ += bytes;
             }
 
@@ -51,7 +55,7 @@ namespace cortono::net
                 int s = info.length();
                 enable_bytes(s);
                 std::move_backward(info.begin(), info.end(), end() + s);
-                append_bytes(s);
+                retrieve_write_bytes(s);
             }
 
             void append(int n) {
@@ -95,7 +99,24 @@ namespace cortono::net
                     log_error("no match string in buffer:", s, "call read_all()");
                     return read_all();
                 }
+            }
 
+            std::string_view read_util_to_sv(std::string_view s) {
+                if(auto search_it = std::search(begin(), end(), s.begin(), s.end());
+                        search_it != end()) {
+                    return { begin(), search_it - begin() + s.length() };
+                }
+                else{
+                    return {};
+                }
+            }
+            std::string_view to_string_view() {
+                if(empty()) {
+                    return {};
+                }
+                else {
+                    return { data(), size() };
+                }
             }
         private:
             std::size_t read_idx_, write_idx_;

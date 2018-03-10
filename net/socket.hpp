@@ -1,29 +1,16 @@
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <map>
-#include <memory>
-#include <queue>
-#include <future>
-#include <functional>
-#include <algorithm>
-#include <string_view>
-
-#include <cassert>
-#include <cstdint>
-#include <cstring>
-#include <cerrno>
-
 #include "buffer.hpp"
 #include "poller.hpp"
+#include "../std.hpp"
 #include "../ip/sockets.hpp"
 #include "../util/util.hpp"
 #include "../util/noncopyable.hpp"
 
 namespace cortono::net
 {
-    class cort_socket : private util::noncopyable
+    class cort_socket : public std::enable_shared_from_this<cort_socket>,
+                        private util::noncopyable
     {
         public:
             enum socket_option
@@ -83,6 +70,13 @@ namespace cortono::net
 
             bool connect(std::string_view ip, unsigned short port) {
                 return ip::tcp::sockets::connect(fd_, ip, port);
+            }
+
+            bool bind_and_listen(std::string_view ip, unsigned short port, long long listen_nums = INT64_MAX) {
+                enable_option(cort_socket::REUSE_ADDR, cort_socket::REUSE_POST, cort_socket::NON_BLOCK);
+                util::exitif(!bind(ip, port), "fail to bind <", ip, port, ">", std::strerror(errno));
+                util::exitif(!listen(listen_nums), "fail to listen");
+                return true;
             }
 
             void tie(std::shared_ptr<cort_poller> poller) {
@@ -147,7 +141,7 @@ namespace cortono::net
                 if(int bytes = ip::tcp::sockets::readable(fd_); bytes > 0) {
                     read_buffer_->enable_bytes(bytes);
                     if(int read_bytes = ip::tcp::sockets::recv(fd_, read_buffer_->end(), bytes); read_bytes > 0) {
-                        read_buffer_->append_bytes(read_bytes);
+                        read_buffer_->retrieve_write_bytes(read_bytes);
                         return true;
                     }
                 }
@@ -168,6 +162,15 @@ namespace cortono::net
                 return write_buffer_->empty();
             }
 
+            int write_file(std::string_view filename, int count) {
+                if(filename.empty()) {
+                    return -1;
+                }
+                else {
+                    return ip::tcp::sockets::send_file(fd_, filename, count);
+                }
+            }
+
             cort_socket& write(const std::string& msg) {
                 int write_bytes = 0;
                 if(!write_buffer_->empty() ||
@@ -183,12 +186,13 @@ namespace cortono::net
                             do_write_callback();
                         }
                         else {
-                            write_buffer_->append_bytes(std::max(0, write_bytes));
+                            write_buffer_->retrieve_read_bytes(std::max(0, write_bytes));
                         }
                     });
                 }
                 return *this;
             }
+
 
             void do_write_callback() {
                 while(!write_cbs_.empty()) {
@@ -197,21 +201,20 @@ namespace cortono::net
                     task();
                 }
             }
+
             template <typename Function, typename... Args>
-            cort_socket& then(Function&& f, Args... args) {
-                if(write_done()) {
-                    f(args...);
-                    return *this;
-                }
+            auto invoke_after_write_done(Function&& f, Args... args) {
                 using result_type = typename std::invoke_result_t<Function, Args...>;
                 auto task = std::make_shared<std::packaged_task<result_type()>>(
                     std::bind(std::forward<Function>(f), std::forward<Args>(args)...));
                 write_cbs_.emplace([task]{
                     (*task)();
                 });
-                return *this;
+                if(write_done()) {
+                    do_write_callback();
+                }
+                return shared_from_this();
             }
-
 
             void enable_option() { }
 

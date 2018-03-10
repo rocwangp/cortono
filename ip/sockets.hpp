@@ -1,22 +1,11 @@
 #pragma once
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <error.h>
-
-#include <string_view>
-#include <string>
-#include <cstring>
-
+#include "../std.hpp"
 #include "../util/util.hpp"
 
 namespace cortono::ip
 {
+    using namespace std::literals;
     class address
     {
         public:
@@ -113,7 +102,7 @@ namespace cortono::ip
                             util::io::close(idle_fd);
                             fd = ::accept(sockfd, nullptr, nullptr);
                             sockets::close(fd);
-                            util::io::open("/dev/null");
+                            util::io::open("/dev/null"sv);
                         }
                     }
                     return fd;
@@ -168,11 +157,18 @@ namespace cortono::ip
                     return send(fd, msg.c_str(), msg.size());
                 }
 
+                static int send_file(int fd, std::string_view filename, std::size_t count) {
+                    int in_fd = util::io::open(filename);
+                    int n = ::sendfile(fd, in_fd, nullptr, count);
+                    log_debug(fd, in_fd, count, n);
+                    util::io::close(in_fd);
+                    return n;
+                }
 
             private:
                 static int idle_fd;
         };
 
-        int sockets::idle_fd = util::io::open("/dev/null");
+        int sockets::idle_fd = util::io::open("/dev/null"sv);
     }
 }

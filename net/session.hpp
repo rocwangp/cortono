@@ -1,7 +1,7 @@
 #pragma once
 
-#include <memory>
 #include "socket.hpp"
+#include "../std.hpp"
 #include "../util/noncopyable.hpp"
 
 namespace cortono::net
