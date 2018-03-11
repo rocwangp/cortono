@@ -10,21 +10,20 @@
 namespace cortono::net
 {
     template <typename session_type>
-    class cort_service : private util::noncopyable
+    class tcp_service : private util::noncopyable
     {
         public:
-
-            cort_service(cort_eventloop* loop, std::string_view ip, unsigned short port)
+            tcp_service(event_loop* loop, std::string_view ip, unsigned short port)
                 : loop_(loop),
                   loop_idx_(-1),
-                  acceptor_(std::make_unique<cort_socket>())
+                  acceptor_(std::make_unique<tcp_socket>())
             {
                 acceptor_->tie(loop_->poller());
-                acceptor_->enable_read(std::bind(&cort_service::handle_accept, this));
+                acceptor_->enable_read(std::bind(&tcp_service::handle_accept, this));
                 acceptor_->bind_and_listen(ip, port);
             }
 
-            ~cort_service()
+            ~tcp_service()
             {
 
             }
@@ -33,8 +32,11 @@ namespace cortono::net
             void start(int thread_nums = std::thread::hardware_concurrency()) {
                 while(thread_nums--) {
                     util::threadpool::instance().async([this] {
-                        auto loop_ptr = std::make_shared<cort_eventloop>();
-                        event_loops_.push_back(loop_ptr);
+                        auto loop_ptr = std::make_shared<event_loop>();
+                        {
+                            std::unique_lock lock{ mutex_ };
+                            event_loops_.emplace_back(loop_ptr.get());
+                        }
                         loop_ptr->sync_loop();
                     });
                 }
@@ -62,14 +64,14 @@ namespace cortono::net
              *        ...
              *
              *     private:
-             *         cort_eventloop base_;
+             *         event_loop base_;
              *         cort_service<session_type> service_;
              * }; */
-            void on_conn(std::function<void(std::shared_ptr<cort_socket>)> cb) {
+            void on_conn(std::function<void(std::shared_ptr<tcp_socket>)> cb) {
                 conn_cb_ = cb;
             }
 
-            void register_session(std::shared_ptr<cort_socket> socket, std::shared_ptr<session_type> session) {
+            void register_session(std::shared_ptr<tcp_socket> socket, std::shared_ptr<session_type> session) {
                 sessions_.emplace(socket.get(), session);
             }
         private:
@@ -82,9 +84,9 @@ namespace cortono::net
                                     ? loop_
                                     : event_loops_[(++loop_idx_) % event_loops_.size()].get();
                     loop->safe_call([this, loop, fd]{
-                        auto socket = std::make_shared<cort_socket>(fd);
+                        auto socket = std::make_shared<tcp_socket>(fd);
                         socket->tie(loop->poller());
-                        socket->enable_option(cort_socket::NON_BLOCK);
+                        socket->enable_option(tcp_socket::non_block);
                         std::weak_ptr weak_socket { socket };
                         socket->enable_read([this, weak_socket] {
                             if(auto strong_socket = weak_socket.lock(); strong_socket) {
@@ -103,22 +105,21 @@ namespace cortono::net
                                 }
                             }
                         });
-                        if(conn_cb_) {
-                            conn_cb_(socket);
-                        }
+                        util::exitif(conn_cb_ == nullptr, "no conn callback");
+                        conn_cb_(socket);
                     });
                 }
             }
 
         private:
 
-            cort_eventloop *loop_;
+            event_loop *loop_;
             int loop_idx_;
             std::mutex mutex_;
-            std::unique_ptr<cort_socket> acceptor_;
-            std::vector<std::shared_ptr<cort_eventloop>> event_loops_;
-            std::unordered_map<cort_socket*, std::shared_ptr<session_type>> sessions_;
-            std::function<void(std::shared_ptr<cort_socket>)> conn_cb_;
+            std::unique_ptr<tcp_socket> acceptor_;
+            std::vector<std::shared_ptr<event_loop>> event_loops_;
+            std::unordered_map<tcp_socket*, std::shared_ptr<session_type>> sessions_;
+            std::function<void(std::shared_ptr<tcp_socket>)> conn_cb_;
 
     };
 }

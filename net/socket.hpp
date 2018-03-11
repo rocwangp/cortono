@@ -9,44 +9,38 @@
 
 namespace cortono::net
 {
-    class cort_socket : public std::enable_shared_from_this<cort_socket>,
+    class tcp_socket : public std::enable_shared_from_this<tcp_socket>,
                         private util::noncopyable
     {
         public:
             enum socket_option
             {
-                BLOCK,
-                NON_BLOCK,
-                REUSE_ADDR,
-                REUSE_POST,
-                NO_DELAY
+                block,
+                non_block,
+                reuse_addr,
+                reuse_port,
+                no_delay
             };
 
-            enum socket_state
-            {
-                INIT,
-                ADDED,
-                DELETED
-            };
         public:
 
-            cort_socket()
-                : cort_socket(ip::tcp::sockets::block_socket())
+            tcp_socket()
+                : tcp_socket(ip::tcp::sockets::block_socket())
             {
 
             }
 
-            cort_socket(int fd)
+            tcp_socket(int fd)
                 : fd_(fd),
-                  events_(cort_poller::NONE_EVENT),
-                  poller_cbs_(std::make_shared<cort_poller::CB>()),
-                  read_buffer_(std::make_shared<cort_buffer>()),
-                  write_buffer_(std::make_shared<cort_buffer>())
+                  events_(event_poller::none_event),
+                  poller_cbs_(std::make_shared<event_poller::event_cb>()),
+                  read_buffer_(std::make_shared<event_buffer>()),
+                  write_buffer_(std::make_shared<event_buffer>())
             {
 
             }
 
-            ~cort_socket() {
+            ~tcp_socket() {
                 ip::tcp::sockets::close(fd_);
             }
 
@@ -73,21 +67,21 @@ namespace cortono::net
             }
 
             bool bind_and_listen(std::string_view ip, unsigned short port, long long listen_nums = INT64_MAX) {
-                enable_option(cort_socket::REUSE_ADDR, cort_socket::REUSE_POST, cort_socket::NON_BLOCK);
+                enable_option(reuse_addr, reuse_port, non_block);
                 util::exitif(!bind(ip, port), "fail to bind <", ip, port, ">", std::strerror(errno));
                 util::exitif(!listen(listen_nums), "fail to listen");
                 return true;
             }
 
-            void tie(std::shared_ptr<cort_poller> poller) {
+            void tie(std::shared_ptr<event_poller> poller) {
                 weak_poller_ = poller;
             }
 
             void enable_read(std::function<void()> cb) {
                 if(auto poller = weak_poller_.lock(); poller) {
                     poller_cbs_->read_cb = std::move(cb);
-                    poller->update(fd_, events_, events_ | cort_poller::READ_EVENT, poller_cbs_);
-                    events_ |= cort_poller::READ_EVENT;
+                    poller->update(fd_, events_, events_ | event_poller::read_event, poller_cbs_);
+                    events_ |= event_poller::read_event;
                 }
                 else {
                     log_fatal("poller is not exist");
@@ -97,8 +91,8 @@ namespace cortono::net
             void enable_write(std::function<void()> cb) {
                 if(auto poller = weak_poller_.lock(); poller) {
                     poller_cbs_->write_cb = std::move(cb);
-                    poller->update(fd_, events_, events_ | cort_poller::WRITE_EVENT, poller_cbs_);
-                    events_ |= cort_poller::WRITE_EVENT;
+                    poller->update(fd_, events_, events_ | event_poller::write_event, poller_cbs_);
+                    events_ |= event_poller::write_event;
                 }
                 else {
                     log_fatal("poller is not exist");
@@ -111,8 +105,8 @@ namespace cortono::net
 
             void disable_write() {
                 if(auto poller = weak_poller_.lock(); poller) {
-                    poller->update(fd_, events_, events_ & (~cort_poller::WRITE_EVENT), poller_cbs_);
-                    events_ &= (~cort_poller::WRITE_EVENT);
+                    poller->update(fd_, events_, events_ & (~event_poller::write_event), poller_cbs_);
+                    events_ &= (~event_poller::write_event);
                 }
                 else {
                     log_fatal("poller is not exist");
@@ -121,8 +115,8 @@ namespace cortono::net
 
             void disable_all() {
                 if(auto poller = weak_poller_.lock(); poller) {
-                    poller->update(fd_, events_, cort_poller::NONE_EVENT, poller_cbs_);
-                    events_ = cort_poller::NONE_EVENT;
+                    poller->update(fd_, events_, event_poller::NONE_EVENT, poller_cbs_);
+                    events_ = event_poller::NONE_EVENT;
                 }
                 else {
                     log_fatal("poller is not exist");
@@ -171,7 +165,7 @@ namespace cortono::net
                 }
             }
 
-            cort_socket& write(const std::string& msg) {
+            auto write(const std::string& msg) {
                 int write_bytes = 0;
                 if(!write_buffer_->empty() ||
                    ((write_bytes = ip::tcp::sockets::send(fd_, msg)) < static_cast<int>(msg.size())))
@@ -190,7 +184,7 @@ namespace cortono::net
                         }
                     });
                 }
-                return *this;
+                return shared_from_this();
             }
 
 
@@ -234,21 +228,21 @@ namespace cortono::net
         private:
             int fd_;
             uint32_t events_;
-            std::weak_ptr<cort_poller> weak_poller_;
-            std::shared_ptr<cort_poller::CB> poller_cbs_;
-            std::shared_ptr<cort_buffer> read_buffer_;
-            std::shared_ptr<cort_buffer> write_buffer_;
+            std::weak_ptr<event_poller> weak_poller_;
+            std::shared_ptr<event_poller::event_cb> poller_cbs_;
+            std::shared_ptr<event_buffer> read_buffer_;
+            std::shared_ptr<event_buffer> write_buffer_;
             std::queue<std::function<void()>> write_cbs_;
 
             static std::map<socket_option, std::function<bool(int)>> opt_functors_;
     };
 
-    std::map<cort_socket::socket_option, std::function<bool(int)>> cort_socket::opt_functors_ = {
-        { cort_socket::BLOCK,      [](int fd) { return ip::tcp::sockets::set_block(fd); }},
-        { cort_socket::NON_BLOCK,  [](int fd) { return ip::tcp::sockets::set_nonblock(fd); }},
-        { cort_socket::REUSE_ADDR, [](int fd) { return ip::tcp::sockets::reuse_address(fd); }},
-        { cort_socket::REUSE_POST, [](int fd) { return ip::tcp::sockets::reuse_post(fd); }},
-        { cort_socket::NO_DELAY,   [](int fd) { return ip::tcp::sockets::no_delay(fd); }}
+    std::map<tcp_socket::socket_option, std::function<bool(int)>> tcp_socket::opt_functors_ = {
+        { tcp_socket::block,      [](int fd) { return ip::tcp::sockets::set_block(fd); }},
+        { tcp_socket::non_block,  [](int fd) { return ip::tcp::sockets::set_nonblock(fd); }},
+        { tcp_socket::reuse_addr, [](int fd) { return ip::tcp::sockets::reuse_address(fd); }},
+        { tcp_socket::reuse_port, [](int fd) { return ip::tcp::sockets::reuse_post(fd); }},
+        { tcp_socket::no_delay,   [](int fd) { return ip::tcp::sockets::no_delay(fd); }}
     };
 
 }

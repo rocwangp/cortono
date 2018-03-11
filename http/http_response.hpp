@@ -1,9 +1,6 @@
 #pragma once
 
-#include <string>
-#include <string_view>
-#include <unordered_map>
-
+#include "../std.hpp"
 #include "../cortono.hpp"
 #include "response_cv.hpp"
 
@@ -19,16 +16,13 @@ namespace cortono::http
                 std::string header_value = to_chars(value);
                 headers_.emplace(header_key, header_value);
             }
-
             void set_status_and_content(status_type status) {
                 set_status_and_content(status, status_to_content(status));
             }
-
             void set_status_and_content(status_type status, std::string_view content) {
                 status_ = status;
                 content_.append(std::string{ content.data(), content.length() });
             }
-
             std::string response_header() {
                 std::string_view status_sv = status_to_sv(status_);
                 std::string response{ status_sv.data(), status_sv.length() };
@@ -41,14 +35,12 @@ namespace cortono::http
                 response.append(crlf);
                 return response;
             }
-
             std::string to_string() {
                 set_header(response_header::content_length, content_.size());
                 std::string r =  response_header() + content_;
                 log_debug(r);
                 return r;
             }
-
             void reset() {
                 content_.clear();
                 headers_.clear();

@@ -15,14 +15,14 @@ namespace cortono::net
     class cort_hsha : private util::noncopyable
     {
         public:
-            typedef std::function<void(std::shared_ptr<cort_socket>)> callback_type;
+            typedef std::function<void(std::shared_ptr<tcp_socket>)> callback_type;
 
             cort_hsha(const std::string& ip = "localhost", unsigned short port = 9999)
-                : poller_(std::make_shared<cort_poller>()),
-                  acceptor_(std::make_shared<cort_socket>())
+                : poller_(std::make_shared<event_poller>()),
+                  acceptor_(std::make_shared<tcp_socket>())
             {
                 acceptor_->tie(poller_);
-                acceptor_->enable_option(cort_socket::REUSE_ADDR, cort_socket::REUSE_POST, cort_socket::NON_BLOCK);
+                acceptor_->enable_option(tcp_socket::reuse_addr, tcp_socket::reuse_port, tcp_socket::non_block);
                 acceptor_->enable_read(std::bind(&cort_hsha::handle_accept, this));
                 util::exitif(!acceptor_->bind(ip, port), "bind error");
                 util::exitif(!acceptor_->listen(), "listen error");
@@ -40,7 +40,7 @@ namespace cortono::net
                 conn_cb_ = std::move(cb);
             }
 
-            void register_session(std::shared_ptr<cort_socket> socket,
+            void register_session(std::shared_ptr<tcp_socket> socket,
                                   std::shared_ptr<session_type> session) {
                 sessions_[socket.get()] = session;
             }
@@ -50,9 +50,9 @@ namespace cortono::net
                     int fd = acceptor_->accept();
                     if(fd == -1)
                         return;
-                    auto socket = std::make_shared<cort_socket>(fd);
+                    auto socket = std::make_shared<tcp_socket>(fd);
                     socket->tie(poller_);
-                    socket->enable_option(cort_socket::REUSE_ADDR, cort_socket::REUSE_POST, cort_socket::NON_BLOCK);
+                    socket->enable_option(tcp_socket::reuse_addr, tcp_socket::reuse_port, tcp_socket::non_block);
                     std::weak_ptr weak_socket { socket };
                     socket->enable_read([this, weak_socket] {
                         util::threadpool::instance().async([this, weak_socket] {
@@ -82,9 +82,9 @@ namespace cortono::net
             }
         private:
             callback_type conn_cb_ = nullptr;
-            std::shared_ptr<cort_poller> poller_;
-            std::shared_ptr<cort_socket> acceptor_;
-            std::unordered_map<cort_socket*, std::shared_ptr<session_type>> sessions_;
+            std::shared_ptr<event_poller> poller_;
+            std::shared_ptr<tcp_socket> acceptor_;
+            std::unordered_map<tcp_socket*, std::shared_ptr<session_type>> sessions_;
             std::mutex mutex_;
     };
 }

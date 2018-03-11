@@ -1,9 +1,7 @@
 #pragma once
 
+#include "../std.hpp"
 #include "../cortono.hpp"
-
-#include <string>
-#include <string_view>
 
 namespace cortono::http
 {
@@ -55,8 +53,9 @@ namespace cortono::http
 
     enum class module_handle_status
     {
-        interval_redirect,
         done,
-        error
+        next,
+        error,
+        redirection
     };
 }

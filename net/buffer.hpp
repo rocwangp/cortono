@@ -7,10 +7,10 @@
 namespace cortono::net
 {
     template <std::size_t Size>
-    class cort_base_buffer
+    class base_buffer
     {
         public:
-            cort_base_buffer()
+            base_buffer()
                 : read_idx_(0),
                   write_idx_(0),
                   buffer_(Size)
@@ -101,7 +101,7 @@ namespace cortono::net
                 }
             }
 
-            std::string_view read_util_to_sv(std::string_view s) {
+            std::string_view read_sv_util(std::string_view s) {
                 if(auto search_it = std::search(begin(), end(), s.begin(), s.end());
                         search_it != end()) {
                     return { begin(), search_it - begin() + s.length() };
@@ -123,7 +123,7 @@ namespace cortono::net
             std::vector<char> buffer_;
     };
 
-    class cort_buffer : public cort_base_buffer<1024>
+    class event_buffer : public base_buffer<1024>
     {
 
     };

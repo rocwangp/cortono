@@ -1,11 +1,9 @@
 #pragma once
 
+#include "../std.hpp"
 #include "../cortono.hpp"
-#include "util.hpp"
+#include "http_util.hpp"
 
-#include <string>
-#include <map>
-#include <regex>
 
 namespace cortono::http
 {
@@ -19,12 +17,10 @@ namespace cortono::http
                 : status_(parse_status::parse_line),
                   http_method_(http_method::unknown)
             {
-
             }
-
-            parse_status parse_line(std::shared_ptr<cortono::net::cort_buffer> read_buffer) {
+            parse_status parse_line(std::shared_ptr<cortono::net::event_buffer> read_buffer) {
                 log_trace;
-                std::string_view buf = read_buffer->read_util_to_sv("\r\n");
+                std::string_view buf = read_buffer->read_sv_util("\r\n");
                 if(!buf.empty()) {
                     std::regex e("^([a-zA-Z]+) ([^ ]+) HTTP/(.*)\r\n$");
                     std::match_results<std::string_view::const_iterator> match;
@@ -42,10 +38,8 @@ namespace cortono::http
                 }
                 return status_;
             }
-
-
-            parse_status parse_header(std::shared_ptr<cortono::net::cort_buffer> read_buffer) {
-                std::string_view buf = read_buffer->read_util_to_sv("\r\n");
+            parse_status parse_header(std::shared_ptr<cortono::net::event_buffer> read_buffer) {
+                std::string_view buf = read_buffer->read_sv_util("\r\n");
                 if(buf == "\r\n"sv) {
                     read_buffer->retrieve_read_bytes(buf.length());
                     parse_common_fields();
@@ -69,25 +63,21 @@ namespace cortono::http
                 }
                 return status_;
             }
-
-            parse_status parse_body(std::shared_ptr<cortono::net::cort_buffer> read_buffer) {
+            parse_status parse_body(std::shared_ptr<cortono::net::event_buffer> read_buffer) {
                 if(read_buffer->size() == content_length_) {
                     status_ = parse_status::parse_done;
                 }
                 return status_;
             }
-
             void parse_common_fields() {
                 parse_method();
                 parse_query();
                 parse_content_length();
                 parse_keep_alive();
             }
-
             void parse_method() {
                 http_method_ = to_method(method_);
             }
-
             void parse_query() {
                 std::string_view uri = uri_;
                 std::size_t pos = uri.find_first_of('?');
@@ -109,7 +99,6 @@ namespace cortono::http
                 }
                 uri_ = uri.substr(0, pos);
             }
-
             void parse_content_length() {
                 if(auto it = headers_.find("content-length"); it != headers_.end()) {
                     content_length_ = util::from_chars(it->second);
@@ -118,7 +107,6 @@ namespace cortono::http
                     content_length_ = 0;
                 }
             }
-
             void parse_keep_alive() {
                 if(auto it = headers_.find("connection"); it != headers_.end()) {
                     if(iequal(it->second, "close")) {
@@ -128,34 +116,26 @@ namespace cortono::http
                 }
                 keep_alive_ = true;
             }
-
-
             parse_status get_parse_status() {
                 return status_;
             }
-
             http_method method() const {
                 return http_method_;
             }
-
             std::string_view uri() const {
                 return { uri_.data(), uri_.length() };
             }
-
             void set_body(std::string_view body) {
                 body_ = body;
             }
-
-            bool keep_alive() const {
-                return keep_alive_;
-            }
-
-            void rewrite_uri(std::string&& uri) {
+            void set_uri(std::string&& uri) {
                 uri_ = std::move(uri);
             }
-
-            void rewrite_uri(std::string_view uri) {
+            void set_uri(std::string_view uri) {
                 uri_ = { uri.data(), uri.length() };
+            }
+            bool keep_alive() const {
+                return keep_alive_;
             }
         private:
             bool keep_alive_ = false;

@@ -1,8 +1,9 @@
+#pragma once
+
 #include "../cortono.hpp"
 #include "http_module.hpp"
-#include "mime_type.hpp"
+#include "http_mime_type.hpp"
 
-#include <fstream>
 #include <experimental/filesystem>
 
 namespace cortono::http
@@ -16,19 +17,17 @@ namespace cortono::http
             http_static_file_module() : http_module() {}
             virtual ~http_static_file_module() {}
             virtual module_handle_status handle(http_request& req, http_response& res,
-                                                std::shared_ptr<cort_socket> socket) override {
+                                                std::shared_ptr<tcp_socket> socket) override {
                 log_trace;
                 if(auto method = req.method(); method != GET ) {
                     log_error("method error");
-                    return module_handle_status::done;
+                    return module_handle_status::next;
                 }
-
                 auto uri = req.uri();
                 if(uri.back() == '/') {
                     log_error("dir error");
-                    return module_handle_status::done;
+                    return module_handle_status::next;
                 }
-
                 if(uri.find("..") != std::string_view::npos) {
                     return module_handle_status::error;
                 }
@@ -47,7 +46,6 @@ namespace cortono::http
                     log_error("file is symbol link");
                     return module_handle_status::error;
                 }
-
                 res.set_status_and_content(status_type::ok);
 
                 auto file_size = filesystem::file_size(p);
@@ -75,11 +73,9 @@ namespace cortono::http
             filesystem::path uri_to_path(std::string_view uri) {
                 return filesystem::absolute(uri);
             }
-
             bool file_exist(filesystem::path& p) {
                 return filesystem::exists(p);
             }
-
             std::string_view mime_type(std::string_view uri) {
                 std::size_t dot_index = uri.find_last_of('.');
                 if(dot_index == std::string_view::npos) {
@@ -89,7 +85,6 @@ namespace cortono::http
                     return get_mime_type(uri.substr(dot_index));
                 }
             }
-
         private:
             std::string_view name_ = "static_file"sv;
     };

@@ -6,24 +6,24 @@
 
 namespace cortono::net
 {
-    class cort_poller : private util::noncopyable
+    class event_poller : private util::noncopyable
     {
 
         public:
-            struct CB
+            struct event_cb
             {
                 std::function<void()> read_cb, write_cb, close_cb;
             };
 
             enum
             {
-                NONE_EVENT = 0,
-                READ_EVENT = EPOLLIN | EPOLLET,
-                WRITE_EVENT = EPOLLOUT | EPOLLET
+                none_event = 0,
+                read_event = EPOLLIN | EPOLLET,
+                write_event = EPOLLOUT | EPOLLET
             };
 
         public:
-            cort_poller()
+            event_poller()
                 : epollfd_(::epoll_create1(::EPOLL_CLOEXEC)),
                   event_nums_(0),
                   events_(1000)
@@ -31,14 +31,14 @@ namespace cortono::net
 
             }
 
-            ~cort_poller() {
+            ~event_poller() {
                 util::io::close(epollfd_);
             }
 
-            void update(int fd, uint32_t old_events, uint32_t new_events, std::shared_ptr<CB> poller_cbs) {
+            void update(int fd, uint32_t old_events, uint32_t new_events, std::shared_ptr<event_cb> poller_cbs) {
                 int epoll_opt = EPOLL_CTL_ADD;
-                if(new_events != NONE_EVENT) {
-                    if(old_events != NONE_EVENT)
+                if(new_events != none_event) {
+                    if(old_events != none_event)
                         epoll_opt = EPOLL_CTL_MOD;
                     else
                         ++event_nums_;
@@ -60,23 +60,23 @@ namespace cortono::net
                 int n = ::epoll_wait(epollfd_, &events_[0], events_.size(), timeout);
                 /* util::exitif(n == -1, std::strerror(errno), epollfd_, event_nums_); */
                 for(int i = 0; i < n; ++i) {
-                    if(read_event(events_[i].events))
-                        static_cast<CB*>(events_[i].data.ptr)->read_cb();
-                    else if(write_event(events_[i].events))
-                        static_cast<CB*>(events_[i].data.ptr)->write_cb();
+                    if(readable_event(events_[i].events))
+                        static_cast<event_cb*>(events_[i].data.ptr)->read_cb();
+                    else if(writeable_event(events_[i].events))
+                        static_cast<event_cb*>(events_[i].data.ptr)->write_cb();
                     else
-                        static_cast<CB*>(events_[i].data.ptr)->close_cb();
+                        static_cast<event_cb*>(events_[i].data.ptr)->close_cb();
                 }
             }
 
 
         private:
-            bool read_event(uint32_t events) {
-                return events & READ_EVENT;
+            bool readable_event(uint32_t events) {
+                return events & read_event;
             }
 
-            bool write_event(uint32_t events) {
-                return events & WRITE_EVENT;
+            bool writeable_event(uint32_t events) {
+                return events & write_event;
             }
 
         private:
