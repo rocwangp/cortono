@@ -157,6 +157,15 @@ namespace cortono::http
             bool static_file() const {
                 return static_file_;
             }
+            bool support_gzip()  {
+                return false;
+                if(auto it = headers_.find("accept-encoding"); it != headers_.end()) {
+                    if(it->second.find("gzip") != std::string::npos) {
+                        return true;
+                    }
+                }
+                return false;
+            }
             void reset() {
                 keep_alive_ = true;
                 static_file_ = true;

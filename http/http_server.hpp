@@ -30,7 +30,7 @@ namespace cortono::http
                 service_.on_conn([this](auto conn) {
                     log_trace;
                     {
-                        /* std::unique_lock lock { mutex_ }; */
+                        std::unique_lock lock { mutex_ };
                         auto session = std::make_shared<HttpSession>();
                         sessions_[conn] = session;
                         conn->on_read([=](auto conn) { session->parse_line(conn); });

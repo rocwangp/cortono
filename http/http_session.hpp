@@ -19,7 +19,6 @@ namespace cortono::http
     {
         public:
             void parse_line(TcpConnection::Pointer conn) {
-                log_trace;
                 auto status = request_.parse_line(conn->recv_buffer());
                 switch(status) {
                     case ParseStatus::ParseError:
@@ -35,12 +34,10 @@ namespace cortono::http
                 }
             }
             void parse_header(TcpConnection::Pointer conn) {
-                log_trace;
                 auto recv_buffer = conn->recv_buffer();
                 while(true) {
                     auto status = request_.parse_header(recv_buffer);
                     if(status == ParseStatus::ParseBody) {
-                        log_trace;
                         conn->on_read(std::bind(
                             &HttpSession::parse_body, this, std::placeholders::_1));
                         parse_body(conn);
@@ -55,7 +52,6 @@ namespace cortono::http
                 }
             }
             void parse_body(TcpConnection::Pointer conn) {
-                log_trace;
                 auto status = request_.parse_body(conn->recv_buffer());
                 if(status == ParseStatus::ParseDone) {
                     conn->on_read([this](auto conn) { handle_none(conn); });
@@ -66,28 +62,22 @@ namespace cortono::http
 
             }
             void handle_request(TcpConnection::Pointer conn) {
-                log_trace;
                 request_.set_body(conn->recv_string_view());
                 if(request_.static_file()) {
                     auto file_path = request_.file_path();
 
-                    log_debug(std::string{file_path.data(), file_path.length()});
                     filesystem::path p{ file_path };
                     if(!filesystem::exists(p)) {
-                        log_trace;
                         response_back(conn, ResponseStatus::BadRequest);
                         return;
                     }
                     std::size_t dot_index = file_path.find_last_of('.');
                     if(dot_index == std::string_view::npos) {
-                        log_trace;
                         response_back(conn, ResponseStatus::BadRequest);
                         return;
                     }
                     auto content_type = get_mime_type(file_path.substr(dot_index));
-                    auto file_size = filesystem::file_size(p);
                     response_.set_header(ResponseHeader::Content_Type, content_type);
-                    response_.set_header(ResponseHeader::Content_Length, file_size);
                     if(request_.keep_alive()) {
                         response_.set_header(ResponseHeader::Connection, "keep-alive");
                     }
@@ -95,10 +85,16 @@ namespace cortono::http
                         response_.set_header(ResponseHeader::Connection, "close");
                     }
                     response_.set_status_and_content(ResponseStatus::OK);
-                    auto header = response_.get_response_header();
-                    log_debug(header);
-                    conn->send(header);
-                    conn->sendfile(file_path);
+                    if(request_.support_gzip()) {
+                        response_.set_header(ResponseHeader::Content_Encoding, "gzip");
+                        response_.gzip_file(file_path);
+                        conn->send(response_.to_string());
+                    }
+                    else {
+                        response_.set_header(ResponseHeader::Content_Length, filesystem::file_size(p));
+                        conn->send(response_.get_response_header());
+                        conn->sendfile(file_path);
+                    }
 
                     /* std::ifstream fin; */
                     /* fin.open(std::string{file_path.data(), file_path.length()}, std::ios_base::in); */

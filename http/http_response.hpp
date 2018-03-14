@@ -3,6 +3,7 @@
 #include "../std.hpp"
 #include "../cortono.hpp"
 #include "response_cv.hpp"
+#include "http_codec.hpp"
 
 namespace cortono::http
 {
@@ -40,6 +41,9 @@ namespace cortono::http
                 std::string r =  get_response_header() + content_;
                 /* log_debug(r); */
                 return r;
+            }
+            void gzip_file(std::string_view file_path) {
+                content_ = gzip_codec::compress(file_path);
             }
             void reset() {
                 content_.clear();
