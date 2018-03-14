@@ -2,6 +2,7 @@
 
 #include "../std.hpp"
 #include "noncopyable.hpp"
+#include <experimental/filesystem>
 
 namespace cortono
 {
@@ -34,10 +35,6 @@ namespace cortono
             public:
                 static int open(const std::string& filename) {
                     return ::open(filename.c_str(), O_RDONLY);
-                }
-
-                static int open(std::string_view filename) {
-                    return ::open(std::string{ filename.data(), filename.length() }.c_str(), O_RDONLY);
                 }
 
                 static void close(int fd) {
@@ -157,6 +154,17 @@ namespace cortono
                 ls.append(1, std::tolower(ch));
             }
             return ls;
+        }
+
+        inline std::size_t get_filesize(std::string_view filename) {
+            using namespace std::experimental;
+            filesystem::path p{ filename };
+            if(!filesystem::exists(p)) {
+                return 0;
+            }
+            else {
+                return filesystem::file_size(p);
+            }
         }
     }
 

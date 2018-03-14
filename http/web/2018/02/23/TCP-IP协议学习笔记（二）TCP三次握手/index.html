@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="TCP/IP," />
+
+
+<meta name="description" content="TCP是一种面向连接的流传输协议，提供了对数据传输时的各种控制功能，比如  当丢包时可以重新发送 即使数据到达顺序错乱也可以保证数据的有序性  由于TCP是面向连接的协议，所以必须在确定通信对端存在时才会发送数据，即三次握手。">
+<meta name="keywords" content="TCP&#x2F;IP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP&#x2F;IP学习笔记（二）TCP三次握手">
+<meta property="og:url" content="http://yoursite.com/2018/02/23/TCP-IP协议学习笔记（二）TCP三次握手/index.html">
+<meta property="og:site_name" content="「.Roc.」">
+<meta property="og:description" content="TCP是一种面向连接的流传输协议，提供了对数据传输时的各种控制功能，比如  当丢包时可以重新发送 即使数据到达顺序错乱也可以保证数据的有序性  由于TCP是面向连接的协议，所以必须在确定通信对端存在时才会发送数据，即三次握手。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://s1.ax1x.com/2018/02/23/9aVzh6.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/02/23/9aAKc4.jpg">
+<meta property="og:image" content="https://s1.ax1x.com/2018/02/25/9wAV4P.png">
+<meta property="og:updated_time" content="2018-02-27T09:31:24.465Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TCP&#x2F;IP学习笔记（二）TCP三次握手">
+<meta name="twitter:description" content="TCP是一种面向连接的流传输协议，提供了对数据传输时的各种控制功能，比如  当丢包时可以重新发送 即使数据到达顺序错乱也可以保证数据的有序性  由于TCP是面向连接的协议，所以必须在确定通信对端存在时才会发送数据，即三次握手。">
+<meta name="twitter:image" content="https://s1.ax1x.com/2018/02/23/9aVzh6.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/02/23/TCP-IP协议学习笔记（二）TCP三次握手/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>TCP/IP学习笔记（二）TCP三次握手 | 「.Roc.」</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">「.Roc.」</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/23/TCP-IP协议学习笔记（二）TCP三次握手/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="「.Roc.」">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">TCP/IP学习笔记（二）TCP三次握手</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-23T00:00:00+08:00">2018-02-23</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP/IP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>TCP是一种面向连接的流传输协议，提供了对数据传输时的各种控制功能，比如</p>
+<ul>
+<li>当丢包时可以重新发送</li>
+<li>即使数据到达顺序错乱也可以保证数据的有序性</li>
+</ul>
+<p>由于TCP是面向连接的协议，所以必须在确定通信对端存在时才会发送数据，即三次握手。</p>
+<a id="more"></a>
+<p>好比于A和B打电话，电话拨通后</p>
+<blockquote>
+<p>A对B说:”你好，我是A，你能听见我说话吗”(第一次握手)</p>
+<p>B听到A的询问回答说:”你好，我能听见你说话，你能听见我说话吗”(第二次握手)</p>
+<p>A听见B的回复后告诉B说:”我也能听见你说话”(第三次握手)</p>
+<p>此时A和B都已确定对方能够听见自己的声音，即A和B的通讯连接已经建立</p>
+</blockquote>
+<hr>
+<h1 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h1><p>三次握手主要需要解决以下三个问题</p>
+<ul>
+<li>要使每一方能够知道对方的存在</li>
+<li>要允许双方协商一些参数（如最大窗口值，是否使用窗口扩大选项和时间戳选项以及服务质量等）</li>
+<li>能够对运输实体资源（如缓存大小，连接表中的项目等）进行分配</li>
+</ul>
+<p>三次握手的时序图如下，其中，客户端进行主动连接，称为主动打开(执行connect)，而服务器进行连接请求的接收，称为被动打开(执行accept)</p>
+<p><img src="https://s1.ax1x.com/2018/02/23/9aVzh6.png" alt=""></p>
+<h2 id="三次握手流程"><a href="#三次握手流程" class="headerlink" title="三次握手流程"></a>三次握手流程</h2><h3 id="第一次握手"><a href="#第一次握手" class="headerlink" title="第一次握手"></a>第一次握手</h3><ul>
+<li>客户端调用connect函数，请求连接服务器，并发送连接请求报文段，此时报文首部的同步位SYN = 1，同时选择一个初始序列号seq = x放在报文段中。此时客户端状态变为SYN_SENT，表示同步已发送。</li>
+</ul>
+<p>当电话接通后A询问B:”你能听见我说话吗？”</p>
+<blockquote>
+<p>TCP规定，SYN = 1的报文段不能携带数据，但是需要消耗一个序列号</p>
+</blockquote>
+<h3 id="第二次握手"><a href="#第二次握手" class="headerlink" title="第二次握手"></a>第二次握手</h3><ul>
+<li>服务器调用accept函数，当收到客户端的连接请求后，将收到的报文段记录在本地（获取序列号信息），随后发送自己的报文段，该报文段中的SYN位和ACK位都被置为1，表示既是一个同步报文也是一个应答报文。此外，报文中需要包含自己的初始序列号sqe = y以及希望下次收到的数据的序列号，由于刚才收到的序列号为x，所以下次希望接受的序列号为x + 1。至此服务器状态变为SYN_RCVD，表示同步已收到。</li>
+</ul>
+<p>B回复A说:”我能听见你说话，你能听见我说话吗？”</p>
+<blockquote>
+<p>TCP规定，该报文段也不能携带数据，但是也需要消耗一个序列号</p>
+</blockquote>
+<h3 id="第三次握手"><a href="#第三次握手" class="headerlink" title="第三次握手"></a>第三次握手</h3><ul>
+<li>客户端收到服务器的报文段后发送确认报文段，该报文段首部ACK确认位被置1，序列号为x + 1，希望下次接收的数据序列号为y + 1。随后状态变为ESTABLISHED，connect函数返回。</li>
+<li>服务器收到客户端发来的确认报文段，确认连接建立，状态变为ESTABLISHED，accept函数返回</li>
+</ul>
+<p>A听到B的回复后确认B能听见自己的声音，同时告诉B自己也能听见他的声音。B听见A的回复后确认A能听见自己的声音，此时双方可以正常进行通话</p>
+<p><img src="https://s1.ax1x.com/2018/02/23/9aAKc4.jpg" alt=""></p>
+<hr>
+<h1 id="文件描述符耗尽时的accept处理"><a href="#文件描述符耗尽时的accept处理" class="headerlink" title="文件描述符耗尽时的accept处理"></a>文件描述符耗尽时的accept处理</h1><p>accept会先后执行两步，任何位置出错都会直接返回</p>
+<ul>
+<li>选择一个空闲的文件描述符充当套接字描述符</li>
+<li>从TCP缓冲区的连接队列中取出一个连接请求，创建连接</li>
+</ul>
+<p>然而考虑一种极端情况，当服务器本地文件描述符耗尽时，accept在第一步就会出错返回，根本没有从缓冲区中取出连接请求。此时如果重新判断，那么监听套接字仍然是可读的，又开始accept，结果又发现耗尽，就会造成死循环。</p>
+<p>解决的办法就是想办法让accept正常返回，成功接收请求。可以在服务器初始化时占用一个空闲描述符(通常是打开一个文件)，当出现上述文件描述符耗尽的情况时，释放占用的描述符，此时就会出现一个空闲描述符，重新调用accept函数后会正常返回，然后再显示关闭连接，重新打开文件占用空闲描述符</p>
+<hr>
+<h1 id="以打电话为例解释二-三-四次握手"><a href="#以打电话为例解释二-三-四次握手" class="headerlink" title="以打电话为例解释二/三/四次握手"></a>以打电话为例解释二/三/四次握手</h1><h2 id="二次握手"><a href="#二次握手" class="headerlink" title="二次握手"></a>二次握手</h2><p>A：你好，我是A，你能听见我说话吗</p>
+<p>B：你好，我能听见你说话，你能听见我说话吗</p>
+<p>A：今天跟你谈谈事情1，balabalalba….</p>
+<p>B：你好，我能听见你说话，你能听见我说话吗</p>
+<p>A：今天跟你谈谈事情2，又balabalabala…</p>
+<p>B：我tm问你能不能听见我说话，fuck!</p>
+<p>A：今天跟你谈谈事情3，再balabalabala…</p>
+<p>B：…</p>
+<blockquote>
+<p>显然B无法确定A是否能听见自己说话，所以会一直询问。而A已经知道B能听见自己说话，所以会直接谈具体事情，导致无法进行正常交流</p>
+</blockquote>
+<h2 id="三次握手-1"><a href="#三次握手-1" class="headerlink" title="三次握手"></a>三次握手</h2><p>A：你好，我是A，你能听见我说话吗</p>
+<p>B：你好，我能听见你说话，你能听见我说话吗</p>
+<p>A：我能听见你说话</p>
+<p>B：OK</p>
+<p>A：今天跟你谈谈事情1，balabalabala…</p>
+<p>B：噢这个事啊，balabalabala…</p>
+<blockquote>
+<p>A和B都已确定对方能够听见自己说话，所以可以进行正常交流</p>
+</blockquote>
+<h2 id="四次握手"><a href="#四次握手" class="headerlink" title="四次握手"></a>四次握手</h2><p>A：你好，我是A，你能听见我说话吗</p>
+<p>B：你好，我能听见你说话</p>
+<p>B：你好，我是B，你能听见我说话吗</p>
+<p>A：你好，我能听见你说话</p>
+<p>B：OK</p>
+<p>A：今天跟你谈谈事情1，balabalabala…</p>
+<p>B：噢这个事啊，balabalabala…</p>
+<blockquote>
+<p>A和B也可以进行正常交流，但是第二三次握手时B完全可以浓缩成”我能听见你说话，你能听见我说话吗”</p>
+</blockquote>
+<h1 id="三次握手抓包分析"><a href="#三次握手抓包分析" class="headerlink" title="三次握手抓包分析"></a>三次握手抓包分析</h1><p>下面利用tcpdump命令在linux环境下进行三次握手的抓包分析，通过抓包，可以看到连接过程中一些主要数据的传输</p>
+<p>在上面的介绍中得知三次握手的过程中会进行如下数据交互（仅考虑序列号，其中A是客户端，B是服务器）</p>
+<p>A-&gt;B：SYN同步报文段，带有起始序列号seq = x</p>
+<p>B-&gt;A：SYN/ACK同步/确认报文段，带有起始序列号seq = y以及希望下次接收的序列号ack = x + 1</p>
+<p>A-&gt;B：ACK确认报文段，对服务器的确认ack = y + 1</p>
+<p>首先需要有服务器和客户端程序，自己敲两个就行，然后启动tcpdump命令</p>
+<ul>
+<li>-S表示显示的序列号是绝对值，而不是相对值</li>
+<li>-i lo指定网络接口，可以通过ifconfig命令查看接口</li>
+<li>tcp表示只抓取tcp数据包</li>
+<li>port 9999指定抓取端口，这里假设服务器监听9999端口</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo tcpdump -S -i lo tcp port 9999</span><br></pre></td></tr></table></figure>
+<p>随后运行服务器和客户端，观察tcpdump命令输出</p>
+<p><img src="https://s1.ax1x.com/2018/02/25/9wAV4P.png" alt=""></p>
+<p>输出结果分为三行，分别对应每一次握手，可以看到</p>
+<ul>
+<li>客户端发送给服务器的SYN同步报文段中包含自己的起始序列号2360165387</li>
+<li>服务器发送给客户端的SYN/ACK报文段中包含自己的起始序列号2184124889以及希望下次从客户端接收的序列号2360165388（可以看到正是第一次握手发送的序列号加一，因为SYN报文段占用了一个序列号）</li>
+<li>客户端发送给服务器ACK报文段中包含希望下次从服务器接收的序列号2184124890，可以看到同样是服务器上次传送的序列号加一</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/TCP-IP/" rel="tag"># TCP/IP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/22/TCP-IP协议学习笔记（一）分层模型概述/" rel="next" title="TCP/IP学习笔记（一）分层模型概述">
+                <i class="fa fa-chevron-left"></i> TCP/IP学习笔记（一）分层模型概述
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/24/TCP-IP协议学习笔记（三）TCP流量控制以及滑动窗口/" rel="prev" title="TCP/IP学习笔记（三）TCP流量控制以及滑动窗口">
+                TCP/IP学习笔记（三）TCP流量控制以及滑动窗口 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#三次握手"><span class="nav-number">1.</span> <span class="nav-text">三次握手</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#三次握手流程"><span class="nav-number">1.1.</span> <span class="nav-text">三次握手流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一次握手"><span class="nav-number">1.1.1.</span> <span class="nav-text">第一次握手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二次握手"><span class="nav-number">1.1.2.</span> <span class="nav-text">第二次握手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三次握手"><span class="nav-number">1.1.3.</span> <span class="nav-text">第三次握手</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文件描述符耗尽时的accept处理"><span class="nav-number">2.</span> <span class="nav-text">文件描述符耗尽时的accept处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#以打电话为例解释二-三-四次握手"><span class="nav-number">3.</span> <span class="nav-text">以打电话为例解释二/三/四次握手</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#二次握手"><span class="nav-number">3.1.</span> <span class="nav-text">二次握手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三次握手-1"><span class="nav-number">3.2.</span> <span class="nav-text">三次握手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四次握手"><span class="nav-number">3.3.</span> <span class="nav-text">四次握手</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三次握手抓包分析"><span class="nav-number">4.</span> <span class="nav-text">三次握手抓包分析</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.0.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="TCP/IP," />
+
+
+<meta name="description" content="TCP为了实现稳定可靠的传输，自然是需要在发送数据时附带一些信息，对端接收到报文段后将用户数据分离开存放在接收缓冲区，然后根据附加信息决定接下来的行为。所以即使TCP是面向字节流的传输协议，但是传输的基本单元却是报文段。 报文段由报文首部和数据组成，报文首部最小占20字节最多占60字节，固定的20字节包含各种连接信息，可扩展的40字节存放各种选项值">
+<meta name="keywords" content="TCP&#x2F;IP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP&#x2F;IP学习笔记（九）TCP报文段首部格式">
+<meta property="og:url" content="http://yoursite.com/2018/03/02/TCP-IP学习笔记（九）TCP报文段首部格式/index.html">
+<meta property="og:site_name" content="「.Roc.」">
+<meta property="og:description" content="TCP为了实现稳定可靠的传输，自然是需要在发送数据时附带一些信息，对端接收到报文段后将用户数据分离开存放在接收缓冲区，然后根据附加信息决定接下来的行为。所以即使TCP是面向字节流的传输协议，但是传输的基本单元却是报文段。 报文段由报文首部和数据组成，报文首部最小占20字节最多占60字节，固定的20字节包含各种连接信息，可扩展的40字节存放各种选项值">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/02/9rzlJf.png">
+<meta property="og:updated_time" content="2018-03-02T13:17:49.060Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TCP&#x2F;IP学习笔记（九）TCP报文段首部格式">
+<meta name="twitter:description" content="TCP为了实现稳定可靠的传输，自然是需要在发送数据时附带一些信息，对端接收到报文段后将用户数据分离开存放在接收缓冲区，然后根据附加信息决定接下来的行为。所以即使TCP是面向字节流的传输协议，但是传输的基本单元却是报文段。 报文段由报文首部和数据组成，报文首部最小占20字节最多占60字节，固定的20字节包含各种连接信息，可扩展的40字节存放各种选项值">
+<meta name="twitter:image" content="https://s1.ax1x.com/2018/03/02/9rzlJf.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/03/02/TCP-IP学习笔记（九）TCP报文段首部格式/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>TCP/IP学习笔记（九）TCP报文段首部格式 | 「.Roc.」</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">「.Roc.」</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/02/TCP-IP学习笔记（九）TCP报文段首部格式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="「.Roc.」">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">TCP/IP学习笔记（九）TCP报文段首部格式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-02T00:00:00+08:00">2018-03-02</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP/IP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>TCP为了实现稳定可靠的传输，自然是需要在发送数据时附带一些信息，对端接收到报文段后将用户数据分离开存放在接收缓冲区，然后根据附加信息决定接下来的行为。所以即使TCP是面向字节流的传输协议，但是传输的基本单元却是报文段。</p>
+<p>报文段由报文首部和数据组成，报文首部最小占20字节最多占60字节，固定的20字节包含各种连接信息，可扩展的40字节存放各种选项值</p>
+<a id="more"></a>
+<p><img src="https://s1.ax1x.com/2018/03/02/9rzlJf.png" alt=""></p>
+<h2 id="源端口和目的端口"><a href="#源端口和目的端口" class="headerlink" title="源端口和目的端口"></a>源端口和目的端口</h2><p>各占2个字节，分别写入源端口号和目的端口号。比如客户端端口号10000，服务器端口号9999，那么客户端发送的报文段中源端口号为10000，目的端口号为9999。服务器发送的报文段相反</p>
+<h2 id="序列号"><a href="#序列号" class="headerlink" title="序列号"></a>序列号</h2><p>占4个字节，范围是$[0:2^{32}$]。表示数据的第一个字节的序列号，由于TCP的数据交互是基于序列号的（控制滑动窗口），发送方通过序列号控制发送数据以及超时重传，接收方通过序列号控制乱序重排</p>
+<blockquote>
+<p>接收方可以根据第一个字节序列号 + 数据个数算出最后一个字节的序列号，并将其加一用作应答</p>
+</blockquote>
+<p>当序列号增加到$2^{32} - 1$后，会重新从0开始，由于$2^{32}$字节为4GB，可以保证重复使用的序列号代表的数据已经成功到达对端</p>
+<h2 id="确认号"><a href="#确认号" class="headerlink" title="确认号"></a>确认号</h2><p>占4个字节，表示期望下次收到的序列号。比如服务器收到客户端发来的报文段，其序列号字段值为501，并通过计算可知数据长度为200，所以服务器可以算出最后一个字节的序列号为700。这表明服务器正确收到了客户端发送的序列号到700为止的数据，因此，服务器期望下次收到的序列号为701，并将其作为确认号放入应答报文段中</p>
+<blockquote>
+<p>确认号和序列号范围相同，当溢出时从0开始</p>
+</blockquote>
+<h2 id="数据偏移"><a href="#数据偏移" class="headerlink" title="数据偏移"></a>数据偏移</h2><p>占4位（注意这个单位是位，不是字节），表示TCP报文段的第一个数据距离报文段起始处有多远。由于TCP报文段首部长度不确定，20到60字节不等，所以需要一个字段用于找到数据起始处</p>
+<p>数据偏移代表的是4字节的倍数，由于4位二进制最大可以表示15，所以数据偏移最大为4 * 15 = 60，这也是TCP报文段首部的最大长度</p>
+<h2 id="保留"><a href="#保留" class="headerlink" title="保留"></a>保留</h2><p>占6位，目前不使用</p>
+<h2 id="控制位"><a href="#控制位" class="headerlink" title="控制位"></a>控制位</h2><p>TCP报文段首部存在6个控制位，用于说明报文段的性质，每个控制字段占1位</p>
+<h3 id="紧急URG"><a href="#紧急URG" class="headerlink" title="紧急URG"></a>紧急URG</h3><p>表示报文段中的数据是紧急数据，需要马上处理。接收方收到这种类型的报文段后，不会像正常流程那样将数据追加到接收缓冲区末尾，而是插到缓冲区开始的位置，这样应用程序就可以立即读取紧急数据</p>
+<p>比如键入Ctrl + C时，就会将这条中断信息放在缓冲区头部，否则，只有当应用程序将之前的数据全部处理完才能够接收这个终止信息</p>
+<blockquote>
+<p>该控制位需要配合紧急指针一同使用</p>
+</blockquote>
+<h3 id="确认ACK"><a href="#确认ACK" class="headerlink" title="确认ACK"></a>确认ACK</h3><p>只有当ACK位被置1时确认号才有用。TCP规定，连接建立后发送的所有报文段ACK位都必须置1</p>
+<h3 id="推送PSH"><a href="#推送PSH" class="headerlink" title="推送PSH"></a>推送PSH</h3><p>当发送方希望数据可以立即发送给对端时，TCP会将报文段首部的PSH位置1，接收方同样将PSH位置1的报文段中的数据尽快告知应用程序</p>
+<blockquote>
+<p>该控制位很少使用，因为TCP会自己决定什么时候应该使用PUSH操作</p>
+</blockquote>
+<h3 id="复位RST"><a href="#复位RST" class="headerlink" title="复位RST"></a>复位RST</h3><p>用于复位，表示连接出现错误，应当立即关闭。当TCP接收到复位报文段后会通知应用程序连接被复位，随后关闭连接</p>
+<h3 id="同步SYN"><a href="#同步SYN" class="headerlink" title="同步SYN"></a>同步SYN</h3><p>连接建立的过程中用于同步序列号，告知对方自己的起始序列号。可以根据对方的序列号初始化缓冲区起点（滑动窗口）</p>
+<blockquote>
+<p>SYN=1，ACK=0时表示一个连接请求报文段，SYN=1，ACK=1表示一个连接接收报文段</p>
+</blockquote>
+<h3 id="终止FIN"><a href="#终止FIN" class="headerlink" title="终止FIN"></a>终止FIN</h3><p>用于释放连接，报文段中FIN控制位为1表示已经将数据发送完毕，等待关闭连接</p>
+<h2 id="窗口"><a href="#窗口" class="headerlink" title="窗口"></a>窗口</h2><p>占2个字节，表示发送该报文段的一方能够接收的字节数，用于控制对端发送数据的个数（控制对端滑动窗口）</p>
+<p>窗口值范围为$[0,:2^{16}-1]$</p>
+<h2 id="检验和"><a href="#检验和" class="headerlink" title="检验和"></a>检验和</h2><p>占2个字节，用于检验报文段是否出错。发送方根据发送的报文段计算检验和填入报文段首部，接收方根据接收的报文段重新计算，如果不匹配，表明报文段出错</p>
+<h2 id="紧急指针"><a href="#紧急指针" class="headerlink" title="紧急指针"></a>紧急指针</h2><p>占2个字节，表示紧急数据的个数，因为报文段中可以既包含紧急数据也可以包含普通数据，该字段用于区分二者</p>
+<blockquote>
+<p>只有紧急URG控制位置1时才有效</p>
+</blockquote>
+<h2 id="选项"><a href="#选项" class="headerlink" title="选项"></a>选项</h2><p>长度可变， 最长为40字节，当没有使用选项字段时，TCP报文段首部共20字节。</p>
+<p>TCP选项比较常用的是MSS，即最大报文段长度。需要注意的是MSS指的是数据的最大长度而不是TCP报文段长度。在将数据发送之前，会根据MSS将数据进行合理的切分，即单次发送的报文段中的数据不能超过MSS，所以MSS应该适当调大一些以降低网络中的报文段个数</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/TCP-IP/" rel="tag"># TCP/IP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/01/TCP-IP学习笔记（八）复位报文段/" rel="next" title="TCP/IP学习笔记（八）复位报文段">
+                <i class="fa fa-chevron-left"></i> TCP/IP学习笔记（八）复位报文段
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/05/HTTP协议学习笔记（一）HTTP请求方法名及状态码/" rel="prev" title="HTTP协议学习笔记（一）HTTP请求方法名及状态码">
+                HTTP协议学习笔记（一）HTTP请求方法名及状态码 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#源端口和目的端口"><span class="nav-number">1.</span> <span class="nav-text">源端口和目的端口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#序列号"><span class="nav-number">2.</span> <span class="nav-text">序列号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#确认号"><span class="nav-number">3.</span> <span class="nav-text">确认号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据偏移"><span class="nav-number">4.</span> <span class="nav-text">数据偏移</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#保留"><span class="nav-number">5.</span> <span class="nav-text">保留</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#控制位"><span class="nav-number">6.</span> <span class="nav-text">控制位</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#紧急URG"><span class="nav-number">6.1.</span> <span class="nav-text">紧急URG</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#确认ACK"><span class="nav-number">6.2.</span> <span class="nav-text">确认ACK</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#推送PSH"><span class="nav-number">6.3.</span> <span class="nav-text">推送PSH</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#复位RST"><span class="nav-number">6.4.</span> <span class="nav-text">复位RST</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#同步SYN"><span class="nav-number">6.5.</span> <span class="nav-text">同步SYN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#终止FIN"><span class="nav-number">6.6.</span> <span class="nav-text">终止FIN</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#窗口"><span class="nav-number">7.</span> <span class="nav-text">窗口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#检验和"><span class="nav-number">8.</span> <span class="nav-text">检验和</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#紧急指针"><span class="nav-number">9.</span> <span class="nav-text">紧急指针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选项"><span class="nav-number">10.</span> <span class="nav-text">选项</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.0.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

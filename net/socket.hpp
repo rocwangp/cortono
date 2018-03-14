@@ -9,8 +9,8 @@
 
 namespace cortono::net
 {
-    class tcp_socket : public std::enable_shared_from_this<tcp_socket>,
-                        private util::noncopyable
+    class TcpSocket : public std::enable_shared_from_this<TcpSocket>,
+                       private util::noncopyable
     {
         public:
             enum socket_option
@@ -22,26 +22,25 @@ namespace cortono::net
                 no_delay
             };
 
+            typedef std::shared_ptr<TcpSocket> Pointer;
+            typedef std::function<void()>      EventCallBack;
         public:
 
-            tcp_socket()
-                : tcp_socket(ip::tcp::sockets::block_socket())
+            TcpSocket()
+                : TcpSocket(ip::tcp::sockets::block_socket())
             {
-
             }
 
-            tcp_socket(int fd)
+            TcpSocket(int fd)
                 : fd_(fd),
-                  events_(event_poller::none_event),
-                  poller_cbs_(std::make_shared<event_poller::event_cb>()),
-                  read_buffer_(std::make_shared<event_buffer>()),
-                  write_buffer_(std::make_shared<event_buffer>())
+                  events_(EventPoller::NONE_EVENT),
+                  poller_cbs_(std::make_shared<EventPoller::PollerCB>())
             {
-
             }
 
-            ~tcp_socket() {
+            ~TcpSocket() {
                 ip::tcp::sockets::close(fd_);
+                log_info("~TcpSocket");
             }
 
             bool bind(std::string_view ip, unsigned short port) {
@@ -66,57 +65,49 @@ namespace cortono::net
                 return ip::tcp::sockets::connect(fd_, ip, port);
             }
 
-            bool bind_and_listen(std::string_view ip, unsigned short port, long long listen_nums = INT64_MAX) {
-                enable_option(reuse_addr, reuse_port, non_block);
-                util::exitif(!bind(ip, port), "fail to bind <", ip, port, ">", std::strerror(errno));
-                util::exitif(!listen(listen_nums), "fail to listen");
-                return true;
-            }
-
-            void tie(std::shared_ptr<event_poller> poller) {
+            void tie(std::shared_ptr<EventPoller> poller) {
                 weak_poller_ = poller;
             }
-
-            void enable_read(std::function<void()> cb) {
+            void enable_reading() {
                 if(auto poller = weak_poller_.lock(); poller) {
-                    poller_cbs_->read_cb = std::move(cb);
-                    poller->update(fd_, events_, events_ | event_poller::read_event, poller_cbs_);
-                    events_ |= event_poller::read_event;
+                    poller->update(fd_, events_, events_ | EventPoller::READ_EVENT, poller_cbs_);
+                    events_ |= EventPoller::READ_EVENT;
                 }
                 else {
                     log_fatal("poller is not exist");
                 }
             }
-
-            void enable_write(std::function<void()> cb) {
+            void enable_writing() {
                 if(auto poller = weak_poller_.lock(); poller) {
-                    poller_cbs_->write_cb = std::move(cb);
-                    poller->update(fd_, events_, events_ | event_poller::write_event, poller_cbs_);
-                    events_ |= event_poller::write_event;
+                    poller->update(fd_, events_, events_ | EventPoller::WRITE_EVENT, poller_cbs_);
+                    events_ |= EventPoller::WRITE_EVENT;
                 }
                 else {
                     log_fatal("poller is not exist");
                 }
             }
-
-            void enable_close(std::function<void()> cb) {
-                poller_cbs_->close_cb = std::move(cb);
-            }
-
-            void disable_write() {
+            void disable_reading() {
                 if(auto poller = weak_poller_.lock(); poller) {
-                    poller->update(fd_, events_, events_ & (~event_poller::write_event), poller_cbs_);
-                    events_ &= (~event_poller::write_event);
+                    poller->update(fd_, events_, events_ & (~EventPoller::READ_EVENT), poller_cbs_);
+                    events_ &= (~EventPoller::READ_EVENT);
                 }
                 else {
                     log_fatal("poller is not exist");
                 }
             }
-
+            void disable_writing() {
+                if(auto poller = weak_poller_.lock(); poller) {
+                    poller->update(fd_, events_, events_ & (~EventPoller::WRITE_EVENT), poller_cbs_);
+                    events_ &= (~EventPoller::WRITE_EVENT);
+                }
+                else {
+                    log_fatal("poller is not exist");
+                }
+            }
             void disable_all() {
                 if(auto poller = weak_poller_.lock(); poller) {
-                    poller->update(fd_, events_, event_poller::NONE_EVENT, poller_cbs_);
-                    events_ = event_poller::NONE_EVENT;
+                    poller->update(fd_, events_, EventPoller::NONE_EVENT, poller_cbs_);
+                    events_ = EventPoller::NONE_EVENT;
                 }
                 else {
                     log_fatal("poller is not exist");
@@ -131,118 +122,46 @@ namespace cortono::net
                 return ip::address::peer_address(fd_);
             }
 
-            bool recv_to_buffer() {
-                if(int bytes = ip::tcp::sockets::readable(fd_); bytes > 0) {
-                    read_buffer_->enable_bytes(bytes);
-                    if(int read_bytes = ip::tcp::sockets::recv(fd_, read_buffer_->end(), bytes); read_bytes > 0) {
-                        read_buffer_->retrieve_write_bytes(read_bytes);
-                        return true;
-                    }
-                }
-                log_info("read 0 bytes or error, close connection");
-                poller_cbs_->close_cb();
-                return false;
-            }
-
-            std::string read_all() {
-                return read_buffer_->read_all();
-            }
-
-            std::string read_util(std::string_view s) {
-                return read_buffer_->read_util(s);
-            }
-
-            bool write_done() const {
-                return write_buffer_->empty();
-            }
-
-            int write_file(std::string_view filename, int count) {
-                if(filename.empty()) {
-                    return -1;
-                }
-                else {
-                    return ip::tcp::sockets::send_file(fd_, filename, count);
-                }
-            }
-
-            auto write(const std::string& msg) {
-                int write_bytes = 0;
-                if(!write_buffer_->empty() ||
-                   ((write_bytes = ip::tcp::sockets::send(fd_, msg)) < static_cast<int>(msg.size())))
-                {
-                    write_bytes = std::max(write_bytes, 0);
-                    write_buffer_->append(msg.substr(write_bytes));
-                    enable_write([this] {
-                        int write_bytes = ip::tcp::sockets::send(
-                                fd_, write_buffer_->begin(), write_buffer_->readable());
-                        if(write_bytes == write_buffer_->readable()){
-                            disable_write();
-                            do_write_callback();
-                        }
-                        else {
-                            write_buffer_->retrieve_read_bytes(std::max(0, write_bytes));
-                        }
-                    });
-                }
-                return shared_from_this();
-            }
-
-
-            void do_write_callback() {
-                while(!write_cbs_.empty()) {
-                    auto task = write_cbs_.front();
-                    write_cbs_.pop();
-                    task();
-                }
-            }
-
-            template <typename Function, typename... Args>
-            auto invoke_after_write_done(Function&& f, Args... args) {
-                using result_type = typename std::invoke_result_t<Function, Args...>;
-                auto task = std::make_shared<std::packaged_task<result_type()>>(
-                    std::bind(std::forward<Function>(f), std::forward<Args>(args)...));
-                write_cbs_.emplace([task]{
-                    (*task)();
-                });
-                if(write_done()) {
-                    do_write_callback();
-                }
-                return shared_from_this();
-            }
-
-            void enable_option() { }
+            void set_option() { }
 
             template <class... Args>
-            void enable_option(socket_option opt, Args... args) {
-                util::exitif(!opt_functors_[opt](fd_), static_cast<int>(opt), std::strerror(errno));
-                enable_option(args...);
+            void set_option(socket_option opt, Args... args) {
+                if(!opt_functors_[opt](fd_)) {
+                    log_error("fail to set option", static_cast<int>(opt), fd_);
+                }
+                set_option(args...);
             }
 
             int fd() {
                 return fd_;
             }
-
-            auto read_buffer() {
-                return read_buffer_;
+            void set_read_callback(EventCallBack cb) {
+                read_cb_ = std::move(cb);
+                poller_cbs_->read_cb = read_cb_;
+            }
+            void set_write_callback(EventCallBack cb) {
+                write_cb_ = std::move(cb);
+                poller_cbs_->write_cb = write_cb_;
+            }
+            void set_close_callback(EventCallBack cb) {
+                close_cb_ = std::move(cb);
+                poller_cbs_->close_cb = close_cb_;
             }
         private:
             int fd_;
             uint32_t events_;
-            std::weak_ptr<event_poller> weak_poller_;
-            std::shared_ptr<event_poller::event_cb> poller_cbs_;
-            std::shared_ptr<event_buffer> read_buffer_;
-            std::shared_ptr<event_buffer> write_buffer_;
-            std::queue<std::function<void()>> write_cbs_;
-
+            std::weak_ptr<EventPoller> weak_poller_;
+            std::shared_ptr<EventPoller::PollerCB> poller_cbs_;
+            EventCallBack read_cb_, close_cb_, write_cb_;
             static std::map<socket_option, std::function<bool(int)>> opt_functors_;
     };
 
-    std::map<tcp_socket::socket_option, std::function<bool(int)>> tcp_socket::opt_functors_ = {
-        { tcp_socket::block,      [](int fd) { return ip::tcp::sockets::set_block(fd); }},
-        { tcp_socket::non_block,  [](int fd) { return ip::tcp::sockets::set_nonblock(fd); }},
-        { tcp_socket::reuse_addr, [](int fd) { return ip::tcp::sockets::reuse_address(fd); }},
-        { tcp_socket::reuse_port, [](int fd) { return ip::tcp::sockets::reuse_post(fd); }},
-        { tcp_socket::no_delay,   [](int fd) { return ip::tcp::sockets::no_delay(fd); }}
+    std::map<TcpSocket::socket_option, std::function<bool(int)>> TcpSocket::opt_functors_ = {
+        { TcpSocket::block,      [](int fd) { return ip::tcp::sockets::set_block(fd); }},
+        { TcpSocket::non_block,  [](int fd) { return ip::tcp::sockets::set_nonblock(fd); }},
+        { TcpSocket::reuse_addr, [](int fd) { return ip::tcp::sockets::reuse_address(fd); }},
+        { TcpSocket::reuse_port, [](int fd) { return ip::tcp::sockets::reuse_post(fd); }},
+        { TcpSocket::no_delay,   [](int fd) { return ip::tcp::sockets::no_delay(fd); }}
     };
 
 }

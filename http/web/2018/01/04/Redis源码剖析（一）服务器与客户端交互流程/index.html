@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="Redis," />
+
+
+<meta name="description" content="Redis底层还是基于网络请求的，对于单机数据库而言，网络请求仅仅是在一台机器上交互，即服务器客户端都在一台计算机上 当在终端输入redis-serve时，便启动了一个Redis服务器，随后开始初始化内部数据，对于Redis而言包括  读取配置文件初始化内部参数 创建默认数据库(默认为16个) 创建监听套接字并绑定回调函数(接收客户端连接请求) 执行事件驱动循环，开始响应客户端请求 …">
+<meta name="keywords" content="Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis源码剖析（一）服务器与客户端交互流程">
+<meta property="og:url" content="http://yoursite.com/2018/01/04/Redis源码剖析（一）服务器与客户端交互流程/index.html">
+<meta property="og:site_name" content="「.Roc.」">
+<meta property="og:description" content="Redis底层还是基于网络请求的，对于单机数据库而言，网络请求仅仅是在一台机器上交互，即服务器客户端都在一台计算机上 当在终端输入redis-serve时，便启动了一个Redis服务器，随后开始初始化内部数据，对于Redis而言包括  读取配置文件初始化内部参数 创建默认数据库(默认为16个) 创建监听套接字并绑定回调函数(接收客户端连接请求) 执行事件驱动循环，开始响应客户端请求 …">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-02-19T07:02:23.481Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis源码剖析（一）服务器与客户端交互流程">
+<meta name="twitter:description" content="Redis底层还是基于网络请求的，对于单机数据库而言，网络请求仅仅是在一台机器上交互，即服务器客户端都在一台计算机上 当在终端输入redis-serve时，便启动了一个Redis服务器，随后开始初始化内部数据，对于Redis而言包括  读取配置文件初始化内部参数 创建默认数据库(默认为16个) 创建监听套接字并绑定回调函数(接收客户端连接请求) 执行事件驱动循环，开始响应客户端请求 …">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/01/04/Redis源码剖析（一）服务器与客户端交互流程/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Redis源码剖析（一）服务器与客户端交互流程 | 「.Roc.」</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">「.Roc.」</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/04/Redis源码剖析（一）服务器与客户端交互流程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="「.Roc.」">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Redis源码剖析（一）服务器与客户端交互流程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-04T00:00:00+08:00">2018-01-04</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Redis底层还是基于网络请求的，对于单机数据库而言，网络请求仅仅是在一台机器上交互，即服务器客户端都在一台计算机上</p>
+<p>当在终端输入redis-serve时，便启动了一个Redis服务器，随后开始初始化内部数据，对于Redis而言包括</p>
+<ul>
+<li>读取配置文件初始化内部参数</li>
+<li>创建默认数据库(默认为16个)</li>
+<li>创建监听套接字并绑定回调函数(接收客户端连接请求)</li>
+<li>执行事件驱动循环，开始响应客户端请求</li>
+<li>…</li>
+</ul>
+<a id="more"></a>
+<p>当在终端输入redis-cli时，便启动了一个客户端</p>
+<p>到这里可以简单的猜测一下，Redis的命令交互流程大致为</p>
+<ul>
+<li>启动一个客户端，请求连接到服务器</li>
+<li>服务器接收客户端请求，建立连接成功，服务器开始监听客户端文件描述符并绑定回调函数</li>
+<li>客户端输入命令，导致服务器端监听的文件描述符变为可读，服务器开始读取命令</li>
+<li>服务器解析命令，并调用对应的命令处理函数</li>
+<li>服务器将处理结果反馈给客户端</li>
+<li>客户端文件描述符变为可读，读取反馈信息，输出在终端</li>
+</ul>
+<p>上述是一个常见的C/S模型，Redis采用Reactor模式处理连接，Reactor模式就是常说的使用io多路复用函数监听客户端的方法。不过Redis是单线程下的Reactor，在常见的高并发服务器设计模型中可以使用Reactor+线程池的方法提高并发性(也叫one loop per thread，muduo网络库采用的设计模型)</p>
+<p>下面就从源代码的角度体会服务器和客户端交互的流程(只截取关键部分)</p>
+<h1 id="服务器与客户端的交互流程"><a href="#服务器与客户端的交互流程" class="headerlink" title="服务器与客户端的交互流程"></a>服务器与客户端的交互流程</h1><h2 id="服务器监听客户端连接"><a href="#服务器监听客户端连接" class="headerlink" title="服务器监听客户端连接"></a>服务器监听客户端连接</h2><p>当服务器启动时，首先执行的是server.c/main函数，如上所述，main函数进行了大量初始化工作，其中有一项是调用initServer函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//server.c</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="comment">/* 初始化服务器，创建监听套接字 */</span></span><br><span class="line">    initServer();</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>initServer函数中同样进行了大量初始化工作，其中的一部分是创建监听套接字</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//server.c</span></span><br><span class="line"><span class="comment">/* 服务器启动时调用，初始化服务器 */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">initServer</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">    <span class="comment">/* 创建监听套接字 */</span></span><br><span class="line">    <span class="comment">/* ipfd_count是监听套接字的数量 */</span></span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; server.ipfd_count; j++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (aeCreateFileEvent(server.el, server.ipfd[j], AE_READABLE,</span><br><span class="line">            acceptTcpHandler,<span class="literal">NULL</span>) == AE_ERR)</span><br><span class="line">            &#123;</span><br><span class="line">                serverPanic(</span><br><span class="line">                    <span class="string">"Unrecoverable error creating server.ipfd file event."</span>);</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>创建监听套接字由函数aeCreateFileEvent函数实现</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//ae.c</span></span><br><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * 创建文件事件(事件驱动) </span></span><br><span class="line"><span class="comment"> * eventLoop : 服务器的事件驱动循环数组</span></span><br><span class="line"><span class="comment"> * fd        : 文件描述符</span></span><br><span class="line"><span class="comment"> * mask      : 需要监听的事件</span></span><br><span class="line"><span class="comment"> * proc      : 回调函数</span></span><br><span class="line"><span class="comment"> * clientData: 传给回调函数的参数</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">aeCreateFileEvent</span><span class="params">(aeEventLoop *eventLoop, <span class="keyword">int</span> fd, <span class="keyword">int</span> mask,</span></span></span><br><span class="line"><span class="function"><span class="params">        aeFileProc *proc, <span class="keyword">void</span> *clientData)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">/* 如果要创建的文件描述符大于服务器规定的大小，则报错 */</span></span><br><span class="line">    <span class="keyword">if</span> (fd &gt;= eventLoop-&gt;setsize) &#123;</span><br><span class="line">        errno = ERANGE;</span><br><span class="line">        <span class="keyword">return</span> AE_ERR;</span><br><span class="line">    &#125;</span><br><span class="line">   </span><br><span class="line">    <span class="comment">/* 返回服务器事件驱动循环中的第fd个事件 */</span></span><br><span class="line">    aeFileEvent *fe = &amp;eventLoop-&gt;events[fd];</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 将文件描述符和其需要监听的事件添加到io多路复用函数中 */</span></span><br><span class="line">    <span class="keyword">if</span> (aeApiAddEvent(eventLoop, fd, mask) == <span class="number">-1</span>)</span><br><span class="line">        <span class="keyword">return</span> AE_ERR;</span><br><span class="line">    <span class="comment">/* 将监听事件保存在事件驱动中 */</span></span><br><span class="line">    fe-&gt;mask |= mask;</span><br><span class="line">    <span class="comment">/* 设置回调函数 */</span></span><br><span class="line">    <span class="keyword">if</span> (mask &amp; AE_READABLE) fe-&gt;rfileProc = proc;</span><br><span class="line">    <span class="keyword">if</span> (mask &amp; AE_WRITABLE) fe-&gt;wfileProc = proc;</span><br><span class="line">    <span class="comment">/* 设置参数 */</span></span><br><span class="line">    fe-&gt;clientData = clientData;</span><br><span class="line">    <span class="keyword">if</span> (fd &gt; eventLoop-&gt;maxfd)</span><br><span class="line">        eventLoop-&gt;maxfd = fd;</span><br><span class="line">    <span class="keyword">return</span> AE_OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>函数中的aeEventLoop是事件驱动循环，保存所有正在监听的事件，当io复用返回时，会将所有以激活的事件也保存在aeEventLoop中以便于处理，和libevent中的事件驱动循环作用相同</p>
+<p>aeFileEvent是对事件的封装，内部保存有监听的文件描述符，监听的事件以及回调函数，和libevent中的事件(event)作用相同</p>
+<h2 id="接收客户端连接请求"><a href="#接收客户端连接请求" class="headerlink" title="接收客户端连接请求"></a>接收客户端连接请求</h2><p>另外对于传给aeCreateFileEvent函数的回调函数，可以猜测它的作用主要就是调用accept函数接收客户端连接请求，建立与客户端关联的文件描述符，注册到io复用中。它的定义如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//networking.c</span></span><br><span class="line"><span class="comment">/* 服务器监听套接字的回调函数，用于接收客户端的连接请求 */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">acceptTcpHandler</span><span class="params">(aeEventLoop *el, <span class="keyword">int</span> fd, <span class="keyword">void</span> *privdata, <span class="keyword">int</span> mask)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> cport, cfd, max = MAX_ACCEPTS_PER_CALL;</span><br><span class="line">    <span class="keyword">char</span> cip[NET_IP_STR_LEN];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(max--) &#123;</span><br><span class="line">        <span class="comment">/* 调用accept接收客户端连接请求，返回与客户端关联的文件描述符 */</span></span><br><span class="line">        cfd = anetTcpAccept(server.neterr, fd, cip, <span class="keyword">sizeof</span>(cip), &amp;cport);</span><br><span class="line">        ...</span><br><span class="line">        <span class="comment">/* 根据文件描述符创建客户端实例(client对象)，用于与客户端交互 */</span></span><br><span class="line">        acceptCommonHandler(cfd,<span class="number">0</span>,cip);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>每当接收到一个客户端请求时，服务器都会根据客户端文件描述符创建一个客户端实例(client类型)，client是服务器与客户端交互的桥梁，客户端输入的所有命令都是读取到client中的缓冲区再进行处理的</p>
+<h2 id="创建客户端实例"><a href="#创建客户端实例" class="headerlink" title="创建客户端实例"></a>创建客户端实例</h2><p>创建客户端实例的函数定义如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//networking.c</span></span><br><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * 根据客户端文件描述符创建客户端实例</span></span><br><span class="line"><span class="comment"> * fd : 接收客户端连接请求时返回的文件描述符</span></span><br><span class="line"><span class="comment"> * ip : 客户端地址&lt;ip, port&gt;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">acceptCommonHandler</span><span class="params">(<span class="keyword">int</span> fd, <span class="keyword">int</span> flags, <span class="keyword">char</span> *ip)</span> </span>&#123;</span><br><span class="line">    client *c;</span><br><span class="line">    <span class="comment">/* 以客户端文件描述符创建客户端实例 */</span></span><br><span class="line">    <span class="keyword">if</span> ((c = createClient(fd)) == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        serverLog(LL_WARNING,</span><br><span class="line">            <span class="string">"Error registering fd event for the new client: %s (fd=%d)"</span>,</span><br><span class="line">            strerror(errno),fd);</span><br><span class="line">        close(fd); <span class="comment">/* May be already closed, just ignore errors */</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数调用createClient，执行真正创建客户端实例的操作</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//networking.c</span></span><br><span class="line"><span class="comment">/* 根据文件描述符创建与客户端的连接 */</span></span><br><span class="line"><span class="function">client *<span class="title">createClient</span><span class="params">(<span class="keyword">int</span> fd)</span> </span>&#123;</span><br><span class="line">    <span class="comment">/* 申请client大小的内存空间 */</span></span><br><span class="line">    client *c = zmalloc(<span class="keyword">sizeof</span>(client));</span><br><span class="line">    <span class="keyword">if</span> (fd != <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="comment">/* 设置成非阻塞io */</span></span><br><span class="line">        anetNonBlock(<span class="literal">NULL</span>,fd);</span><br><span class="line">        anetEnableTcpNoDelay(<span class="literal">NULL</span>,fd);</span><br><span class="line">        <span class="comment">/* keep-alive选项 */</span></span><br><span class="line">        <span class="keyword">if</span> (server.tcpkeepalive)</span><br><span class="line">            anetKeepAlive(<span class="literal">NULL</span>,fd,server.tcpkeepalive);</span><br><span class="line">        <span class="comment">/* 为这次连接创建事件，监听可读事件, 回调函数为readQueryFromClient */</span></span><br><span class="line">        <span class="keyword">if</span> (aeCreateFileEvent(server.el,fd,AE_READABLE,</span><br><span class="line">            readQueryFromClient, c) == AE_ERR)</span><br><span class="line">        &#123;</span><br><span class="line">            close(fd);</span><br><span class="line">            zfree(c);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>创建与文件描述符关联的事件和上面相同，只是这里的回调函数变为readQueryFromClient，因为这个连接不是为了接收客户端连接请求，而是用于接收客户端的输入命令。</p>
+<h2 id="处理客户端输入的命令"><a href="#处理客户端输入的命令" class="headerlink" title="处理客户端输入的命令"></a>处理客户端输入的命令</h2><p>当客户端输入命令后，会执行相应的回调函数readQueryFromClient，该函数主要调用read函数从客户端文件描述符中读取输入的命令</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//networking.c</span></span><br><span class="line"><span class="comment">/* 当客户端可读时的回调函数 */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">readQueryFromClient</span><span class="params">(aeEventLoop *el, <span class="keyword">int</span> fd, <span class="keyword">void</span> *privdata, <span class="keyword">int</span> mask)</span> </span>&#123;</span><br><span class="line">    client *c = (client*) privdata;</span><br><span class="line">    <span class="keyword">int</span> nread, readlen;</span><br><span class="line"></span><br><span class="line">    readlen = PROTO_IOBUF_LEN;</span><br><span class="line">    <span class="comment">/* 为缓冲区申请空间，用于保存客户端命令 */</span></span><br><span class="line">    c-&gt;querybuf = sdsMakeRoomFor(c-&gt;querybuf, readlen);</span><br><span class="line">    <span class="comment">/* 从客户端读取命令，保存在c-&gt;querybuf中 */</span></span><br><span class="line">    nread = read(fd, c-&gt;querybuf+qblen, readlen);</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">/* 处理客户端命令 */</span></span><br><span class="line">    processInputBuffer(c);</span><br></pre></td></tr></table></figure>
+<p>processInputBuffer函数根据客户端选项执行不同的操作，最终调用processCommand函数处理命令，这个函数会先解析客户端的命令关键字，判断这个关键字是否合法。如果合法，再判断参数个数是否合法</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//server.c</span></span><br><span class="line"><span class="comment">/* 解析客户端命令，先判断命令关键字是否合法，再判断参数个数是否合法 */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">processCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">    <span class="comment">/* 从命令字典中查找该命令名字，判断是否存在该命令 */</span></span><br><span class="line">    <span class="comment">/* 将命令保存在cmd中，其中包括命令对应的处理函数 */</span></span><br><span class="line">    c-&gt;cmd = c-&gt;lastcmd = lookupCommand(c-&gt;argv[<span class="number">0</span>]-&gt;ptr);</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span>(...)</span><br><span class="line">    &#123;</span><br><span class="line">      	...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">    	<span class="comment">//调用命令处理函数 </span></span><br><span class="line">        call(c,CMD_CALL_FULL);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到这个函数主要是解析命令关键字，从底层字典中查找是否有这个关键字，如果有，会连同命令对应的处理函数一起返回赋值给cmd变量中，cmd变量是struct redisCommand *类型，稍后可以看到用处</p>
+<p>call函数的定义如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//server.c</span></span><br><span class="line"><span class="comment">/* 调用命令处理函数 */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">call</span><span class="params">(client *c, <span class="keyword">int</span> flags)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">/* 调用命令回调函数 */</span></span><br><span class="line">    c-&gt;cmd-&gt;proc(c);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="命令结构"><a href="#命令结构" class="headerlink" title="命令结构"></a>命令结构</h2><p>Redis内部已经将每个命令以及其对应的处理函数包装好，这个结构就是struct redisCommand，其中两个比较重要的成员变量为</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//server.h</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">redisCommand</span> &#123;</span></span><br><span class="line">    <span class="keyword">char</span> *name; <span class="comment">//命令关键字</span></span><br><span class="line">    redisCommandProc *proc;<span class="comment">//处理函数</span></span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>到这里可以猜到，在processCommand函数中调用lookupCommand函数时，会查找是否有相应命令关键字的结构，如果有，则返回到cmd变量中。现在可以看一下Redis内部是如何包装每一个命令的了</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">redisCommand</span> <span class="title">redisCommandTable</span>[] = &#123;</span></span><br><span class="line">    &#123;<span class="string">"get"</span>,getCommand,<span class="number">2</span>,<span class="string">"rF"</span>,<span class="number">0</span>,<span class="literal">NULL</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">"set"</span>,setCommand,<span class="number">-3</span>,<span class="string">"wm"</span>,<span class="number">0</span>,<span class="literal">NULL</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">"setnx"</span>,setnxCommand,<span class="number">3</span>,<span class="string">"wmF"</span>,<span class="number">0</span>,<span class="literal">NULL</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">"setex"</span>,setexCommand,<span class="number">4</span>,<span class="string">"wm"</span>,<span class="number">0</span>,<span class="literal">NULL</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>&#125;,</span><br><span class="line">    &#123;<span class="string">"psetex"</span>,psetexCommand,<span class="number">4</span>,<span class="string">"wm"</span>,<span class="number">0</span>,<span class="literal">NULL</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>&#125;,</span><br><span class="line">	...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>原来Redis已经为每个命令设计好了struct redisCommand结构，但是查找是否有命令关键字却不是直接从这个“超大”的数组中一个个找，那样太慢了。Redis内部是将每个命令关键字和它对应的struct redisCommand结构记录在一个字典中，由于字典(底层由哈希表实现)的查找效率是O(1)，所以不会造成性能瓶颈</p>
+<p>获取到相应的命令结构后，同样也获取了命令处理函数，对于get命令而言是getCommand，对于set命令而言是setCommand，大概就是命令关键字后加Command是对应的命令处理函数</p>
+<p>所以上述c-&gt;cmd-&gt;proc(c)函数调用时便直接调用了相应的处理函数，处理完成后，将反馈发送给客户端，完成一次交互</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>服务器与客户端的交互实际上还是基于网络请求的，服务器监听客户端请求，客户端请求连接，当连接建立成功后服务器会开始监听客户端的文件描述符(套接字)，一旦客户端输入命令，服务器便读取文件描述符获得客户端的输入，然后解析，执行处理函数，将结构反馈给客户端，客户端将结构显示在终端，完成一次交互。</p>
+<p>不过上述列举的仅仅是冰山一角，源代码中有诸多细节值得品味，包括对io复用的封装，tcp连接的建立与维护，底层数据结构的实现等，都需要好好理解</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/04/Redis源码剖析（二）io多路复用函数及事件驱动流程/" rel="prev" title="Redis源码剖析（二）io多路复用函数及事件驱动流程">
+                Redis源码剖析（二）io多路复用函数及事件驱动流程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#服务器与客户端的交互流程"><span class="nav-number">1.</span> <span class="nav-text">服务器与客户端的交互流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器监听客户端连接"><span class="nav-number">1.1.</span> <span class="nav-text">服务器监听客户端连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接收客户端连接请求"><span class="nav-number">1.2.</span> <span class="nav-text">接收客户端连接请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建客户端实例"><span class="nav-number">1.3.</span> <span class="nav-text">创建客户端实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#处理客户端输入的命令"><span class="nav-number">1.4.</span> <span class="nav-text">处理客户端输入的命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#命令结构"><span class="nav-number">1.5.</span> <span class="nav-text">命令结构</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">2.</span> <span class="nav-text">小结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.0.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

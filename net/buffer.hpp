@@ -7,10 +7,10 @@
 namespace cortono::net
 {
     template <std::size_t Size>
-    class base_buffer
+    class BaseBuffer
     {
         public:
-            base_buffer()
+            BaseBuffer()
                 : read_idx_(0),
                   write_idx_(0),
                   buffer_(Size)
@@ -110,7 +110,7 @@ namespace cortono::net
                     return {};
                 }
             }
-            std::string_view to_string_view() {
+            std::string_view read_string_view() {
                 if(empty()) {
                     return {};
                 }
@@ -123,7 +123,7 @@ namespace cortono::net
             std::vector<char> buffer_;
     };
 
-    class event_buffer : public base_buffer<1024>
+    class Buffer : public BaseBuffer<1024>
     {
 
     };

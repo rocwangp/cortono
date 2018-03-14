@@ -2,6 +2,7 @@
 
 #include "../std.hpp"
 #include "../cortono.hpp"
+#include "http_codec.hpp"
 #include "http_util.hpp"
 
 
@@ -10,16 +11,15 @@ namespace cortono::http
     using namespace std::literals;
 
 
-    class http_request
+    class HttpRequest
     {
         public:
-            http_request()
-                : status_(parse_status::parse_line),
-                  http_method_(http_method::unknown)
+            HttpRequest()
+                : status_(ParseStatus::ParseLine),
+                  HttpMethod_(HttpMethod::UNKNOWN)
             {
             }
-            parse_status parse_line(std::shared_ptr<cortono::net::event_buffer> read_buffer) {
-                log_trace;
+            ParseStatus parse_line(std::shared_ptr<cortono::net::Buffer> read_buffer) {
                 std::string_view buf = read_buffer->read_sv_util("\r\n");
                 if(!buf.empty()) {
                     std::regex e("^([a-zA-Z]+) ([^ ]+) HTTP/(.*)\r\n$");
@@ -29,56 +29,23 @@ namespace cortono::http
                         method_ = std::move(match[1]);
                         uri_ = std::move(match[2]);
                         version_ = std::move(match[3]);
-                        status_ = parse_status::parse_header;
-                        log_trace;
+                        handle_request_line();
+                        handle_request_uri();
+                        status_ = ParseStatus::ParseHeader;
                     }
                     else {
-                        status_ = parse_status::parse_error;
+                        status_ = ParseStatus::ParseError;
                     }
                 }
                 return status_;
             }
-            parse_status parse_header(std::shared_ptr<cortono::net::event_buffer> read_buffer) {
-                std::string_view buf = read_buffer->read_sv_util("\r\n");
-                if(buf == "\r\n"sv) {
-                    read_buffer->retrieve_read_bytes(buf.length());
-                    parse_common_fields();
-                    if(content_length_ > 0) {
-                        status_ = parse_status::parse_body;
-                    }
-                    else {
-                        status_ = parse_status::parse_done;
-                    }
+
+            void handle_request_line() {
+                if(version_ != "1.1") {
+                    status_ = ParseStatus::ParseError;
                 }
-                else if(!buf.empty()){
-                    std::regex e("^([^ ]+): (.*)\r\n$");
-                    std::match_results<std::string_view::const_iterator> match;
-                    if(std::regex_match(buf.begin(), buf.end(), match, e)) {
-                        read_buffer->retrieve_read_bytes(buf.length());
-                        headers_.emplace(std::move(match[1]), std::move(match[2]));
-                    }
-                    else {
-                        status_ = parse_status::parse_error;
-                    }
-                }
-                return status_;
             }
-            parse_status parse_body(std::shared_ptr<cortono::net::event_buffer> read_buffer) {
-                if(read_buffer->size() == content_length_) {
-                    status_ = parse_status::parse_done;
-                }
-                return status_;
-            }
-            void parse_common_fields() {
-                parse_method();
-                parse_query();
-                parse_content_length();
-                parse_keep_alive();
-            }
-            void parse_method() {
-                http_method_ = to_method(method_);
-            }
-            void parse_query() {
+            void parse_request_query() {
                 std::string_view uri = uri_;
                 std::size_t pos = uri.find_first_of('?');
                 if(pos == std::string::npos) {
@@ -99,6 +66,53 @@ namespace cortono::http
                 }
                 uri_ = uri.substr(0, pos);
             }
+            void handle_request_uri() {
+                parse_request_query();
+                if(uri_.back() == '/')
+                    uri_.append("index.html");
+                uri_ = std::string("web") + uri_;
+                static_file_ = true;
+                uri_ = html_codec::decode(uri_);
+                log_debug(uri_);
+            }
+
+            ParseStatus parse_header(std::shared_ptr<cortono::net::Buffer> read_buffer) {
+                std::string_view buf = read_buffer->read_sv_util("\r\n");
+                if(buf == "\r\n"sv) {
+                    read_buffer->retrieve_read_bytes(buf.length());
+                    parse_common_fields();
+                    status_ = ParseStatus::ParseBody;
+                }
+                else if(!buf.empty()){
+                    std::regex e("^([^ ]+): (.*)\r\n$");
+                    std::match_results<std::string_view::const_iterator> match;
+                    if(std::regex_match(buf.begin(), buf.end(), match, e)) {
+                        read_buffer->retrieve_read_bytes(buf.length());
+                        headers_.emplace(std::move(match[1]), std::move(match[2]));
+                    }
+                    else {
+                        status_ = ParseStatus::ParseError;
+                    }
+                }
+                else {
+                    status_ = ParseStatus::NoComplete;
+                }
+                return status_;
+            }
+            ParseStatus parse_body(std::shared_ptr<cortono::net::Buffer> read_buffer) {
+                if(read_buffer->size() == content_length_) {
+                    status_ = ParseStatus::ParseDone;
+                }
+                return status_;
+            }
+            void parse_common_fields() {
+                parse_method();
+                parse_content_length();
+                parse_keep_alive();
+            }
+            void parse_method() {
+                HttpMethod_ = to_method(method_);
+            }
             void parse_content_length() {
                 if(auto it = headers_.find("content-length"); it != headers_.end()) {
                     content_length_ = util::from_chars(it->second);
@@ -116,14 +130,17 @@ namespace cortono::http
                 }
                 keep_alive_ = true;
             }
-            parse_status get_parse_status() {
+            ParseStatus get_ParseStatus() {
                 return status_;
             }
-            http_method method() const {
-                return http_method_;
+            HttpMethod method() const {
+                return HttpMethod_;
             }
             std::string_view uri() const {
                 return { uri_.data(), uri_.length() };
+            }
+            std::string_view file_path() const {
+                return uri();
             }
             void set_body(std::string_view body) {
                 body_ = body;
@@ -137,11 +154,26 @@ namespace cortono::http
             bool keep_alive() const {
                 return keep_alive_;
             }
+            bool static_file() const {
+                return static_file_;
+            }
+            void reset() {
+                keep_alive_ = true;
+                static_file_ = true;
+                content_length_ = 0;
+                status_ = ParseStatus::ParseLine;
+                method_.clear();
+                uri_.clear();
+                version_.clear();
+                headers_.clear();
+                queries_.clear();
+            }
         private:
             bool keep_alive_ = false;
+            bool static_file_ = true;
             int content_length_ = 0;
-            parse_status status_;
-            http_method http_method_;
+            ParseStatus status_;
+            HttpMethod HttpMethod_;
             std::string method_, uri_, version_;
             std::string_view body_;
             std::map<std::string, std::string, cortono::util::ci_less> headers_;

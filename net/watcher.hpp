@@ -4,14 +4,14 @@
 
 namespace cortono::net
 {
-    class watcher
+    class Watcher
     {
         public:
-            watcher() {
+            Watcher() {
                 ::pipe(fd_);
             }
 
-            ~watcher() {
+            ~Watcher() {
                 util::io::close(fd_[0]);
                 util::io::close(fd_[1]);
             }

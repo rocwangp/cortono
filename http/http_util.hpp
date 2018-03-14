@@ -7,16 +7,8 @@ namespace cortono::http
 {
     using namespace cortono::util;
 
-    enum class http_method
+    enum class HttpMethod
     {
-        get,
-        post,
-        head,
-        options,
-        put,
-        trace,
-        unknown,
-
         GET,
         POST,
         HEAD,
@@ -26,28 +18,28 @@ namespace cortono::http
         UNKNOWN
     };
 
-    constexpr inline auto GET = http_method::get;
-    constexpr inline auto POST = http_method::post;
+    constexpr inline auto GET = HttpMethod::GET;
+    constexpr inline auto POST = HttpMethod::POST;
 
-    enum class parse_status
+    enum class ParseStatus
     {
-        parse_line,
-        parse_header,
-        parse_body,
-        parse_done,
-        parse_error
+        ParseLine,
+        ParseHeader,
+        ParseBody,
+        ParseError,
+        ParseDone,
+        NoComplete
     };
 
 
-    inline http_method to_method(std::string_view method) {
-        log_debug(std::string{ method.data(), method.length() });
+    inline HttpMethod to_method(std::string_view method) {
         if(auto s = to_lower(method); s == "get") {
             return GET;
         }
         else if(s == "post") {
             return POST;
         }
-        return http_method::UNKNOWN;
+        return HttpMethod::UNKNOWN;
     }
 
 

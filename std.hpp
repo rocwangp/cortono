@@ -1,5 +1,6 @@
 #pragma once
 
+#include <fstream>
 #include <vector>
 #include <queue>
 #include <string>
@@ -31,8 +32,10 @@
 #include <cstdint>
 #include <cstring>
 
+#include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <wait.h>
 #include <sys/epoll.h>
 
 #include <sys/sendfile.h>
@@ -43,3 +46,7 @@
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
 
+#include <zlib.h>
+
+#include <experimental/filesystem>
+using namespace std::experimental;

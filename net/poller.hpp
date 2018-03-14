@@ -6,24 +6,25 @@
 
 namespace cortono::net
 {
-    class event_poller : private util::noncopyable
+    class EventPoller : private util::noncopyable
     {
 
         public:
-            struct event_cb
+            struct PollerCB
             {
+                void clear() { read_cb = write_cb = close_cb = nullptr; }
                 std::function<void()> read_cb, write_cb, close_cb;
             };
 
             enum
             {
-                none_event = 0,
-                read_event = EPOLLIN | EPOLLET,
-                write_event = EPOLLOUT | EPOLLET
+                NONE_EVENT = 0,
+                READ_EVENT = EPOLLIN | EPOLLET,
+                WRITE_EVENT = EPOLLOUT | EPOLLET
             };
 
         public:
-            event_poller()
+            EventPoller()
                 : epollfd_(::epoll_create1(::EPOLL_CLOEXEC)),
                   event_nums_(0),
                   events_(1000)
@@ -31,14 +32,14 @@ namespace cortono::net
 
             }
 
-            ~event_poller() {
+            ~EventPoller() {
                 util::io::close(epollfd_);
             }
 
-            void update(int fd, uint32_t old_events, uint32_t new_events, std::shared_ptr<event_cb> poller_cbs) {
+            void update(int fd, uint32_t old_events, uint32_t new_events, std::shared_ptr<PollerCB> poller_cbs) {
                 int epoll_opt = EPOLL_CTL_ADD;
-                if(new_events != none_event) {
-                    if(old_events != none_event)
+                if(new_events != NONE_EVENT) {
+                    if(old_events != NONE_EVENT)
                         epoll_opt = EPOLL_CTL_MOD;
                     else
                         ++event_nums_;
@@ -58,25 +59,28 @@ namespace cortono::net
                 if(event_nums_ > static_cast<int>(events_.size()))
                     events_.resize(event_nums_);
                 int n = ::epoll_wait(epollfd_, &events_[0], events_.size(), timeout);
-                /* util::exitif(n == -1, std::strerror(errno), epollfd_, event_nums_); */
+                log_trace;
                 for(int i = 0; i < n; ++i) {
-                    if(readable_event(events_[i].events))
-                        static_cast<event_cb*>(events_[i].data.ptr)->read_cb();
-                    else if(writeable_event(events_[i].events))
-                        static_cast<event_cb*>(events_[i].data.ptr)->write_cb();
-                    else
-                        static_cast<event_cb*>(events_[i].data.ptr)->close_cb();
+                    if(readable_event(events_[i].events)) {
+                        static_cast<PollerCB*>(events_[i].data.ptr)->read_cb();
+                    }
+                    else if(writeable_event(events_[i].events)) {
+                        static_cast<PollerCB*>(events_[i].data.ptr)->write_cb();
+                    }
+                    else {
+                        static_cast<PollerCB*>(events_[i].data.ptr)->close_cb();
+                    }
                 }
             }
 
 
         private:
             bool readable_event(uint32_t events) {
-                return events & read_event;
+                return events & READ_EVENT;
             }
 
             bool writeable_event(uint32_t events) {
-                return events & write_event;
+                return events & WRITE_EVENT;
             }
 
         private:

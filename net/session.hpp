@@ -10,15 +10,21 @@ namespace cortono::net
                          private util::noncopyable
     {
         public:
-            tcp_session(std::shared_ptr<tcp_socket> socket)
+            tcp_session(std::shared_ptr<TcpSocket> socket)
                 : socket_(socket)
             {
             }
 
             ~tcp_session() {}
 
-            void on_read() { read_cb_(); }
-            void on_conn() { conn_cb_(); }
+            void on_read() {
+                log_trace;
+                if(!read_cb_)
+                  log_debug("read_cb is nullptr");
+                else
+                  read_cb_();
+            }
+            void on_conn() { if(conn_cb_) conn_cb_(); }
 
             void set_read_callback(std::function<void()> cb) {
                 read_cb_ = std::move(cb);
@@ -27,7 +33,7 @@ namespace cortono::net
                 conn_cb_ = std::move(cb);
             }
         protected:
-            std::shared_ptr<tcp_socket> socket_;
+            std::shared_ptr<TcpSocket> socket_;
 
         private:
             std::function<void()> conn_cb_, read_cb_;

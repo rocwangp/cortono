@@ -9,35 +9,40 @@
 
 namespace cortono::net
 {
-    class event_loop : private util::noncopyable
+    class EventLoop : private util::noncopyable
     {
         public:
-            event_loop()
+            EventLoop()
                 : tid_(std::this_thread::get_id()),
                   quit_(false),
-                  poller_(std::make_shared<event_poller>()),
-                  watcher_(std::make_shared<watcher>()),
-                  watch_socket_(std::make_shared<tcp_socket>(watcher_->read_fd()))
+                  poller_(std::make_shared<EventPoller>()),
+                  watcher_(std::make_shared<Watcher>()),
+                  watch_socket_(std::make_shared<TcpSocket>(watcher_->read_fd()))
             {
                 watch_socket_->tie(poller_);
-                watch_socket_->enable_read([this]{ watcher_->clear(); });
+                watch_socket_->enable_reading();
+                watch_socket_->set_read_callback([this] { watcher_->clear(); });
             }
 
             void quit() {
                 quit_.store(true);
             }
-            void sync_loop() {
+            void loop() {
                 while(!quit_) {
-                    int timeout = timers_.empty() ? -1 : timers_.top().expires_milliseconds();
-                    poller_->wait(timeout);
-                    handle_pending_func();
-                    handle_time_func();
+                    loop_once();
                 }
+            }
+            void loop_once() {
+                int timeout = timers_.empty() ? -1 : timers_.top().expires_milliseconds();
+                poller_->wait(timeout);
+                handle_pending_func();
+                handle_time_func();
             }
             void handle_pending_func() {
                 for(auto&& cb : pending_functors_) {
                     cb();
                 }
+                decltype(pending_functors_)().swap(pending_functors_);
             }
             void handle_time_func() {
                 while(!timers_.empty() && timers_.top().is_expires()) {
@@ -69,34 +74,34 @@ namespace cortono::net
                 return poller_;
             }
 
-            void set_timer(timer::time_point&& point, timer::milliseconds&& interval, std::function<void()>&& cb) {
+            void set_timer(Timer::time_point&& point, Timer::milliseconds&& interval, std::function<void()>&& cb) {
                 timers_.emplace(std::move(point), std::move(interval), std::move(cb));
             }
-            void runAt(timer::time_point point, std::function<void()> cb) {
-                timer::milliseconds interval{0};
+            void runAt(Timer::time_point point, std::function<void()> cb) {
+                Timer::milliseconds interval{0};
                 set_timer(std::move(point), std::move(interval), std::move(cb));
             }
-            void runAt(timer::time_point point, timer::milliseconds interval, std::function<void()> cb) {
+            void runAt(Timer::time_point point, Timer::milliseconds interval, std::function<void()> cb) {
                 set_timer(std::move(point), std::move(interval), std::move(cb));
             }
-            void runAfter(timer::milliseconds interval, std::function<void()> cb) {
-                runAt(timer::now() + interval, cb);
+            void runAfter(Timer::milliseconds interval, std::function<void()> cb) {
+                runAt(Timer::now() + interval, cb);
             }
-            void runAfter(timer::milliseconds interval1, timer::milliseconds interval2, std::function<void()> cb) {
-                runAt(timer::now() + interval1, interval2, cb);
+            void runAfter(Timer::milliseconds interval1, Timer::milliseconds interval2, std::function<void()> cb) {
+                runAt(Timer::now() + interval1, interval2, cb);
             }
-            void runEvery(timer::milliseconds interval, std::function<void()> cb) {
+            void runEvery(Timer::milliseconds interval, std::function<void()> cb) {
                 runAfter(interval, interval, cb);
             }
         private:
             std::thread::id tid_;
             std::mutex mutex_;
             std::atomic_bool quit_;
-            std::shared_ptr<event_poller> poller_;
-            std::shared_ptr<watcher> watcher_;
-            std::shared_ptr<tcp_socket> watch_socket_;
+            std::shared_ptr<EventPoller> poller_;
+            std::shared_ptr<Watcher> watcher_;
+            std::shared_ptr<TcpSocket> watch_socket_;
             std::vector<std::function<void()>> pending_functors_;
-            std::priority_queue<timer> timers_;
+            std::priority_queue<Timer> timers_;
 
     };
 }

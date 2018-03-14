@@ -495,7 +495,6 @@ namespace cortono::http
 	};
 
 	inline std::string_view get_mime_type(std::string_view extension) {
-        log_debug(std::string{ extension.data(), extension.length() });
         if(auto it = mime_map.find(extension); it != mime_map.end()) {
             return it->second;
         }

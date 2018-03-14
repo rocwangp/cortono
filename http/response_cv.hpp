@@ -6,38 +6,44 @@ namespace cortono::http
 {
     using namespace std::literals;
 
-    enum class status_type
+    enum class ResponseStatus
     {
-        ok,
-        bad_request
+        OK,
+        BadRequest
     };
 
-    enum class response_header
+    enum class ResponseHeader
     {
-        content_length,
-        content_type,
-        last_modified_time
+        Connection,
+        Content_Length,
+        Content_Type,
+        Last_Modified_Time,
+        Content_Encoding
     };
 
     constexpr inline auto conv_header_to_string(
-        std::integral_constant<response_header,
-                               response_header::content_length>) {
+        std::integral_constant<ResponseHeader,
+                               ResponseHeader::Content_Length>) {
         return "Content-Length"sv;
     }
     constexpr inline auto conv_header_to_string(
-        std::integral_constant<response_header,
-                               response_header::content_type>) {
+        std::integral_constant<ResponseHeader,
+                               ResponseHeader::Content_Type>) {
         return "Content-Type"sv;
     }
 
-    inline std::string_view response_header_to_sv(response_header header) {
+    inline std::string_view ResponseHeader_to_sv(ResponseHeader header) {
         switch(header) {
-            case response_header::content_length:
+            case ResponseHeader::Content_Length:
                 return "Content-Length"sv;
-            case response_header::content_type:
+            case ResponseHeader::Content_Type:
                 return "Content-Type"sv;
-            case response_header::last_modified_time:
+            case ResponseHeader::Last_Modified_Time:
                 return "Last-Modified-Time"sv;
+            case ResponseHeader::Connection:
+                return "Connection"sv;
+            case ResponseHeader::Content_Encoding:
+                return "Content-Encoding";
         }
     }
 
@@ -60,11 +66,11 @@ namespace cortono::http
 	constexpr inline std::string_view rep_bad_gateway = "HTTP/1.1 502 Bad Gateway\r\n"sv;
 	constexpr inline std::string_view rep_service_unavailable = "HTTP/1.1 503 Service Unavailable\r\n"sv;
 
-    std::string_view status_to_sv(status_type status) {
+    std::string_view status_to_sv(ResponseStatus status) {
         switch(status) {
-            case status_type::ok:
+            case ResponseStatus::OK:
                 return rep_ok;
-            case status_type::bad_request:
+            case ResponseStatus::BadRequest:
                 return rep_bad_request;
             default:
                 return {};
@@ -161,11 +167,11 @@ namespace cortono::http
 		"<body><h1>503 Service Unavailable</h1></body>"
 		"</html>";
 
-    std::string_view status_to_content(status_type status) {
+    std::string_view status_to_content(ResponseStatus status) {
         switch(status) {
-            case status_type::ok:
+            case ResponseStatus::OK:
                 return ok;
-            case status_type::bad_request:
+            case ResponseStatus::BadRequest:
                 return bad_request;
             default:
                 return {};

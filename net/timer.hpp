@@ -5,19 +5,19 @@
 
 namespace cortono::net
 {
-    class timer
+    class Timer
     {
         public:
             using time_point = std::chrono::steady_clock::time_point;
             using milliseconds = std::chrono::milliseconds;
             using seconds = std::chrono::seconds;
 
-            timer(time_point point, std::function<void()> cb)
-                : timer(point, milliseconds(0), cb)
+            Timer(time_point point, std::function<void()> cb)
+                : Timer(point, milliseconds(0), cb)
             {
             }
 
-            timer(time_point point, milliseconds interval, std::function<void()> cb)
+            Timer(time_point point, milliseconds interval, std::function<void()> cb)
                 : periodic_(interval != milliseconds(0)),
                   expires_time_(std::move(point)),
                   interval_(std::move(interval)),
@@ -25,7 +25,7 @@ namespace cortono::net
             {
             }
 
-            timer(const timer& t)
+            Timer(const Timer& t)
                 : periodic_(t.periodic_),
                   expires_time_(t.expires_time_),
                   interval_(t.interval_),
@@ -33,7 +33,7 @@ namespace cortono::net
             {
             }
 
-            timer(timer&& t)
+            Timer(Timer&& t)
                 : periodic_(std::move(t.periodic_)),
                   expires_time_(std::move(t.expires_time_)),
                   interval_(std::move(t.interval_)),
@@ -41,6 +41,11 @@ namespace cortono::net
             {
             }
 
+            Timer& operator=(const Timer& t) {
+                Timer tmp(t);
+                std::swap(*this, tmp);
+                return *this;
+            }
             bool is_expires() const {
                 return expires_time_ <= now();
             }
@@ -64,10 +69,24 @@ namespace cortono::net
             static time_point now() {
                 return std::chrono::steady_clock::now();
             }
+
+            bool operator==(const Timer& t) const {
+                return expires_time_ == t.expires_time_;
+            }
+            bool operator!=(const Timer& t) const {
+                return !operator==(t);
+            }
+            bool operator>(const Timer& t) const {
+                return expires_time_ > t.expires_time_;
+            }
+            bool operator<(const Timer& t) const{
+                return expires_time_ < t.expires_time_;
+            }
         private:
             bool periodic_;
             time_point expires_time_;
             milliseconds interval_;
             std::function<void()> cb_;
     };
+
 }

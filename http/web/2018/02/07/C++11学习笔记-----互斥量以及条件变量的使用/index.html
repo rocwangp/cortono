@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="C++," />
+
+
+<meta name="description" content="在多线程环境中，当多个线程同时访问共享资源时，由于操作系统CPU调度的缘故，经常会出现一个线程执行到一半突然切换到另一个线程的情况。以多个线程同时对一个共享变量做加法运算为例，自增的汇编指令大致如下，先将变量值存放在某个寄存器中(eax)，然后对寄存器进行加一，随后将结果回写到变量内存上">
+<meta name="keywords" content="C++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++11学习笔记-----互斥量以及条件变量的使用">
+<meta property="og:url" content="http://yoursite.com/2018/02/07/C++11学习笔记-----互斥量以及条件变量的使用/index.html">
+<meta property="og:site_name" content="「.Roc.」">
+<meta property="og:description" content="在多线程环境中，当多个线程同时访问共享资源时，由于操作系统CPU调度的缘故，经常会出现一个线程执行到一半突然切换到另一个线程的情况。以多个线程同时对一个共享变量做加法运算为例，自增的汇编指令大致如下，先将变量值存放在某个寄存器中(eax)，然后对寄存器进行加一，随后将结果回写到变量内存上">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://s1.ax1x.com/2018/02/07/9134ns.png">
+<meta property="og:updated_time" content="2018-02-19T07:02:23.481Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="C++11学习笔记-----互斥量以及条件变量的使用">
+<meta name="twitter:description" content="在多线程环境中，当多个线程同时访问共享资源时，由于操作系统CPU调度的缘故，经常会出现一个线程执行到一半突然切换到另一个线程的情况。以多个线程同时对一个共享变量做加法运算为例，自增的汇编指令大致如下，先将变量值存放在某个寄存器中(eax)，然后对寄存器进行加一，随后将结果回写到变量内存上">
+<meta name="twitter:image" content="https://s1.ax1x.com/2018/02/07/9134ns.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/02/07/C++11学习笔记-----互斥量以及条件变量的使用/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>C++11学习笔记-----互斥量以及条件变量的使用 | 「.Roc.」</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">「.Roc.」</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/07/C++11学习笔记-----互斥量以及条件变量的使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="「.Roc.」">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">C++11学习笔记-----互斥量以及条件变量的使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-07T00:00:00+08:00">2018-02-07</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在多线程环境中，当多个线程同时访问共享资源时，由于操作系统CPU调度的缘故，经常会出现一个线程执行到一半突然切换到另一个线程的情况。以多个线程同时对一个共享变量做加法运算为例，自增的汇编指令大致如下，先将变量值存放在某个寄存器中(eax)，然后对寄存器进行加一，随后将结果回写到变量内存上</p>
+<a id="more"></a>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mov [<span class="meta">#address#] eax;	<span class="comment">// 这里#address#简要表示目标变量的地址	// 1</span></span></span><br><span class="line">inc eax;	<span class="comment">// 2</span></span><br><span class="line">mov eax [<span class="meta">#address#];	<span class="comment">// 3</span></span></span><br></pre></td></tr></table></figure>
+<p>假设存在两个线程同时对变量a进行加法操作，a初值为0，如果其中一个线程在第一步执行完后被切走，那么最终a的结果可能不是2而是1</p>
+<p><img src="https://s1.ax1x.com/2018/02/07/9134ns.png" alt=""></p>
+<p>由图片可知，由于cpu调度的缘故，多线程下同时对共享变量进行操作，可能会导致最终的结果并不是期望值。所以，为了保护共享变量，保证同一时刻只能允许一个线程对共享变量进行操作，就需要借助互斥量的协助</p>
+<h1 id="Linux下的原生互斥量"><a href="#Linux下的原生互斥量" class="headerlink" title="Linux下的原生互斥量"></a>Linux下的原生互斥量</h1><p>Linux下提供了原生互斥量api，定义在头文件&lt;pthread.t&gt;中。互斥量，形象点理解就是一把锁，在对共享变量进行操作之前，先上锁，只有获得锁的这个线程能够继续运行，而其他线程运行到上锁语句时，会阻塞在那里直到获得锁的那个线程执行解锁操作，随后继续争抢锁，抢到锁的线程接着执行，没有抢到锁的线程继续阻塞</p>
+<h2 id="示例：利用互斥锁解决多线程共享变量问题"><a href="#示例：利用互斥锁解决多线程共享变量问题" class="headerlink" title="示例：利用互斥锁解决多线程共享变量问题"></a>示例：利用互斥锁解决多线程共享变量问题</h2><p>在上一篇中提到了创建10个线程同时对一个共享变量进行自增，发现结果和预期不同，接下来利用互斥量解决这一问题</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">long</span> <span class="keyword">long</span> <span class="keyword">int</span> total = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">pthread_mutex_t</span> m;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span>* <span class="title">thread_task</span><span class="params">(<span class="keyword">void</span>* arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">    	<span class="comment">/* 对total进行加法之前先上锁，保证同一时刻只能有一个线程执行++total */</span></span><br><span class="line">        ::pthread_mutex_lock(&amp;m);</span><br><span class="line">        ++total;</span><br><span class="line">        <span class="comment">/* 解锁 */</span></span><br><span class="line">        ::pthread_mutex_unlock(&amp;m);</span><br><span class="line">    &#125;</span><br><span class="line">    ::pthread_exit(<span class="literal">nullptr</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">/* 初始化互斥量 */</span></span><br><span class="line">    ::pthread_mutex_init(&amp;m, <span class="literal">nullptr</span>);</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">pthread_t</span>&gt; tids;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">pthread_t</span> tid;</span><br><span class="line">        ::pthread_create(&amp;tid, <span class="literal">nullptr</span>, thread_task, <span class="literal">nullptr</span>);</span><br><span class="line">        tids.emplace_back(tid);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span>&amp; tid : tids)</span><br><span class="line">      ::pthread_join(tid, <span class="literal">nullptr</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/* 释放互斥量 */</span></span><br><span class="line">    ::pthread_mutex_destroy(&amp;m);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; total &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="C-11下的互斥量和条件变量"><a href="#C-11下的互斥量和条件变量" class="headerlink" title="C++11下的互斥量和条件变量"></a>C++11下的互斥量和条件变量</h1><h2 id="互斥量"><a href="#互斥量" class="headerlink" title="互斥量"></a>互斥量</h2><p>对比linux原生的库函数，C++11提供的互斥量突出的特点有</p>
+<ul>
+<li>无需考虑互斥量的初始化和销毁，在类的构造和析构函数中管理，无需使用者操心</li>
+<li>采用RAII对互斥量进行了不同封装，提供了更加友好的上锁机制</li>
+</ul>
+<p>C++11提供的互斥量位于&lt;mutex&gt;头文件中，提供的接口有</p>
+<ul>
+<li>lock，上锁</li>
+<li>try_lock，尝试上锁，如果失败则返回false</li>
+<li>unlock，解锁</li>
+</ul>
+<p>这三个函数和linux下的接口差不多，其实也没什么不同嘛~。事实上，多数程序都不直接使用std::mutex，标准库采用RAII(资源获取时就进行初始化)对std::mutex进行了封装，使用起来当然是方便得不得了</p>
+<h2 id="简单的锁机制lock-guard"><a href="#简单的锁机制lock-guard" class="headerlink" title="简单的锁机制lock_guard"></a>简单的锁机制lock_guard</h2><p>最简单的封装是std::lock_guard，单纯利用RAII，构造时上锁，析构时解锁，使用示例为</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;mutex&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">long</span> <span class="keyword">int</span> total = <span class="number">0</span>;</span><br><span class="line">    <span class="built_in">std</span>::mutex m;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::thread&gt; threads;    </span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        threads.emplace_back(</span><br><span class="line">                        [&amp;m, &amp;total]</span><br><span class="line">                        &#123;</span><br><span class="line">                            <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10000</span>; ++i)</span><br><span class="line">                            &#123;</span><br><span class="line">                                &#123;</span><br><span class="line">                                    <span class="built_in">std</span>::lock_guard&lt;<span class="built_in">std</span>::mutex&gt; lock(m);</span><br><span class="line">                                    ++total;</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    );</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span>&amp; th : threads)</span><br><span class="line">      th.join();</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; total &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>想对于共享数据的提供保护，使用std::lock_guard是完全没有问题的，进入共享区前上锁，离开后解锁</p>
+<h2 id="更灵活的锁unique-lock"><a href="#更灵活的锁unique-lock" class="headerlink" title="更灵活的锁unique_lock"></a>更灵活的锁unique_lock</h2><p>稍微复杂的封装是std::unique_lock，它提供了更灵活的上锁机制，即通过构造函数的参数进行设置，分别可以</p>
+<ul>
+<li>直接上锁</li>
+<li>延迟上锁，仅保存互斥量，不进行上锁工作</li>
+<li>尝试上锁</li>
+</ul>
+<p>但是多数情况下采用默认的直接上锁就可以了，而在std::unique_lock的生存期间，使用者也可以对其进行解锁再上锁等工作，这个作用体现在和条件变量的配合上</p>
+<h2 id="条件变量"><a href="#条件变量" class="headerlink" title="条件变量"></a>条件变量</h2><p>标准库中条件变量位于头文件&lt;condition_variable&gt;中</p>
+<p>其中有三个接口用于阻塞当前线程，常用的是wait</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">wait</span><span class="params">(<span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt;&amp; lock)</span></span>;</span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">Predicate</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">void</span> <span class="title">wait</span>(<span class="title">std</span>:</span>:unique_lock&lt;<span class="built_in">std</span>::mutex&gt;&amp; lock, Predicate pred);</span><br></pre></td></tr></table></figure>
+<p>原子操作释放锁lock，阻塞当前线程，并将当前线程添加到*this上的等待线程列表，等待notify_one或者notify_all调用时结束阻塞(第二个重载当pred返回true时也会结束阻塞)</p>
+<p>此外，还有两个接口用于通知一个或多个等待线程，将其从阻塞状态变为非阻塞</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">notify_one</span><span class="params">()</span> <span class="keyword">noexcept</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">notify_all</span><span class="params">()</span> <span class="keyword">noexcept</span></span>;</span><br></pre></td></tr></table></figure>
+<h2 id="示例，利用互斥量和条件变量实现线程池"><a href="#示例，利用互斥量和条件变量实现线程池" class="headerlink" title="示例，利用互斥量和条件变量实现线程池"></a>示例，利用互斥量和条件变量实现线程池</h2><h3 id="线程池工作原理"><a href="#线程池工作原理" class="headerlink" title="线程池工作原理"></a>线程池工作原理</h3><p>线程池的工作原理是预先创建若干线程，同时维护一个任务队列，每个线程不断地从任务队列中取出任务并执行，使用者可以随时向任务队列中添加新任务。当任务队列为空，线程池中的线程要么执行自己那个没有结束的任务，要么处于睡眠状态</p>
+<p>在这个问题模型中，任务队列就相当于共享变量，同一时刻只能有一个线程访问任务队列并从中取出任务，而添加任务时也需要避免添加和取出同时进行，这就需要互斥量的协助，凡是涉及到对任务队列的存和取，都需要事先上锁。</p>
+<p>另外，如果任务队列为空，那么每个线程都不断的上锁，取任务(发现为空)，解锁，再上锁，取任务(发现为空)，解锁…这样的busy loop会极大消耗cpu，造成了不必要的开销，所以需要引入条件变量，当任务队列为空时，采用条件变量令线程睡眠</p>
+<h3 id="线程池定义"><a href="#线程池定义" class="headerlink" title="线程池定义"></a>线程池定义</h3><p>可以明确的是，线程池除了构造析构函数外，需要提供一个接口用于调用者添加任务，所以线程池的定义可以明确如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;future&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;mutex&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;condition_variable&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;queue&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ThreadPool</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">        ThreadPool(<span class="built_in">std</span>::<span class="keyword">size_t</span> threadNums);</span><br><span class="line">        ~ThreadPool();</span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123; quit_ = <span class="literal">true</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span>:</span><br><span class="line">    	<span class="comment">/* 用于添加任务，std::future&lt;&gt;用于保存函数f的执行结果 */</span></span><br><span class="line">        <span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">F</span>, <span class="title">class</span>... <span class="title">Args</span>&gt;</span></span><br><span class="line"><span class="class">        <span class="title">auto</span> <span class="title">enqueue</span>(<span class="title">F</span>&amp;&amp; <span class="title">f</span>, <span class="title">Args</span>... <span class="title">args</span>)</span></span><br><span class="line"><span class="class">            -&gt; <span class="title">std</span>:</span>:future&lt;<span class="keyword">typename</span> <span class="built_in">std</span>::result_of&lt;F(Args...)&gt;::type&gt;;</span><br><span class="line">    <span class="keyword">private</span>:</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::thread&gt; threads_;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">queue</span>&lt;<span class="built_in">std</span>::function&lt;<span class="keyword">void</span>()&gt;&gt; tasks_;</span><br><span class="line">        <span class="built_in">std</span>::atomic&lt;<span class="keyword">bool</span>&gt; quit_;</span><br><span class="line">        <span class="built_in">std</span>::mutex mutex_;</span><br><span class="line">        <span class="built_in">std</span>::condition_variable cond_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><p>当线程池构造时，创建threadNums个线程，每个线程都从任务队列中取出任务然后执行</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">ThreadPool::ThreadPool(<span class="built_in">std</span>::<span class="keyword">size_t</span> threadNums)</span><br><span class="line">        : quit_(<span class="literal">false</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="built_in">std</span>::<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; threadNums; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        threads_.emplace_back(</span><br><span class="line">                        [<span class="keyword">this</span>]</span><br><span class="line">                        &#123;</span><br><span class="line">                            <span class="keyword">while</span>(!<span class="keyword">this</span>-&gt;quit_)</span><br><span class="line">                            &#123;</span><br><span class="line">                                <span class="built_in">std</span>::function&lt;<span class="keyword">void</span>()&gt; task;</span><br><span class="line">                                &#123;</span><br><span class="line">                                    <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lock(<span class="keyword">this</span>-&gt;mutex_);</span><br><span class="line">                                    <span class="comment">/* 利用条件变量，等待直到线程池退出或者任务队列不为空 */</span></span><br><span class="line">                                    cond_.wait(lock, [<span class="keyword">this</span>]() &#123; <span class="keyword">return</span> <span class="keyword">this</span>-&gt;quit_ || !<span class="keyword">this</span>-&gt;tasks_.empty(); &#125;);</span><br><span class="line">                                    <span class="keyword">if</span>(<span class="keyword">this</span>-&gt;quit_) <span class="keyword">return</span>;</span><br><span class="line">                                    task = <span class="keyword">this</span>-&gt;tasks_.front();</span><br><span class="line">                                    <span class="keyword">this</span>-&gt;tasks_.pop();</span><br><span class="line">                                &#125;</span><br><span class="line">                                task();</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    );     </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="析构函数"><a href="#析构函数" class="headerlink" title="析构函数"></a>析构函数</h3><p>析构函数用于回收线程资源</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ThreadPool::~ThreadPool()</span><br><span class="line">&#123;</span><br><span class="line">	stop();</span><br><span class="line">    cond_.notify_all();</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span>&amp; th : threads_)</span><br><span class="line">      th.join();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="添加任务"><a href="#添加任务" class="headerlink" title="添加任务"></a>添加任务</h3><p>enqueue函数用于添加任务，涉及到了一些std::future的内容，这里先简单看看</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* class... 表示不定长参数列表 */</span></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">F</span>, <span class="title">class</span>... <span class="title">Args</span>&gt;</span></span><br><span class="line"><span class="class">/* </span></span><br><span class="line"><span class="class"> * <span class="title">auto</span>会根据-&gt;后的内容自动推导返回类型</span></span><br><span class="line"><span class="class"> * <span class="title">std</span>:</span>:future用于保存函数运行结果</span><br><span class="line"> * <span class="built_in">std</span>::result_of用于获取函数运行结果</span><br><span class="line"> * <span class="built_in">std</span>::packaged_task&lt;T&gt;是一个函数包，类似<span class="built_in">std</span>::function，用于包装函数</span><br><span class="line"> * <span class="built_in">std</span>::packaged_task&lt;T&gt;::get_future用于返回函数运行结果</span><br><span class="line"> * <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; 上锁(这里也可以用<span class="built_in">std</span>::lock_guard </span><br><span class="line"> */</span><br><span class="line"><span class="keyword">auto</span> ThreadPool::enqueue(F&amp;&amp; f, Args... args)</span><br><span class="line">        -&gt; <span class="built_in">std</span>::future&lt;<span class="keyword">typename</span> <span class="built_in">std</span>::result_of&lt;F(Args...)&gt;::type&gt;</span><br><span class="line">&#123;</span><br><span class="line">   <span class="keyword">using</span> return_type = <span class="keyword">typename</span> <span class="built_in">std</span>::result_of&lt;F(Args...)&gt;::type;</span><br><span class="line">   <span class="keyword">auto</span> task = <span class="built_in">std</span>::make_shared&lt;<span class="built_in">std</span>::packaged_task&lt;return_type()&gt;&gt;(</span><br><span class="line">                    <span class="built_in">std</span>::bind(<span class="built_in">std</span>::forward&lt;F&gt;(f), <span class="built_in">std</span>::forward&lt;Args&gt;(args)...)</span><br><span class="line">               );</span><br><span class="line">   <span class="built_in">std</span>::future&lt;return_type&gt; res = task-&gt;get_future();</span><br><span class="line">   <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lock(mutex_);</span><br><span class="line">   tasks_.push([task]() &#123; (*task)(); &#125;);</span><br><span class="line">   <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">ThreadPool <span class="title">pool</span><span class="params">(<span class="number">4</span>)</span></span>;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="built_in">std</span>::future&lt;<span class="keyword">int</span>&gt;&gt; results;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        results.emplace_back(</span><br><span class="line">                    pool.enqueue(</span><br><span class="line">                            [i]</span><br><span class="line">                            &#123;</span><br><span class="line">                                <span class="comment">/* std::this_thread::sleep_for(std::chrono::seconds(1)); */</span></span><br><span class="line">                                <span class="keyword">return</span> i * i;</span><br><span class="line">                            &#125;</span><br><span class="line">                        )</span><br><span class="line">                    );</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">auto</span>&amp;&amp; result : results)</span><br><span class="line">      <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; result.get() &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>互斥锁是多线程环境中不可缺少的重要部分，用于保护共享资源免受cpu调度的危害。另外，条件变量和互斥锁配合使用可以避免busy loop带来的不必要损耗</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C/" rel="tag"># C++</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/06/C++11学习笔记-----线程库std__thread/" rel="next" title="C++11学习笔记-----线程库std::thread">
+                <i class="fa fa-chevron-left"></i> C++11学习笔记-----线程库std::thread
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/08/C++11学习笔记-----获取异步操作执行结果/" rel="prev" title="C++11学习笔记-----获取异步操作执行结果">
+                C++11学习笔记-----获取异步操作执行结果 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux下的原生互斥量"><span class="nav-number">1.</span> <span class="nav-text">Linux下的原生互斥量</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#示例：利用互斥锁解决多线程共享变量问题"><span class="nav-number">1.1.</span> <span class="nav-text">示例：利用互斥锁解决多线程共享变量问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#C-11下的互斥量和条件变量"><span class="nav-number">2.</span> <span class="nav-text">C++11下的互斥量和条件变量</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#互斥量"><span class="nav-number">2.1.</span> <span class="nav-text">互斥量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简单的锁机制lock-guard"><span class="nav-number">2.2.</span> <span class="nav-text">简单的锁机制lock_guard</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更灵活的锁unique-lock"><span class="nav-number">2.3.</span> <span class="nav-text">更灵活的锁unique_lock</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#条件变量"><span class="nav-number">2.4.</span> <span class="nav-text">条件变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例，利用互斥量和条件变量实现线程池"><span class="nav-number">2.5.</span> <span class="nav-text">示例，利用互斥量和条件变量实现线程池</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#线程池工作原理"><span class="nav-number">2.5.1.</span> <span class="nav-text">线程池工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程池定义"><span class="nav-number">2.5.2.</span> <span class="nav-text">线程池定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构造函数"><span class="nav-number">2.5.3.</span> <span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#析构函数"><span class="nav-number">2.5.4.</span> <span class="nav-text">析构函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加任务"><span class="nav-number">2.5.5.</span> <span class="nav-text">添加任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试代码"><span class="nav-number">2.5.6.</span> <span class="nav-text">测试代码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">3.</span> <span class="nav-text">小结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.0.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
