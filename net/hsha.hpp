@@ -1,9 +1,10 @@
 #pragma once
 
 
-#include "socket.hpp"
-#include "session.hpp"
 #include "poller.hpp"
+#include "connection.hpp"
+#include "acceptor.hpp"
+#include "eventloop.hpp"
 #include "../std.hpp"
 #include "../util/util.hpp"
 #include "../util/noncopyable.hpp"
@@ -11,81 +12,83 @@
 
 namespace cortono::net
 {
-    template <typename session_type>
     class HSHA : private util::noncopyable
 
     {
         public:
-            typedef std::function<void(std::shared_ptr<TcpSocket>)> callback_type;
+            typedef std::function<void(TcpConnection::Pointer)> ConnCallBack;
+            typedef TcpConnection::MessageCallBack  MessageCallBack;
+            typedef TcpConnection::ErrorCallBack    ErrorCallBack;
+            typedef TcpConnection::CloseCallBack    CloseCallBack;
 
-            /* HSHA(const std::string& ip = "localhost", unsigned short port = 9999) */
-            /*     : poller_(std::make_shared<EventPoller>()), */
-            /*       acceptor_(std::make_shared<TcpSocket>()) */
-            /* { */
-            /*     acceptor_->tie(poller_); */
-            /*     acceptor_->enable_option(TcpSocket::reuse_addr, TcpSocket::reuse_port, TcpSocket::non_block); */
-            /*     acceptor_->enable_read(std::bind(&HSHA::handle_accept, this)); */
-            /*     util::exitif(!acceptor_->bind(ip, port), "bind error"); */
-            /*     util::exitif(!acceptor_->listen(), "listen error"); */
-            /* } */
-            /* ~HSHA() {} */
+            HSHA(EventLoop* loop, std::string_view ip, unsigned short port)
+                : loop_(loop),
+                  acceptor_(loop, ip, port)
+            {
+                acceptor_.on_connection([this](int fd) {
+                    auto conn = std::make_shared<TcpConnection>(loop_, fd);
+                    conn->on_read([this](auto c) {
+                        if(msg_cb_) {
+                            util::threadpool::instance().async([this, c]{
+                                msg_cb_(c);
+                            });
+                        }
+                    });
+                    conn->on_error([this](auto c) {
+                        if(error_cb_) {
+                            util::threadpool::instance().async([this, c]{
+                                error_cb_(c);
+                                remove_connection(c);
+                            });
+                        }
+                    });
+                    conn->on_close([this](auto c) {
+                        if(close_cb_) {
+                            util::threadpool::instance().async([this, c]{
+                                close_cb_(c);
+                            });
+                        }
+                    });
+                    {
+                        std::unique_lock lock{mutex_};
+                        connections_[conn->name()] = conn;
+                    }
+                    if(conn_cb_) { conn_cb_(conn); }
+                });
+            }
 
-            /* void start() { */
-            /*     util::threadpool::instance().start(); */
-            /*     while(true) { */
-            /*         poller_->wait(); */
-            /*     } */
-            /* } */
-
-            /* void on_conn(callback_type cb){ */
-            /*     conn_cb_ = std::move(cb); */
-            /* } */
-
-            /* void register_session(std::shared_ptr<TcpSocket> socket, */
-            /*                       std::shared_ptr<session_type> session) { */
-            /*     sessions_[socket.get()] = session; */
-            /* } */
-        /* private: */
-            /* void handle_accept() { */
-            /*     while(true) { */
-            /*         int fd = acceptor_->accept(); */
-            /*         if(fd == -1) */
-            /*             return; */
-            /*         auto socket = std::make_shared<TcpSocket>(fd); */
-            /*         socket->tie(poller_); */
-            /*         socket->enable_option(TcpSocket::reuse_addr, TcpSocket::reuse_port, TcpSocket::non_block); */
-            /*         std::weak_ptr weak_socket { socket }; */
-            /*         socket->enable_read([this, weak_socket] { */
-            /*             util::threadpool::instance().async([this, weak_socket] { */
-            /*                 if(auto socket = weak_socket.lock(); socket) { */
-            /*                     socket->recv_to_buffer(); */
-            /*                     sessions_[socket.get()]->on_read(); */
-            /*                 } */
-            /*             }); */
-            /*         }); */
-
-            /*         socket->enable_close([this, weak_socket] { */
-            /*             util::threadpool::instance().async([this, weak_socket] { */
-            /*                 if(auto socket = weak_socket.lock(); socket) { */
-            /*                     socket->disable_all(); */
-            /*                     sessions_[socket.get()]->on_close(); */
-            /*                     { */
-            /*                         std::unique_lock lock { mutex_ }; */
-            /*                         sessions_.erase(socket.get()); */
-            /*                     } */
-            /*                 } */
-            /*             }); */
-            /*         }); */
-            /*         if(conn_cb_) { */
-            /*             conn_cb_(socket); */
-            /*         } */
-            /*     } */
-            /* } */
+            ~HSHA() { }
+            void on_conn(ConnCallBack cb) {
+                conn_cb_ = std::move(cb);
+            }
+            void on_message(MessageCallBack cb) {
+                msg_cb_ = std::move(cb);
+            }
+            void on_close(CloseCallBack cb) {
+                close_cb_ = std::move(cb);
+            }
+            void on_error(ErrorCallBack cb) {
+                error_cb_ = std::move(cb);
+            }
+        public:
+            void start() {
+                util::threadpool::instance().start();
+                acceptor_.start();
+            }
         private:
-            callback_type conn_cb_ = nullptr;
-            std::shared_ptr<EventPoller> poller_;
-            std::shared_ptr<TcpSocket> acceptor_;
-            std::unordered_map<TcpSocket*, std::shared_ptr<session_type>> sessions_;
+            void remove_connection(TcpConnection::Pointer conn) {
+                std::unique_lock lock { mutex_ };
+                connections_.erase(conn->name());
+            }
+        private:
+            EventLoop *loop_ = nullptr;
+            Acceptor acceptor_;
             std::mutex mutex_;
+            std::unordered_map<std::string_view, TcpConnection::Pointer> connections_;
+            ConnCallBack conn_cb_ = nullptr;
+            MessageCallBack msg_cb_ = nullptr;
+            ErrorCallBack error_cb_ = nullptr;
+            CloseCallBack close_cb_ = nullptr;
+
     };
 }
