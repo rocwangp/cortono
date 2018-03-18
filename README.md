@@ -1,6 +1,6 @@
 # cortono
 
-## 一个C++实现的Linux平台下简单网络库
+## 一个C++实现的玩具型网络库
 
 * header only, 只包含头文件
 * 使用c++11/14/17
@@ -16,40 +16,15 @@
 ```c
 #include "/home/roc/unix/cortono/cortono.hpp"
 using namespace cortono::net;
-
-class echo_session : public tcp_session
-{
-    public:
-        echo_session(std::shared_ptr<tcp_socket> socket)
-            : tcp_session(socket)
-        {
-            set_read_callback(std::bind(&echo_session::handle_read, this));
-        }
-
-        void handle_read() {
-            socket_->write(socket_->read_all());
-        }
-};
-
-int main()
-{
-    event_loop base;
-    tcp_service<echo_session> server{ &base, "localhost", 9999 };
-    server.on_conn([&server](auto socket) {
-        server.register_session(socket , std::make_shared<echo_session>(socket)); });
-    server.start();
-    base.sync_loop();
+int main() {
+    EventLoop base;
+    TcpService service(&base, "127.0.0.1", 9999);
+    service.on_message([](auto conn) { conn->send(conn->recv_all()); });
+    service.start();
+    base.loop();
     return 0;
 }
 ```
-
-## 关于tcp_service::on_conn函数
-
-有以下几点考虑
-
-* 自定义的session_type的构造函数可能有多个参数，无法由内部网络库构造，需要在连接建立后显示构造
-* 可以对socket进行更多详细的设置，如no_delay选项
-
 
 ## 不足及改进:
 
