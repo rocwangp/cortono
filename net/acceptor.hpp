@@ -18,6 +18,10 @@ namespace cortono::net
                 socket_.bind(ip, port);
                 socket_.set_read_callback(std::bind(&Acceptor::handle_accept, this));
             }
+            ~Acceptor()
+            {
+                util::io::close(idle_fd_);
+            }
             void start() {
                 socket_.enable_reading();
                 socket_.listen();
