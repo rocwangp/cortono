@@ -48,8 +48,6 @@ namespace cortono::http
             EventLoop base_;
             TcpService service_;
             std::mutex mutex_;
-            std::map<std::weak_ptr<TcpConnection>,
-                     std::shared_ptr<HttpSession>,
-                     std::owner_less<std::weak_ptr<TcpConnection>>> sessions_;
+            std::map<std::weak_ptr<TcpConnection>, std::shared_ptr<HttpSession>> sessions_;
     };
 }
