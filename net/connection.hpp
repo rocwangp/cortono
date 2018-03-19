@@ -99,7 +99,7 @@ namespace cortono::net
                     return;
                 }
                 sendfile_ = true;
-                fin.open(filename_, std::ios_base::in);
+                /* fin.open(filename_, std::ios_base::in); */
                 if(!send_buffer_->empty()) {
                     return;
                 }
