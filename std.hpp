@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <vector>
+#include <list>
 #include <queue>
 #include <string>
 #include <string_view>
