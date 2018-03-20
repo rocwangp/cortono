@@ -40,7 +40,7 @@ namespace cortono::net
 
             ~TcpSocket() {
                 ip::tcp::sockets::close(fd_);
-                log_info("~TcpSocket");
+                /* log_info("~TcpSocket"); */
             }
 
             bool bind(std::string_view ip, unsigned short port) {
@@ -136,23 +136,19 @@ namespace cortono::net
                 return fd_;
             }
             void set_read_callback(EventCallBack cb) {
-                read_cb_ = std::move(cb);
-                poller_cbs_->read_cb = read_cb_;
+                poller_cbs_->read_cb = cb;
             }
             void set_write_callback(EventCallBack cb) {
-                write_cb_ = std::move(cb);
-                poller_cbs_->write_cb = write_cb_;
+                poller_cbs_->write_cb = cb;
             }
             void set_close_callback(EventCallBack cb) {
-                close_cb_ = std::move(cb);
-                poller_cbs_->close_cb = close_cb_;
+                poller_cbs_->close_cb = cb;
             }
         private:
             int fd_;
             uint32_t events_;
             std::weak_ptr<EventPoller> weak_poller_;
             std::shared_ptr<EventPoller::PollerCB> poller_cbs_;
-            EventCallBack read_cb_, close_cb_, write_cb_;
             static std::map<socket_option, std::function<bool(int)>> opt_functors_;
     };
 

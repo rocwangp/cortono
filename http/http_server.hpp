@@ -28,7 +28,6 @@ namespace cortono::http
             }
             void init_callback() {
                 service_.on_conn([this](auto conn) {
-                    log_trace;
                     {
                         std::unique_lock lock { mutex_ };
                         auto session = std::make_shared<HttpSession>();
@@ -48,6 +47,8 @@ namespace cortono::http
             EventLoop base_;
             TcpService service_;
             std::mutex mutex_;
-            std::map<std::weak_ptr<TcpConnection>, std::shared_ptr<HttpSession>> sessions_;
+            std::map<std::weak_ptr<TcpConnection>,
+                     std::shared_ptr<HttpSession>,
+                     std::owner_less<std::weak_ptr<TcpConnection>>> sessions_;
     };
 }

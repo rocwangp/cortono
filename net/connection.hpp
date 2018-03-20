@@ -55,13 +55,14 @@ namespace cortono::net
             void disable_all() {
                 socket_.disable_all();
             }
-            std::string_view name() {
-                if(name_.empty()) {
-                    return {};
-                }
-                else {
-                    return { name_.data(), name_.length() };
-                }
+            std::string name() {
+                return name_;
+                /* if(name_.empty()) { */
+                /*     return {}; */
+                /* } */
+                /* else { */
+                /*     return { name_.data(), name_.length() }; */
+                /* } */
             }
             void close() {
                 handle_close();
@@ -106,24 +107,24 @@ namespace cortono::net
                 handle_sendfile();
             }
             void read_file_to_send() {
-                socket_.disable_writing();
-                socket_.enable_writing();
-                socket_.set_write_callback([this]{
-                    int write_bytes = 0;
-                    do {
-                        if(buffer_size_ == 0) {
-                            buffer_size_ = fin.readsome(file_buffer_, sizeof(file_buffer_));
-                        }
-                        if(buffer_size_ == 0) {
-                            log_debug("sendfile done");
-                            socket_.disable_writing();
-                            fin.close();
-                            break;
-                        }
-                        write_bytes = ip::tcp::sockets::send(socket_.fd(), file_buffer_, buffer_size_);
-                        buffer_size_ -= std::max(0, write_bytes);
-                    }while(write_bytes == buffer_size_);
-                });
+                /* socket_.disable_writing(); */
+                /* socket_.enable_writing(); */
+                /* socket_.set_write_callback([this]{ */
+                /*     int write_bytes = 0; */
+                /*     do { */
+                /*         if(buffer_size_ == 0) { */
+                /*             buffer_size_ = fin.readsome(file_buffer_, sizeof(file_buffer_)); */
+                /*         } */
+                /*         if(buffer_size_ == 0) { */
+                /*             log_debug("sendfile done"); */
+                /*             socket_.disable_writing(); */
+                /*             fin.close(); */
+                /*             break; */
+                /*         } */
+                /*         write_bytes = ip::tcp::sockets::send(socket_.fd(), file_buffer_, buffer_size_); */
+                /*         buffer_size_ -= std::max(0, write_bytes); */
+                /*     }while(write_bytes == buffer_size_); */
+                /* }); */
             }
             std::string recv_all() {
                 return recv_buffer_->read_all();
@@ -143,7 +144,7 @@ namespace cortono::net
                 recv_buffer_->enable_bytes(bytes);
                 bytes = ip::tcp::sockets::recv(socket_.fd(), recv_buffer_->end(), bytes);
                 if(bytes == 0) {
-                    log_info("close connection");
+                    /* log_info("close connection"); */
                     handle_close();
                 }
                 else if(bytes == -1) {
@@ -153,6 +154,7 @@ namespace cortono::net
                 else {
                     recv_buffer_->retrieve_write_bytes(bytes);
                     if(read_cb_) {
+                        /* log_info("read callback"); */
                         read_cb_(shared_from_this());
                     }
                 }
@@ -165,6 +167,9 @@ namespace cortono::net
                     if(bytes == -1) {
                         if(errno == EINTR || errno == EAGAIN) {
                             handle_write();
+                        }
+                        else {
+                            handle_close();
                         }
                     }
                     else if(bytes == 0) {
@@ -189,7 +194,8 @@ namespace cortono::net
             }
             void handle_close() {
                 socket_.disable_all();
-                close_cb_(shared_from_this());
+                if(close_cb_)
+                    close_cb_(shared_from_this());
             }
             void handle_sendfile() {
                 if(!sendfile_) {
@@ -202,6 +208,9 @@ namespace cortono::net
                 else if(bytes == -1) {
                     if(errno == EINTR || errno == EAGAIN) {
                         handle_sendfile();
+                    }
+                    else {
+                        handle_close();
                     }
                 }
                 else if(bytes < static_cast<int>(filesize_)) {
@@ -230,7 +239,7 @@ namespace cortono::net
             CloseCallBack close_cb_;
             std::shared_ptr<Buffer> recv_buffer_, send_buffer_;
 
-            char file_buffer_[128 * 1024];
+            /* char file_buffer_[4 * 1024]; */
             int buffer_size_ = 0;
             std::ifstream fin;
     };

@@ -42,7 +42,7 @@ namespace cortono::http
 
             void handle_request_line() {
                 if(version_ != "1.1") {
-                    status_ = ParseStatus::ParseError;
+                    keep_alive_ = false;
                 }
             }
             void parse_request_query() {
@@ -73,7 +73,6 @@ namespace cortono::http
                 uri_ = std::string("web") + uri_;
                 static_file_ = true;
                 uri_ = html_codec::decode(uri_);
-                log_debug(uri_);
             }
 
             ParseStatus parse_header(std::shared_ptr<cortono::net::Buffer> read_buffer) {
@@ -125,10 +124,19 @@ namespace cortono::http
                 if(auto it = headers_.find("connection"); it != headers_.end()) {
                     if(iequal(it->second, "close")) {
                         keep_alive_ = false;
-                        return;
+                    }
+                    else {
+                        keep_alive_ = true;
                     }
                 }
-                keep_alive_ = true;
+                else {
+                    if(version_ == "1.1") {
+                        keep_alive_ = true;
+                    }
+                    else {
+                        keep_alive_ = false;
+                    }
+                }
             }
             ParseStatus get_ParseStatus() {
                 return status_;

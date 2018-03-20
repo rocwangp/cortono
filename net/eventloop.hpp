@@ -39,10 +39,11 @@ namespace cortono::net
                 handle_time_func();
             }
             void handle_pending_func() {
-                for(auto&& cb : pending_functors_) {
+                for(auto& cb : pending_functors_) {
                     cb();
                 }
-                decltype(pending_functors_)().swap(pending_functors_);
+                /* decltype(pending_functors_)().swap(pending_functors_); */
+                pending_functors_.clear();
             }
             void handle_time_func() {
                 while(!timers_.empty() && timers_.top().is_expires()) {
@@ -56,10 +57,12 @@ namespace cortono::net
                 }
             }
             void safe_call(std::function<void()> cb) {
-                if(std::this_thread::get_id() == tid_) {
+                if(std::this_thread::get_id() == tid_)
+                {
                     cb();
                 }
-                else {
+                else
+                {
                     {
                         std::unique_lock lock { mutex_ };
                         pending_functors_.emplace_back(std::move(cb));

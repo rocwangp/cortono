@@ -30,11 +30,11 @@ namespace cortono::ip
                 unsigned short port = 0;
                 if(ip4) {
                     ::inet_ntop(AF_INET, &addr, ip, sizeof(ip));
-                    port = ::ntohs(((struct sockaddr_in*)(&addr))->sin_port);
+                    port = ntohs(((struct sockaddr_in*)(&addr))->sin_port);
                 }
                 else {
                     ::inet_ntop(AF_INET6, &addr, ip, sizeof(ip));
-                    port = ::ntohs(((struct sockaddr_in6*)(&addr))->sin6_port);
+                    port = ntohs(((struct sockaddr_in6*)(&addr))->sin6_port);
                 }
                 return util::format("<%s:%u>", ip, port);
             }

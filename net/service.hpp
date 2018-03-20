@@ -24,22 +24,21 @@ namespace cortono::net
                   acceptor_(loop, ip, port)
             {
                 acceptor_.on_connection([this](int fd) {
-                    log_trace;
                     auto loop = eventloops_.empty()
                                     ? loop_
                                     : eventloops_[(++loop_idx_) % eventloops_.size()];
                     auto conn = std::make_shared<TcpConnection>(loop, fd);
-                    conn->on_read([this](auto c) {
-                        if(msg_cb_) { msg_cb_(c); }
+                    conn->on_read([this](const auto& c) {
+                        /* if(msg_cb_) { msg_cb_(c); } */
+                        /* msg_cb_(c); */
                     });
-                    conn->on_error([this](auto c) {
+                    conn->on_error([this](const auto& c) {
                         if(error_cb_) { error_cb_(c); }
                     });
-                    conn->on_close([this](auto c) {
-                        if(close_cb_) { close_cb_(c); }
+                    conn->on_close([this](const auto& c) {
+                        /* if(close_cb_) { close_cb_(c); } */
                         remove_connection(c);
                     });
-                    log_debug(conn->name());
                     connections_[conn->name()] = conn;
                     if(conn_cb_) { conn_cb_(conn); }
                 });
@@ -78,10 +77,12 @@ namespace cortono::net
                 acceptor_.start();
             }
         private:
-            void remove_connection(TcpConnection::Pointer conn) {
-                loop_->safe_call([this, conn]{
-                    connections_.erase(conn->name());
-                });
+            void remove_connection(const TcpConnection::Pointer& conn) {
+                /* loop_->safe_call([this, name = conn->name()]{ */
+                /*     log_info("remove connection"); */
+                std::unique_lock lock { mutex_ };
+                connections_.erase(conn->name());
+                /* }); */
             }
         private:
             EventLoop *loop_ = nullptr;
@@ -89,7 +90,7 @@ namespace cortono::net
             int loop_idx_ = -1;
             std::mutex mutex_;
             std::vector<EventLoop*> eventloops_;
-            std::unordered_map<std::string_view, TcpConnection::Pointer> connections_;
+            std::unordered_map<std::string, TcpConnection::Pointer> connections_;
             ConnCallBack conn_cb_ = nullptr;
             MessageCallBack msg_cb_ = nullptr;
             ErrorCallBack error_cb_ = nullptr;

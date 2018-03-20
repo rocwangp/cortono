@@ -59,7 +59,6 @@ namespace cortono::net
                 if(event_nums_ > static_cast<int>(events_.size()))
                     events_.resize(event_nums_);
                 int n = ::epoll_wait(epollfd_, &events_[0], events_.size(), timeout);
-                log_trace;
                 for(int i = 0; i < n; ++i) {
                     if(readable_event(events_[i].events)) {
                         static_cast<PollerCB*>(events_[i].data.ptr)->read_cb();
