@@ -115,7 +115,7 @@ namespace cortono::net
                     return {};
                 }
                 else {
-                    return { data(), size() };
+                    return { data(), static_cast<std::size_t>(size()) };
                 }
             }
         private:
