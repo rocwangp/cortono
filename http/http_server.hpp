@@ -1,54 +1,41 @@
 #pragma once
-
-#include "../std.hpp"
 #include "../cortono.hpp"
-#include "http_session.hpp"
+
+#include "http_router.hpp"
+#include "http_connection.hpp"
 
 namespace cortono::http
 {
-    using namespace cortono::net;
-    using namespace std::literals;
-
+    template <typename Handler>
     class HttpServer
     {
         public:
-            HttpServer(std::string_view ip, unsigned short port)
-                : service_(&base_, ip, port)
+            HttpServer(Handler& handler, const std::string& ip, unsigned short port, std::size_t concurrency)
+                : service_(&loop_, ip, port),
+                  handler_(handler),
+                  concurrency_(concurrency)
             {
                 init_callback();
             }
-            void start() {
-                config_load();
-                service_.start();
-                base_.loop();
-            }
-        private:
-            void config_load() {
 
+            void run() {
+                service_.start(concurrency_);
+                loop_.loop();
             }
+        private:
             void init_callback() {
-                service_.on_conn([this](auto conn) {
-                    {
-                        std::unique_lock lock { mutex_ };
-                        auto session = std::make_shared<HttpSession>();
-                        sessions_[conn] = session;
-                        conn->on_read([=](auto conn) { session->parse_line(conn); });
-                    }
-                });
-                service_.on_close([this](auto conn) {
-                    {
-                        std::unique_lock lock { mutex_ };
-                        std::weak_ptr weak_conn { conn };
-                        sessions_.erase(weak_conn);
-                    }
+                service_.on_conn([&](auto conn_ptr) {
+                    auto c = std::make_shared<Connection<Handler>>(handler_);
+                    conn_ptr->on_read([c](auto conn_ptr) {
+                        c->handle_read(conn_ptr);
+                    });
                 });
             }
         private:
-            EventLoop base_;
-            TcpService service_;
-            std::mutex mutex_;
-            std::map<std::weak_ptr<TcpConnection>,
-                     std::shared_ptr<HttpSession>,
-                     std::owner_less<std::weak_ptr<TcpConnection>>> sessions_;
+            net::EventLoop loop_;
+            net::TcpService service_;
+
+            Handler& handler_;
+            std::size_t concurrency_;
     };
 }

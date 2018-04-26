@@ -1,59 +1,43 @@
 #pragma once
 
 #include "../std.hpp"
-#include "../cortono.hpp"
-#include "response_cv.hpp"
-#include "http_codec.hpp"
-
 namespace cortono::http
 {
-    using namespace cortono::util;
-    class HttpResponse
+    struct Response
     {
-        public:
-            template <typename H, typename T>
-            void set_header(H key, T value) {
-                std::string_view header_key = ResponseHeader_to_sv(key);
-                std::string header_value = to_chars(value);
-                headers_.emplace(header_key, header_value);
-            }
-            void set_status_and_content(ResponseStatus status) {
-                set_status_and_content(status, status_to_content(status));
-            }
-            void set_status_and_content(ResponseStatus status, std::string_view content) {
-                status_ = status;
-                content_ = (std::string{ content.data(), content.length() });
-            }
-            std::string get_response_header() {
-                std::string_view status_sv = status_to_sv(status_);
-                std::string response{ status_sv.data(), status_sv.length() };
-                for(auto &[key, value] : headers_) {
-                    response.append(key);
-                    response.append(key_value_spacer);
-                    response.append(value);
-                    response.append(crlf);
-                }
-                response.append(crlf);
-                return response;
-            }
-            std::string to_string() {
-                set_header(ResponseHeader::Content_Length, content_.size());
-                std::string r =  get_response_header() + content_;
-                /* log_debug(r); */
-                return r;
-            }
-            void gzip_file(std::string_view file_path) {
-                content_ = gzip_codec::compress(file_path);
-            }
-            void reset() {
-                content_.clear();
-                headers_.clear();
-                status_ = ResponseStatus::OK;
-            }
+        int code{ 200 };
+        std::string body;
+        std::unordered_map<std::string, std::string> headers;
 
-        private:
-            ResponseStatus status_;
-            std::string content_;
-            std::unordered_map<std::string_view, std::string> headers_;
+        Response() {}
+        explicit Response(int state_code) : code(state_code) {}
+        explicit Response(std::string&& context) : body(std::move(context)) {}
+        Response(int state_code, std::string&& context) : code(state_code), body(std::move(context)) {}
+
+        Response(Response&& res)
+            : code(res.code),
+              body(std::move(res.body)),
+              headers(std::move(res.headers))
+        {  }
+
+        Response& operator=(Response&& res) {
+            if(this != &res) {
+                code = std::move(res.code);
+                body = std::move(res.body);
+                headers = std::move(res.headers);
+            }
+            return *this;
+        }
+
+        void set_header(std::string&& key, std::string&& value) {
+            headers.emplace(std::forward<std::string>(key),
+                                    std::forward<std::string>(value));
+        }
+        bool has_header(std::string&& key) const {
+            return headers.count(key);
+        }
+        const std::string& get_header_value(std::string&& key)  {
+            return headers[key];
+        }
     };
 }
