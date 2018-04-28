@@ -3,7 +3,10 @@
 int main()
 {
     cortono::http::SimpleApp app;
-    app.register_rule("/")([]() { return "hello world"; });
+    app.register_rule("/")([]() {
+        log_trace;
+        return "hello world";
+    });
     app.register_rule("/adder/<int>/<int>")([](int a, int b) {
         std::stringstream oss;
         oss << a + b;
@@ -29,6 +32,23 @@ int main()
         oss << "\r\n";
         oss << req.body;
         return oss.str();
+    });
+    /* app.register_rule("/<path>")([](std::string filename) -> std::string { */
+    /*     using namespace std::experimental; */
+    /*     filename = "web/" + filename; */
+    /*     if(filesystem::exists(filename)) { */
+    /*         log_debug(filename); */
+    /*         std::size_t filesize = filesystem::file_size(filename); */
+    /*         std::string buffer(filesize, '0'); */
+    /*         std::ifstream fin{ filename, std::ios_base::in }; */
+    /*         fin.read(&buffer[0], filesize); */
+    /*         return buffer; */
+    /*     } */
+    /*     return ""; */
+    /* }); */
+    app.register_rule("/<path>")([](const cortono::http::Request&, cortono::http::Response& res, std::string s) {
+        res = cortono::http::Response(200);
+        res.send_file("web/" + s);
     });
     app.multithread().run();
     return 0;

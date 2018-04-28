@@ -50,15 +50,21 @@ namespace cortono::http
                     if(!is_invalid_request) {
                         handler_.handle(req_, res_);
                     }
-                    conn_ptr->send(std::move(complete_request()));
+                    auto [sendfile, context] = std::move(complete_request());
+                    conn_ptr->send(context);
+                    if(sendfile) {
+                        log_debug(context);
+                        conn_ptr->sendfile(res_.filename);
+                    }
                     if(!add_keep_alive) {
+                        log_info("no keep-alive, close connection");
                         conn_ptr->close();
                     }
                     parser_.clear();
                 }
             }
         private:
-            std::string complete_request() {
+            std::pair<bool, std::string> complete_request() {
                 static const std::unordered_map<int, std::string> status_codes = {
                     {200, "HTTP/1.1 200 OK\r\n"},
                     {201, "HTTP/1.1 201 Created\r\n"},
@@ -95,12 +101,24 @@ namespace cortono::http
                     buffer << std::move(key) << seperator << std::move(value) << crlf;
                 }
                 if(!res_.headers.count("connection-length")) {
-                    buffer << "Content-Length" << seperator << res_.body.size() << crlf;
+                    if(!res_.sendfile) {
+                        buffer << "Content-Length" << seperator << res_.body.size() << crlf;
+                    }
+                    else {
+                        buffer << "Content-Length" << seperator << res_.filesize << crlf;
+                    }
                 }
                 buffer << crlf;
-                buffer << res_.body;
-                log_debug(buffer.str());
-                return buffer.str();
+                if(res_.is_send_file()) {
+                    return { true, buffer.str() };
+                }
+                else {
+                    log_debug(buffer.str());
+                    buffer << res_.body;
+                    return { false, buffer.str() };
+                }
+                /* buffer << res_.body; */
+                /* return buffer.str(); */
             }
         private:
             Handler& handler_;

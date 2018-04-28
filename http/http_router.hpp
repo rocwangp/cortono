@@ -14,6 +14,7 @@ namespace cortono::http
         UINT,
         DOUBLE,
         STRING,
+        PATH,
 
         PARAM_NUMS
     };
@@ -26,25 +27,21 @@ namespace cortono::http
         std::vector<std::string> string_params;
 
         template <typename T>
-        T get(std::size_t) const;
+        T get(std::size_t i) const {
+            if constexpr (std::is_same_v<T, int64_t>) {
+                return int_params[i];
+            }
+            else if constexpr (std::is_same_v<T, uint64_t>) {
+                return uint_params[i];
+            }
+            else if constexpr (std::is_same_v<T, double>) {
+                return double_params[i];
+            }
+            else {
+                return string_params[i];
+            }
+        }
     };
-
-    template <>
-    int64_t routing_params::get<int64_t>(std::size_t i) const {
-        return int_params[i];
-    }
-    template <>
-    uint64_t routing_params::get<uint64_t>(std::size_t i) const {
-        return uint_params[i];
-    }
-    template <>
-    double routing_params::get<double>(std::size_t i) const {
-        return double_params[i];
-    }
-    template <>
-    std::string routing_params::get<std::string>(std::size_t i) const {
-        return string_params[i];
-    }
 
     template <typename H>
     struct call_params
@@ -55,8 +52,6 @@ namespace cortono::http
         const routing_params& params;
 
     };
-
-
     template <typename T, std::size_t P>
     struct call_pair
     {
@@ -139,32 +134,6 @@ namespace cortono::http
                 };
             }
         }
-
-        /* template <typename... Args> */
-        /* void set_(Func f, typename std::enable_if< */
-        /*         std::is_same<const Request&, std::tuple_element_t<0, std::tuple<Args..., void>>>::value && */
-        /*         !std::is_same<Response&, std::tuple_element_t<1, std::tuple<Args..., void, void>>>::value, */
-        /*         int>::type = 0) { */
-        /*     handler_ = req_handler_wrapper<Args...>(std::move(f)); */
-        /* } */
-
-        /* template <typename... Args> */
-        /* void set_(Func f, typename std::enable_if< */
-        /*         std::is_same<const Request&, std::tuple_element_t<0, std::tuple<Args..., void>>>::value && */
-        /*         std::is_same<Response&, std::tuple_element_t<1, std::tuple<Args..., void, void>>>::value, */
-        /*         int>::type = 0) { */
-        /*     handler_ = std::move(f); */
-        /* } */
-
-        /* template <typename... Args> */
-        /* void set_(Func f, typename std::enable_if< */
-        /*         !std::is_same<const Request&, std::tuple_element_t<0, std::tuple<Args..., void>>>::value, */
-        /*         int>::type = 0) { */
-        /*     handler_ = [f = std::move(f)](const Request&, Response& res, Args... args) { */
-        /*         res = Response(f(args...)); */
-        /*     }; */
-        /* } */
-
         template <typename... Args>
         struct handler_type_helper
         {
@@ -195,7 +164,6 @@ namespace cortono::http
                  black_magic::S<>>{}
             (call_params<decltype(handler_)>{ handler_, req, res, params });
         }
-
     };
 
 
@@ -224,7 +192,6 @@ namespace cortono::http
             }
 
             void handle(const Request& req, Response& res, const routing_params& params) {
-                log_trace;
                 handler_(req, res, params);
             }
             const std::string& rule() const {
@@ -268,7 +235,8 @@ namespace cortono::http
                             { ParamType::INT, "<int>" },
                             { ParamType::UINT, "<uint>" },
                             { ParamType::DOUBLE, "<double>" },
-                            { ParamType::STRING, "<string>" }
+                            { ParamType::STRING, "<string>" },
+                            { ParamType::PATH, "<path>" }
                         };
                         for(auto& param_trait : param_traits) {
                             if(rule.compare(i, param_trait.name.size(), param_trait.name) == 0) {
@@ -318,9 +286,8 @@ namespace cortono::http
                     }
                 });
                 if(node->param_children[(int)(ParamType::INT)]) {
-                    log_trace;
                     char c = req_url[pos];
-                    if((c >= '0' && c <= '9') || (c == '-' || c == '+')) {
+                    if((c >= '0' && c <= '9') || (c == '+' || c == '-')) {
                         char* eptr;
                         errno = 0;
                         int64_t value = std::strtoll(req_url.data() + pos, &eptr, 10);
@@ -333,7 +300,6 @@ namespace cortono::http
                     }
                 }
                 if(node->param_children[(int)(ParamType::UINT)]) {
-                    log_trace;
                     char c = req_url[pos];
                     if((c >= '0' && c <= '9') || (c == '+')) {
                         char* eptr;
@@ -348,7 +314,6 @@ namespace cortono::http
                     }
                 }
                 if(node->param_children[(int)(ParamType::DOUBLE)]) {
-                    log_trace;
                     char c = req_url[pos];
                     if((c >= '0' && c <= '9') || (c == '-' || c == '+')) {
                         char* eptr;
@@ -363,7 +328,6 @@ namespace cortono::http
                     }
                 }
                 if(node->param_children[(int)(ParamType::STRING)]) {
-                    log_trace;
                     std::size_t epos = req_url.find_first_of('/', pos);
                     if(epos == std::string::npos) {
                         epos = req_url.size();
@@ -375,9 +339,14 @@ namespace cortono::http
                         params->double_params.pop_back();
                     }
                 }
+                if(node->param_children[(int)(ParamType::PATH)]) {
+                    params->string_params.emplace_back(req_url.substr(pos));
+                    auto ret = find(req_url, req_url.size(), &nodes_[node->param_children[(int)(ParamType::PATH)]], params);
+                    update_found(ret);
+                    params->double_params.pop_back();
+                }
                 for(auto& [format, next_idx] : node->children) {
                     if(!format.empty() && req_url.compare(pos, format.size(), format) == 0) {
-                        /* log_debug(format); */
                         auto ret = find(req_url, pos + format.size(), &nodes_[next_idx], params);
                         update_found(ret);
                     }
