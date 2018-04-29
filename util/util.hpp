@@ -30,6 +30,23 @@ namespace cortono
             return oss.str();
         }
 
+        class exitcall
+        {
+            public:
+                typedef std::function<void()> callback;
+
+                exitcall(callback cb)
+                    : cb_(std::move(cb))
+                {  }
+
+                ~exitcall() {
+                    if(cb_) {
+                        cb_();
+                    }
+                }
+            private:
+                callback cb_;
+        };
         class io
         {
             public:
@@ -120,11 +137,13 @@ namespace cortono
         }
 
         template <typename... Args>
-        void exitif(bool condition, Args... args) {
+        void exitif_impl(bool condition, const std::string& file, std::size_t line, const std::string&& func, Args... args) {
             if(condition) {
-                log_fatal(std::strerror(errno), args...);
+                log_fatal(std::strerror(errno), file, func, line, args...);
             }
         }
+
+
 
         template <typename Function, typename... Args>
         auto invoke_if(Function&& f, Args... args, bool condition)
@@ -168,5 +187,7 @@ namespace cortono
         }
     }
 
+#define exitif(condition, ...) \
+    util::exitif_impl(condition, __FILE__, __LINE__, __func__, __VA_ARGS__)
 }
 

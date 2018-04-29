@@ -43,7 +43,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/web/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -51,21 +51,21 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/web/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+<link href="/web/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/web/images/apple-touch-icon-next.png?v=6.0.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/web/images/favicon-32x32-next.png?v=6.0.4">
 
 
-  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/web/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/web/images/logo.svg?v=6.0.4" color="#222">
 
 
 
@@ -129,7 +129,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/02/23/TCP-IP协议学习笔记（二）TCP三次握手/"/>
+  <link rel="canonical" href="/webhttp://yoursite.com/2018/02/23/TCP-IP协议学习笔记（二）TCP三次握手/"/>
 
 
 
@@ -194,7 +194,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+      <a href="/web/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">「.Roc.」</span>
         <span class="logo-line-after"><i></i></span>
@@ -222,31 +222,31 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
+          <a href="/web/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
         </li>
       
         
         <li class="menu-item menu-item-about">
-          <a href="/about/" rel="section">
+          <a href="/web/about/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
         </li>
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
+          <a href="/web/tags/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
         </li>
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
+          <a href="/web/categories/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
         </li>
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
+          <a href="/web/archives/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
         </li>
       
@@ -291,7 +291,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/23/TCP-IP协议学习笔记（二）TCP三次握手/">
+    <link itemprop="mainEntityOfPage" href="/webhttp://yoursite.com/2018/02/23/TCP-IP协议学习笔记（二）TCP三次握手/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -341,7 +341,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP/IP</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/web/categories/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP/IP</span></a></span>
 
                 
                 
@@ -390,36 +390,36 @@
 <p>此时A和B都已确定对方能够听见自己的声音，即A和B的通讯连接已经建立</p>
 </blockquote>
 <hr>
-<h1 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h1><p>三次握手主要需要解决以下三个问题</p>
+<h1 id="三次握手"><a href="/web#三次握手" class="headerlink" title="三次握手"></a>三次握手</h1><p>三次握手主要需要解决以下三个问题</p>
 <ul>
 <li>要使每一方能够知道对方的存在</li>
 <li>要允许双方协商一些参数（如最大窗口值，是否使用窗口扩大选项和时间戳选项以及服务质量等）</li>
 <li>能够对运输实体资源（如缓存大小，连接表中的项目等）进行分配</li>
 </ul>
 <p>三次握手的时序图如下，其中，客户端进行主动连接，称为主动打开(执行connect)，而服务器进行连接请求的接收，称为被动打开(执行accept)</p>
-<p><img src="https://s1.ax1x.com/2018/02/23/9aVzh6.png" alt=""></p>
-<h2 id="三次握手流程"><a href="#三次握手流程" class="headerlink" title="三次握手流程"></a>三次握手流程</h2><h3 id="第一次握手"><a href="#第一次握手" class="headerlink" title="第一次握手"></a>第一次握手</h3><ul>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/23/9aVzh6.png" alt=""></p>
+<h2 id="三次握手流程"><a href="/web#三次握手流程" class="headerlink" title="三次握手流程"></a>三次握手流程</h2><h3 id="第一次握手"><a href="/web#第一次握手" class="headerlink" title="第一次握手"></a>第一次握手</h3><ul>
 <li>客户端调用connect函数，请求连接服务器，并发送连接请求报文段，此时报文首部的同步位SYN = 1，同时选择一个初始序列号seq = x放在报文段中。此时客户端状态变为SYN_SENT，表示同步已发送。</li>
 </ul>
 <p>当电话接通后A询问B:”你能听见我说话吗？”</p>
 <blockquote>
 <p>TCP规定，SYN = 1的报文段不能携带数据，但是需要消耗一个序列号</p>
 </blockquote>
-<h3 id="第二次握手"><a href="#第二次握手" class="headerlink" title="第二次握手"></a>第二次握手</h3><ul>
+<h3 id="第二次握手"><a href="/web#第二次握手" class="headerlink" title="第二次握手"></a>第二次握手</h3><ul>
 <li>服务器调用accept函数，当收到客户端的连接请求后，将收到的报文段记录在本地（获取序列号信息），随后发送自己的报文段，该报文段中的SYN位和ACK位都被置为1，表示既是一个同步报文也是一个应答报文。此外，报文中需要包含自己的初始序列号sqe = y以及希望下次收到的数据的序列号，由于刚才收到的序列号为x，所以下次希望接受的序列号为x + 1。至此服务器状态变为SYN_RCVD，表示同步已收到。</li>
 </ul>
 <p>B回复A说:”我能听见你说话，你能听见我说话吗？”</p>
 <blockquote>
 <p>TCP规定，该报文段也不能携带数据，但是也需要消耗一个序列号</p>
 </blockquote>
-<h3 id="第三次握手"><a href="#第三次握手" class="headerlink" title="第三次握手"></a>第三次握手</h3><ul>
+<h3 id="第三次握手"><a href="/web#第三次握手" class="headerlink" title="第三次握手"></a>第三次握手</h3><ul>
 <li>客户端收到服务器的报文段后发送确认报文段，该报文段首部ACK确认位被置1，序列号为x + 1，希望下次接收的数据序列号为y + 1。随后状态变为ESTABLISHED，connect函数返回。</li>
 <li>服务器收到客户端发来的确认报文段，确认连接建立，状态变为ESTABLISHED，accept函数返回</li>
 </ul>
 <p>A听到B的回复后确认B能听见自己的声音，同时告诉B自己也能听见他的声音。B听见A的回复后确认A能听见自己的声音，此时双方可以正常进行通话</p>
-<p><img src="https://s1.ax1x.com/2018/02/23/9aAKc4.jpg" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/23/9aAKc4.jpg" alt=""></p>
 <hr>
-<h1 id="文件描述符耗尽时的accept处理"><a href="#文件描述符耗尽时的accept处理" class="headerlink" title="文件描述符耗尽时的accept处理"></a>文件描述符耗尽时的accept处理</h1><p>accept会先后执行两步，任何位置出错都会直接返回</p>
+<h1 id="文件描述符耗尽时的accept处理"><a href="/web#文件描述符耗尽时的accept处理" class="headerlink" title="文件描述符耗尽时的accept处理"></a>文件描述符耗尽时的accept处理</h1><p>accept会先后执行两步，任何位置出错都会直接返回</p>
 <ul>
 <li>选择一个空闲的文件描述符充当套接字描述符</li>
 <li>从TCP缓冲区的连接队列中取出一个连接请求，创建连接</li>
@@ -427,7 +427,7 @@
 <p>然而考虑一种极端情况，当服务器本地文件描述符耗尽时，accept在第一步就会出错返回，根本没有从缓冲区中取出连接请求。此时如果重新判断，那么监听套接字仍然是可读的，又开始accept，结果又发现耗尽，就会造成死循环。</p>
 <p>解决的办法就是想办法让accept正常返回，成功接收请求。可以在服务器初始化时占用一个空闲描述符(通常是打开一个文件)，当出现上述文件描述符耗尽的情况时，释放占用的描述符，此时就会出现一个空闲描述符，重新调用accept函数后会正常返回，然后再显示关闭连接，重新打开文件占用空闲描述符</p>
 <hr>
-<h1 id="以打电话为例解释二-三-四次握手"><a href="#以打电话为例解释二-三-四次握手" class="headerlink" title="以打电话为例解释二/三/四次握手"></a>以打电话为例解释二/三/四次握手</h1><h2 id="二次握手"><a href="#二次握手" class="headerlink" title="二次握手"></a>二次握手</h2><p>A：你好，我是A，你能听见我说话吗</p>
+<h1 id="以打电话为例解释二-三-四次握手"><a href="/web#以打电话为例解释二-三-四次握手" class="headerlink" title="以打电话为例解释二/三/四次握手"></a>以打电话为例解释二/三/四次握手</h1><h2 id="二次握手"><a href="/web#二次握手" class="headerlink" title="二次握手"></a>二次握手</h2><p>A：你好，我是A，你能听见我说话吗</p>
 <p>B：你好，我能听见你说话，你能听见我说话吗</p>
 <p>A：今天跟你谈谈事情1，balabalalba….</p>
 <p>B：你好，我能听见你说话，你能听见我说话吗</p>
@@ -438,7 +438,7 @@
 <blockquote>
 <p>显然B无法确定A是否能听见自己说话，所以会一直询问。而A已经知道B能听见自己说话，所以会直接谈具体事情，导致无法进行正常交流</p>
 </blockquote>
-<h2 id="三次握手-1"><a href="#三次握手-1" class="headerlink" title="三次握手"></a>三次握手</h2><p>A：你好，我是A，你能听见我说话吗</p>
+<h2 id="三次握手-1"><a href="/web#三次握手-1" class="headerlink" title="三次握手"></a>三次握手</h2><p>A：你好，我是A，你能听见我说话吗</p>
 <p>B：你好，我能听见你说话，你能听见我说话吗</p>
 <p>A：我能听见你说话</p>
 <p>B：OK</p>
@@ -447,7 +447,7 @@
 <blockquote>
 <p>A和B都已确定对方能够听见自己说话，所以可以进行正常交流</p>
 </blockquote>
-<h2 id="四次握手"><a href="#四次握手" class="headerlink" title="四次握手"></a>四次握手</h2><p>A：你好，我是A，你能听见我说话吗</p>
+<h2 id="四次握手"><a href="/web#四次握手" class="headerlink" title="四次握手"></a>四次握手</h2><p>A：你好，我是A，你能听见我说话吗</p>
 <p>B：你好，我能听见你说话</p>
 <p>B：你好，我是B，你能听见我说话吗</p>
 <p>A：你好，我能听见你说话</p>
@@ -457,7 +457,7 @@
 <blockquote>
 <p>A和B也可以进行正常交流，但是第二三次握手时B完全可以浓缩成”我能听见你说话，你能听见我说话吗”</p>
 </blockquote>
-<h1 id="三次握手抓包分析"><a href="#三次握手抓包分析" class="headerlink" title="三次握手抓包分析"></a>三次握手抓包分析</h1><p>下面利用tcpdump命令在linux环境下进行三次握手的抓包分析，通过抓包，可以看到连接过程中一些主要数据的传输</p>
+<h1 id="三次握手抓包分析"><a href="/web#三次握手抓包分析" class="headerlink" title="三次握手抓包分析"></a>三次握手抓包分析</h1><p>下面利用tcpdump命令在linux环境下进行三次握手的抓包分析，通过抓包，可以看到连接过程中一些主要数据的传输</p>
 <p>在上面的介绍中得知三次握手的过程中会进行如下数据交互（仅考虑序列号，其中A是客户端，B是服务器）</p>
 <p>A-&gt;B：SYN同步报文段，带有起始序列号seq = x</p>
 <p>B-&gt;A：SYN/ACK同步/确认报文段，带有起始序列号seq = y以及希望下次接收的序列号ack = x + 1</p>
@@ -471,7 +471,7 @@
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo tcpdump -S -i lo tcp port 9999</span><br></pre></td></tr></table></figure>
 <p>随后运行服务器和客户端，观察tcpdump命令输出</p>
-<p><img src="https://s1.ax1x.com/2018/02/25/9wAV4P.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/25/9wAV4P.png" alt=""></p>
 <p>输出结果分为三行，分别对应每一次握手，可以看到</p>
 <ul>
 <li>客户端发送给服务器的SYN同步报文段中包含自己的起始序列号2360165387</li>
@@ -498,7 +498,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/TCP-IP/" rel="tag"># TCP/IP</a>
+            <a href="/web/tags/TCP-IP/" rel="tag"># TCP/IP</a>
           
         </div>
       
@@ -511,7 +511,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/02/22/TCP-IP协议学习笔记（一）分层模型概述/" rel="next" title="TCP/IP学习笔记（一）分层模型概述">
+              <a href="/web/2018/02/22/TCP-IP协议学习笔记（一）分层模型概述/" rel="next" title="TCP/IP学习笔记（一）分层模型概述">
                 <i class="fa fa-chevron-left"></i> TCP/IP学习笔记（一）分层模型概述
               </a>
             
@@ -521,7 +521,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/02/24/TCP-IP协议学习笔记（三）TCP流量控制以及滑动窗口/" rel="prev" title="TCP/IP学习笔记（三）TCP流量控制以及滑动窗口">
+              <a href="/web/2018/02/24/TCP-IP协议学习笔记（三）TCP流量控制以及滑动窗口/" rel="prev" title="TCP/IP学习笔记（三）TCP流量控制以及滑动窗口">
                 TCP/IP学习笔记（三）TCP流量控制以及滑动窗口 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -595,7 +595,7 @@
               
                 <div class="site-state-item site-state-posts">
                 
-                  <a href="/archives/">
+                  <a href="/web/archives/">
                 
                     <span class="site-state-item-count">27</span>
                     <span class="site-state-item-name">日志</span>
@@ -607,7 +607,7 @@
                 
                 
                 <div class="site-state-item site-state-categories">
-                  <a href="/categories/index.html">
+                  <a href="/web/categories/index.html">
                     
                     
                       
@@ -630,7 +630,7 @@
                 
                 
                 <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
+                  <a href="/web/tags/index.html">
                     
                     
                       
@@ -657,12 +657,12 @@
             <div class="links-of-author motion-element">
               
                 <span class="links-of-author-item">
-                  <a href="https://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  <a href="/webhttps://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
                   
                 </span>
               
                 <span class="links-of-author-item">
-                  <a href="http://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  <a href="/webhttp://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
                   
                 </span>
               
@@ -693,7 +693,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#三次握手"><span class="nav-number">1.</span> <span class="nav-text">三次握手</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#三次握手流程"><span class="nav-number">1.1.</span> <span class="nav-text">三次握手流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一次握手"><span class="nav-number">1.1.1.</span> <span class="nav-text">第一次握手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二次握手"><span class="nav-number">1.1.2.</span> <span class="nav-text">第二次握手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三次握手"><span class="nav-number">1.1.3.</span> <span class="nav-text">第三次握手</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文件描述符耗尽时的accept处理"><span class="nav-number">2.</span> <span class="nav-text">文件描述符耗尽时的accept处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#以打电话为例解释二-三-四次握手"><span class="nav-number">3.</span> <span class="nav-text">以打电话为例解释二/三/四次握手</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#二次握手"><span class="nav-number">3.1.</span> <span class="nav-text">二次握手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三次握手-1"><span class="nav-number">3.2.</span> <span class="nav-text">三次握手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四次握手"><span class="nav-number">3.3.</span> <span class="nav-text">四次握手</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三次握手抓包分析"><span class="nav-number">4.</span> <span class="nav-text">三次握手抓包分析</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="/web#三次握手"><span class="nav-number">1.</span> <span class="nav-text">三次握手</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="/web#三次握手流程"><span class="nav-number">1.1.</span> <span class="nav-text">三次握手流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="/web#第一次握手"><span class="nav-number">1.1.1.</span> <span class="nav-text">第一次握手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="/web#第二次握手"><span class="nav-number">1.1.2.</span> <span class="nav-text">第二次握手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="/web#第三次握手"><span class="nav-number">1.1.3.</span> <span class="nav-text">第三次握手</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#文件描述符耗尽时的accept处理"><span class="nav-number">2.</span> <span class="nav-text">文件描述符耗尽时的accept处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#以打电话为例解释二-三-四次握手"><span class="nav-number">3.</span> <span class="nav-text">以打电话为例解释二/三/四次握手</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="/web#二次握手"><span class="nav-number">3.1.</span> <span class="nav-text">二次握手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="/web#三次握手-1"><span class="nav-number">3.2.</span> <span class="nav-text">三次握手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="/web#四次握手"><span class="nav-number">3.3.</span> <span class="nav-text">四次握手</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#三次握手抓包分析"><span class="nav-number">4.</span> <span class="nav-text">三次握手抓包分析</span></a></li></ol></div>
             
 
           </div>
@@ -727,7 +727,7 @@
 
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="/webhttps://hexo.io">Hexo</a> 强力驱动</div>
 
 
 
@@ -735,7 +735,7 @@
 
 
 
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="/webhttps://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
 
 
 
@@ -801,54 +801,54 @@
 
   
   
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/web/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/web/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/web/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/web/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
-
-
-
-  
-  
-
-
-  <script type="text/javascript" src="/js/src/affix.js?v=6.0.4"></script>
-
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.0.4"></script>
-
-
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+  <script type="text/javascript" src="/web/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/web/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/web/js/src/affix.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/web/js/src/schemes/pisces.js?v=6.0.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/web/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/web/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/web/js/src/bootstrap.js?v=6.0.4"></script>
 
 
 

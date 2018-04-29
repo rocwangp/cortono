@@ -107,6 +107,7 @@ namespace cortono::http
                         proxy_conn->send(recv_msg);
                     }
                     else {
+                        log_info("connect to server error");
                         conn_ptr->close();
                     }
                     parser_.clear();

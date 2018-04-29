@@ -46,8 +46,21 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 
 #include <zlib.h>
 
 #include <experimental/filesystem>
-using namespace std::experimental;
+
+#ifndef CORTONO_USE_SSL
+#define CORTONO_USE_SSL
+#endif
+
+#ifdef CORTONO_USE_SSL
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <openssl/rand.h>
+#include <openssl/bio.h>
+#define OPENSSL_API_COMPAT 0x0908
+#endif
+

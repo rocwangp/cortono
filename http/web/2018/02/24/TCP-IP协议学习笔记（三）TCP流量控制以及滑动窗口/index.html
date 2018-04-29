@@ -43,7 +43,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/web/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -51,21 +51,21 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/web/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+<link href="/web/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/web/images/apple-touch-icon-next.png?v=6.0.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/web/images/favicon-32x32-next.png?v=6.0.4">
 
 
-  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/web/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/web/images/logo.svg?v=6.0.4" color="#222">
 
 
 
@@ -137,7 +137,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/02/24/TCP-IP协议学习笔记（三）TCP流量控制以及滑动窗口/"/>
+  <link rel="canonical" href="/webhttp://yoursite.com/2018/02/24/TCP-IP协议学习笔记（三）TCP流量控制以及滑动窗口/"/>
 
 
 
@@ -202,7 +202,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+      <a href="/web/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">「.Roc.」</span>
         <span class="logo-line-after"><i></i></span>
@@ -230,31 +230,31 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
+          <a href="/web/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
         </li>
       
         
         <li class="menu-item menu-item-about">
-          <a href="/about/" rel="section">
+          <a href="/web/about/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
         </li>
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
+          <a href="/web/tags/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
         </li>
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
+          <a href="/web/categories/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
         </li>
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
+          <a href="/web/archives/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
         </li>
       
@@ -299,7 +299,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/24/TCP-IP协议学习笔记（三）TCP流量控制以及滑动窗口/">
+    <link itemprop="mainEntityOfPage" href="/webhttp://yoursite.com/2018/02/24/TCP-IP协议学习笔记（三）TCP流量控制以及滑动窗口/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -349,7 +349,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP/IP</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/web/categories/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP/IP</span></a></span>
 
                 
                 
@@ -386,19 +386,19 @@
         <p>众所周知，TCP是有缓冲区的，比如接收缓冲区用于存放已经到达但是还没有被应用程序及时处理的数据。但是任何缓冲区都是有一定大小的，如果发送方发送数据过快，而接收方处理数据过慢，就会导致接收方的接收缓冲区数据量不断累积最终塞满缓冲区。随后如果再有数据到达就只有一个结果，数据被丢掉</p>
 <p>为了解决这一问题，TCP引入了流量控制功能，所谓流量控制，就是让发送方发送速率不要太快，要让接收方来得及处理。通过滑动窗口机制，可以很容易实现流量控制</p>
 <a id="more"></a>
-<h1 id="序列号"><a href="#序列号" class="headerlink" title="序列号"></a>序列号</h1><p>在介绍流量控制之前，首先需要明确一个概念，就是数据序列号。它的作用是标识数据，数据的每一个字节都有与之对应的序列号，并且在双方通信的过程中序列号是连续的。通信双方就是通过序列号来控制数据的发送和接收</p>
+<h1 id="序列号"><a href="/web#序列号" class="headerlink" title="序列号"></a>序列号</h1><p>在介绍流量控制之前，首先需要明确一个概念，就是数据序列号。它的作用是标识数据，数据的每一个字节都有与之对应的序列号，并且在双方通信的过程中序列号是连续的。通信双方就是通过序列号来控制数据的发送和接收</p>
 <p>以客户端A和服务器B通信为例，客户端A发送一个包含100字节数据的报文段，其中数据的第一个字节的序列号为200，那么可以得知这段数据的序列号范围是[200 : 299]，服务器接收到这段数据后回应客户端一个应答报文段，该报文段中包含了服务器希望下次接受的数据第一个字节的序列号，即300.</p>
 <p>通过这样的一来一往，服务器接收到序列号为[200:299]的这段数据，并且告知客户端自己接下来需要接收序列号从300开始的数据。而客户端知道服务器已经接收到[200:299]这段数据，并且准备发送序列号从300开始的数据。</p>
-<p><img src="https://s1.ax1x.com/2018/02/24/9dVVgO.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dVVgO.png" alt=""></p>
 <p>如前所述，TCP内部设有发送缓冲区和接收缓冲区，为了将事情简化，下面仅考虑客户端的发送缓冲区以及服务器的接收缓冲区。同时，与发送缓冲区对应的是发送窗口，与接收缓冲区对应的是接收窗口。这两个滑动窗口在三次握手建立连接后被创建，起点是对方的起始序列号（由SYN同步位被标记为1的报文段确定）。</p>
 <p>此外，除了起始序列号，三次握手的过程中还各自通知了窗口大小。如服务器告诉客户端窗口大小为100，则客户端初始的滑动窗口大小就为100</p>
 <blockquote>
 <p>100是服务器目前可以接收的序列号个数，也即字节个数</p>
 </blockquote>
 <p>在平时的网络编程中，应用程序使用send/write等api将数据发送给对端，实际上仅仅是将数据复制到自己的TCP发送缓冲区就返回了，剩下的事情TCP协议栈会自己完成，在合适的时间将数据发送出去。这里合适的时间就是根据发送窗口判断的。</p>
-<h1 id="数据发送时滑动窗口的变化"><a href="#数据发送时滑动窗口的变化" class="headerlink" title="数据发送时滑动窗口的变化"></a>数据发送时滑动窗口的变化</h1><p>从发送缓冲区的视角观察，滑动窗口位于发送缓冲区上，覆盖的区域表示能被立即发送的数据区域或者已经发送但是没有收到接收方应答的数据</p>
+<h1 id="数据发送时滑动窗口的变化"><a href="/web#数据发送时滑动窗口的变化" class="headerlink" title="数据发送时滑动窗口的变化"></a>数据发送时滑动窗口的变化</h1><p>从发送缓冲区的视角观察，滑动窗口位于发送缓冲区上，覆盖的区域表示能被立即发送的数据区域或者已经发送但是没有收到接收方应答的数据</p>
 <p>接收方发送的报文段中包含了发送方应该设置的窗口大小，即接收方提供的窗口。图片中此时滑动窗口覆盖了[4:9]字节的区域，表明接收方已经确认了包括第3个字节以内的所有数据，且通告窗口大小为6。该窗口大小表明发送方有多少数据可以立即发送</p>
-<p><img src="https://s1.ax1x.com/2018/02/25/9dywwD.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/25/9dywwD.png" alt=""></p>
 <p>当接收方确认数据后，发送方的滑动窗口不时地向右移动。窗口的左右沿移动情况有以下三种</p>
 <ul>
 <li>窗口左沿向右边沿靠近，称为窗口合拢。这种现象发生在数据被发送并且被接收方正确接收</li>
@@ -411,9 +411,9 @@
 <li>序列号31为下一个正要准备发送的数据序列号，能够发送的序列号范围是[31:50]</li>
 <li>序列号小于31的数据已经发送给了服务器并且也已经得到服务器的应答</li>
 </ul>
-<p><img src="https://s1.ax1x.com/2018/02/24/9dkpDA.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dkpDA.png" alt=""></p>
 <p>现在假设客户端A将序列号为[31:41]的这段数据发送出去，在没有接收到服务器的应答之前，客户端A的发送窗口不会改变</p>
-<p><img src="https://s1.ax1x.com/2018/02/24/9dkiUP.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dkiUP.png" alt=""></p>
 <p>其中，P1，P2，P3三个指针的含义为</p>
 <ul>
 <li>小于P1的部分是已经发送给服务器并且得到服务器回应的数据</li>
@@ -437,11 +437,11 @@
 <li>[P1:P2)表示已发送但是没有收到回应的数据部分，较之前相比少了左边三个</li>
 <li>[P1:P3)表示可以发送但是尚未发送的数据部分，较之前相比多了右边三个</li>
 </ul>
-<p><img src="https://s1.ax1x.com/2018/02/24/9dkG2F.png" alt=""></p>
-<h1 id="超时重传"><a href="#超时重传" class="headerlink" title="超时重传"></a>超时重传</h1><p>TCP协议栈就是按照上述的滑动窗口来控制发送和接收的平衡。不过很多时候网络并不是都那么流畅，可能就会出现某些数据丢失的情况（如客户端发送的数据丢失或者服务器发送的应答报文段丢失等），为了解决这个问题，TCP引入超时重传的机制，即每发送一段序列号的数据，就会为这段数据启动一个定时器，如果在规定的时间内没有收到服务器对于这段数据的回应，那么客户端就会认为数据丢失，便会重新发送，同时重置定时器，如此往复直到接收到服务器的回应（这也正是需要保留已发送但未收到确认的那段数据的原因，因为可能需要重传）</p>
-<p><img src="https://s1.ax1x.com/2018/02/24/9dV9b9.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dkG2F.png" alt=""></p>
+<h1 id="超时重传"><a href="/web#超时重传" class="headerlink" title="超时重传"></a>超时重传</h1><p>TCP协议栈就是按照上述的滑动窗口来控制发送和接收的平衡。不过很多时候网络并不是都那么流畅，可能就会出现某些数据丢失的情况（如客户端发送的数据丢失或者服务器发送的应答报文段丢失等），为了解决这个问题，TCP引入超时重传的机制，即每发送一段序列号的数据，就会为这段数据启动一个定时器，如果在规定的时间内没有收到服务器对于这段数据的回应，那么客户端就会认为数据丢失，便会重新发送，同时重置定时器，如此往复直到接收到服务器的回应（这也正是需要保留已发送但未收到确认的那段数据的原因，因为可能需要重传）</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dV9b9.png" alt=""></p>
 <p>为了模拟这种情况，现假设服务器接收到的数据并不是按照序列号顺序到来的，比如此时服务器接收到37,38,40三个序列号的数据，而其它数据可能在传输过程中丢失。那么服务器的接收窗口（注意这里是服务器的接受窗口而非客户端的发送窗口）为</p>
-<p><img src="https://s1.ax1x.com/2018/02/24/9dkdV1.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dkdV1.png" alt=""></p>
 <p>从服务器的接收窗口可以看到如下信息</p>
 <ul>
 <li>接受窗口大小为20，正在等待接收序列号为[34:53]的数据</li>
@@ -459,17 +459,17 @@
 <p>由于定时器是按序列号段设置的，所以重传也是重传一整个数据段，即使37,38,40这三个数据已经被服务器接收到</p>
 </blockquote>
 <p>不过在这段期间，由于客户端A的发送窗口仍然有数据可以发送，那么就不能闲着，客户端也会将剩余的数据发送给服务器，也为这段数据启动一个定时器，两不耽误</p>
-<p><img src="https://s1.ax1x.com/2018/02/24/9dkbrj.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dkbrj.png" alt=""></p>
 <p>除了数据在发送给服务器的过程中丢失外，服务器回复给客户端的应答报文段也可能丢失，当然处理方法是一样的，当定时器超时，客户端都会重发，因为客户端根本不会知道数据出现了什么状况，只管超时重发就好了</p>
-<p><img src="https://s1.ax1x.com/2018/02/24/9dVPER.png" alt=""></p>
-<h1 id="重复数据的处理"><a href="#重复数据的处理" class="headerlink" title="重复数据的处理"></a>重复数据的处理</h1><p>在上面讨论超时重传机制时，客户端发送[34:41]这段数据，而只有37,38,40这三个数据成功到达服务器，其他数据都已丢失。所以当定时器超时时，客户端会重新发送数据，但是发送的仍然是[34:41]这个数据段，因为客户端无法确定哪几个数据丢失，哪几个数据成功到达服务器（服务器返回给客户端的应答请求表示服务器仍然希望接收到序列号为34的数据），所以客户端索性就全部重发。</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dVPER.png" alt=""></p>
+<h1 id="重复数据的处理"><a href="/web#重复数据的处理" class="headerlink" title="重复数据的处理"></a>重复数据的处理</h1><p>在上面讨论超时重传机制时，客户端发送[34:41]这段数据，而只有37,38,40这三个数据成功到达服务器，其他数据都已丢失。所以当定时器超时时，客户端会重新发送数据，但是发送的仍然是[34:41]这个数据段，因为客户端无法确定哪几个数据丢失，哪几个数据成功到达服务器（服务器返回给客户端的应答请求表示服务器仍然希望接收到序列号为34的数据），所以客户端索性就全部重发。</p>
 <p>但是这会造成一个问题，当客户端重发[34:41]这段数据并顺利到达服务器时，由于服务器已经接收到37,38,40这三个数据，所以这一段数据存在重复部分。对于重复数据，TCP协议栈的解决办法就是丢掉。</p>
 <blockquote>
 <p>另外，如果某一个时刻服务器接收的数据序列号不在滑动窗口的范围内，超出的部分也会被丢掉</p>
 </blockquote>
-<h1 id="流量控制"><a href="#流量控制" class="headerlink" title="流量控制"></a>流量控制</h1><p>之前都是从滑动窗的视角观察数据的发送和接收，没有考虑窗口的动态变化。事实上，发送窗口的大小是动态变化的，这和接收方的承载能力有关，服务器发送给客户端的应答报文段实际上就包含了窗口大小的字段</p>
+<h1 id="流量控制"><a href="/web#流量控制" class="headerlink" title="流量控制"></a>流量控制</h1><p>之前都是从滑动窗的视角观察数据的发送和接收，没有考虑窗口的动态变化。事实上，发送窗口的大小是动态变化的，这和接收方的承载能力有关，服务器发送给客户端的应答报文段实际上就包含了窗口大小的字段</p>
 <p>现在假设客户端A和服务器B在三次握手建立连接后，服务器在SYN同步报文段中告知客户端窗口大小为400，此时客户端的发送窗口大小便初始化为400</p>
-<p><img src="https://s1.ax1x.com/2018/02/24/9dkxiV.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dkxiV.png" alt=""></p>
 <p>如图，客户端先后发送了[1:100]和[101:200]这两段数据，当发送序列号为[201:300]的数据段时丢失。可以得知服务器只能接收到200个数据，所以会回应给客户端</p>
 <ul>
 <li>接收到的最后一个序列号为200，</li>
@@ -487,7 +487,7 @@
 <li>当前窗口大小应该为100，只允许客户端再发送100字节的数据</li>
 </ul>
 <p>得知服务器的承载能力后，客户端发送[501:600]这100个字节的数据段，随后服务器回应客户端，同时表明窗口大小为0，表示不再允许客户端发送数据（告诉客户端，我已经装不下啦，别再发了！）</p>
-<h1 id="零窗口探测"><a href="#零窗口探测" class="headerlink" title="零窗口探测"></a>零窗口探测</h1><p>实际上不是只有接收到数据时服务器才会回应数据给客户端，当服务器的接受窗口发生变化时，服务器也会发送给客户端一个应答报文，报文中的内容包含</p>
+<h1 id="零窗口探测"><a href="/web#零窗口探测" class="headerlink" title="零窗口探测"></a>零窗口探测</h1><p>实际上不是只有接收到数据时服务器才会回应数据给客户端，当服务器的接受窗口发生变化时，服务器也会发送给客户端一个应答报文，报文中的内容包含</p>
 <ul>
 <li>已接收到的数据的最后一个序列号</li>
 <li>希望接收的下一个序列号</li>
@@ -500,7 +500,7 @@
 <li>客户端认为服务器仍然无法接收数据</li>
 </ul>
 <p>为了解决这一问题，TCP协议栈在发送窗口引入零窗口探测报文，同时增加了零窗口定时器，该定时器会在对端的接受窗口变为0时被启动，一旦定时器超时，发送方就会发送一个零窗口探测报文，而接收方接收到这种类型报文时会返回带有窗口大小的应答报文。这样发送方就可以根据窗口大小判断是继续等待还是已经可以发送数据了。如果继续等待，则重置零窗口定时器，重新计时。</p>
-<p><img src="https://s1.ax1x.com/2018/02/24/9dVXdA.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dVXdA.png" alt=""></p>
 
       
     </div>
@@ -521,7 +521,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/TCP-IP/" rel="tag"># TCP/IP</a>
+            <a href="/web/tags/TCP-IP/" rel="tag"># TCP/IP</a>
           
         </div>
       
@@ -534,7 +534,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/02/23/TCP-IP协议学习笔记（二）TCP三次握手/" rel="next" title="TCP/IP学习笔记（二）TCP三次握手">
+              <a href="/web/2018/02/23/TCP-IP协议学习笔记（二）TCP三次握手/" rel="next" title="TCP/IP学习笔记（二）TCP三次握手">
                 <i class="fa fa-chevron-left"></i> TCP/IP学习笔记（二）TCP三次握手
               </a>
             
@@ -544,7 +544,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/02/25/TCP-IP协议学习笔记（四）TCP超时重传及拥塞控制/" rel="prev" title="TCP/IP学习笔记（四）TCP超时重传及拥塞控制">
+              <a href="/web/2018/02/25/TCP-IP协议学习笔记（四）TCP超时重传及拥塞控制/" rel="prev" title="TCP/IP学习笔记（四）TCP超时重传及拥塞控制">
                 TCP/IP学习笔记（四）TCP超时重传及拥塞控制 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -618,7 +618,7 @@
               
                 <div class="site-state-item site-state-posts">
                 
-                  <a href="/archives/">
+                  <a href="/web/archives/">
                 
                     <span class="site-state-item-count">27</span>
                     <span class="site-state-item-name">日志</span>
@@ -630,7 +630,7 @@
                 
                 
                 <div class="site-state-item site-state-categories">
-                  <a href="/categories/index.html">
+                  <a href="/web/categories/index.html">
                     
                     
                       
@@ -653,7 +653,7 @@
                 
                 
                 <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
+                  <a href="/web/tags/index.html">
                     
                     
                       
@@ -680,12 +680,12 @@
             <div class="links-of-author motion-element">
               
                 <span class="links-of-author-item">
-                  <a href="https://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  <a href="/webhttps://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
                   
                 </span>
               
                 <span class="links-of-author-item">
-                  <a href="http://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  <a href="/webhttp://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
                   
                 </span>
               
@@ -716,7 +716,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#序列号"><span class="nav-number">1.</span> <span class="nav-text">序列号</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据发送时滑动窗口的变化"><span class="nav-number">2.</span> <span class="nav-text">数据发送时滑动窗口的变化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#超时重传"><span class="nav-number">3.</span> <span class="nav-text">超时重传</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#重复数据的处理"><span class="nav-number">4.</span> <span class="nav-text">重复数据的处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#流量控制"><span class="nav-number">5.</span> <span class="nav-text">流量控制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#零窗口探测"><span class="nav-number">6.</span> <span class="nav-text">零窗口探测</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="/web#序列号"><span class="nav-number">1.</span> <span class="nav-text">序列号</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#数据发送时滑动窗口的变化"><span class="nav-number">2.</span> <span class="nav-text">数据发送时滑动窗口的变化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#超时重传"><span class="nav-number">3.</span> <span class="nav-text">超时重传</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#重复数据的处理"><span class="nav-number">4.</span> <span class="nav-text">重复数据的处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#流量控制"><span class="nav-number">5.</span> <span class="nav-text">流量控制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#零窗口探测"><span class="nav-number">6.</span> <span class="nav-text">零窗口探测</span></a></li></ol></div>
             
 
           </div>
@@ -750,7 +750,7 @@
 
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="/webhttps://hexo.io">Hexo</a> 强力驱动</div>
 
 
 
@@ -758,7 +758,7 @@
 
 
 
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="/webhttps://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
 
 
 
@@ -824,54 +824,54 @@
 
   
   
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/web/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/web/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/web/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/web/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
-
-
-
-  
-  
-
-
-  <script type="text/javascript" src="/js/src/affix.js?v=6.0.4"></script>
-
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.0.4"></script>
-
-
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+  <script type="text/javascript" src="/web/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/web/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/web/js/src/affix.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/web/js/src/schemes/pisces.js?v=6.0.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/web/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/web/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/web/js/src/bootstrap.js?v=6.0.4"></script>
 
 
 

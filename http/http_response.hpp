@@ -37,24 +37,34 @@ namespace cortono::http
 
         void set_header(std::string&& key, std::string&& value) {
             headers.emplace(std::forward<std::string>(key),
-                                    std::forward<std::string>(value));
+                            std::forward<std::string>(value));
         }
         void send_file(const std::string& file) {
             using namespace std::experimental;
             auto filename_decoded = html_codec::decode(file);
             log_debug(filename_decoded);
             if(filesystem::exists(filename_decoded)) {
-                if(filename_decoded.back() == '/') {
-                    filename_decoded.append("index.html");
+                log_info("file exists");
+                filename = filename_decoded;
+                code = 200;
+                sendfile = true;
+                filesize = 0;
+                if(filesystem::is_directory(filename)) {
+                    filename.append("index.html");
+                    /* for(auto& p : filesystem::recursive_directory_iterator(filename)) { */
+                    /*     if(filesystem::is_regular_file(p)) { */
+                    /*         filesize += filesystem::file_size(p); */
+                    /*     } */
+                    /* } */
                 }
-                if(filesystem::exists(filename_decoded) && filesystem::is_regular_file(filename_decoded)) {
-                    filesize = filesystem::file_size(file);
-                    sendfile = true;
-                    filename = filename_decoded;
-                    return;
-                }
+                /* else { */
+                    filesize = filesystem::file_size(filename);
+                /* } */
             }
-            code = 404;
+            else {
+                log_info("file is not exist");
+                code = 404;
+            }
         }
         bool is_send_file() const {
             return sendfile;

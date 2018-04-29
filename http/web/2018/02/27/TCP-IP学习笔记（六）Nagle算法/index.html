@@ -43,7 +43,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/web/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -51,21 +51,21 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/web/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+<link href="/web/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/web/images/apple-touch-icon-next.png?v=6.0.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/web/images/favicon-32x32-next.png?v=6.0.4">
 
 
-  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/web/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/web/images/logo.svg?v=6.0.4" color="#222">
 
 
 
@@ -128,7 +128,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/02/27/TCP-IP学习笔记（六）Nagle算法/"/>
+  <link rel="canonical" href="/webhttp://yoursite.com/2018/02/27/TCP-IP学习笔记（六）Nagle算法/"/>
 
 
 
@@ -193,7 +193,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+      <a href="/web/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">「.Roc.」</span>
         <span class="logo-line-after"><i></i></span>
@@ -221,31 +221,31 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
+          <a href="/web/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
         </li>
       
         
         <li class="menu-item menu-item-about">
-          <a href="/about/" rel="section">
+          <a href="/web/about/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
         </li>
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
+          <a href="/web/tags/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
         </li>
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
+          <a href="/web/categories/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
         </li>
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
+          <a href="/web/archives/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
         </li>
       
@@ -290,7 +290,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/27/TCP-IP学习笔记（六）Nagle算法/">
+    <link itemprop="mainEntityOfPage" href="/webhttp://yoursite.com/2018/02/27/TCP-IP学习笔记（六）Nagle算法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -340,7 +340,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP/IP</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/web/categories/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP/IP</span></a></span>
 
                 
                 
@@ -380,7 +380,7 @@
 <p>交互数据实际上就是字节数很少的数据，比如客户端调用10次send操作，每次只发送一个字节的数据。</p>
 </blockquote>
 <a id="more"></a>
-<h1 id="Nagle算法"><a href="#Nagle算法" class="headerlink" title="Nagle算法"></a>Nagle算法</h1><p>nagle算法用于处理小报文段（微小分组）的发送问题</p>
+<h1 id="Nagle算法"><a href="/web#Nagle算法" class="headerlink" title="Nagle算法"></a>Nagle算法</h1><p>nagle算法用于处理小报文段（微小分组）的发送问题</p>
 <blockquote>
 <p>nagle算法的核心思想是允许网络中最多只能有一个小分组被发送，而待发送的其它小分组会被重新分组成一个”较大的”小分组，等收到上一个小分组的应答后再发送</p>
 </blockquote>
@@ -395,7 +395,7 @@
 <li>服务器收到客户端的数据后将其缓存，等到全部收到后将其发回客户端</li>
 <li>通过wireshark观察网络中报文段的传输</li>
 </ul>
-<p><img src="https://s1.ax1x.com/2018/02/27/9BMxIO.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/27/9BMxIO.png" alt=""></p>
 <blockquote>
 <p>不知道是操作问题还是客户端服务器处在一个主机上传输速度太快的原因，代码执行了好多次才有个别能体现nagle算法的结果</p>
 </blockquote>
@@ -409,11 +409,11 @@
 <li>11-14行是四次挥手</li>
 </ul>
 <p>可以看到nagle算法确实将待发送的小分组重新分组，等到上一个小分组确认报文到达后一起发送</p>
-<h1 id="禁止Nagle"><a href="#禁止Nagle" class="headerlink" title="禁止Nagle"></a>禁止Nagle</h1><p>虽然nagle算法可以减少网络中小分组的个数，但是对于那些需要实时预览的通讯程序而言，客户端可能需要不断发送更新数据并得到服务器的响应，这种情况下nagle算法会造成客户端明显的延迟，所以需要禁用nagle算法</p>
+<h1 id="禁止Nagle"><a href="/web#禁止Nagle" class="headerlink" title="禁止Nagle"></a>禁止Nagle</h1><p>虽然nagle算法可以减少网络中小分组的个数，但是对于那些需要实时预览的通讯程序而言，客户端可能需要不断发送更新数据并得到服务器的响应，这种情况下nagle算法会造成客户端明显的延迟，所以需要禁用nagle算法</p>
 <p>将套接字描述符设置TCP_NODELAY选项可以禁止nagle算法</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;netinet/tcp.h&gt;</span></span></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">cancel_nagle</span><span class="params">(<span class="keyword">int</span> fd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> val = <span class="number">1</span>;</span><br><span class="line">    ::setsockopt(fd, SOL_TCP, TCP_NODELAY, &amp;val, <span class="keyword">sizeof</span>(val));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>还是以上面的程序为例，这回将nagle算法禁止，观察wireshark抓包结果，预计客户端TCP可以连续发送小报文段而不需要等待上一个小报文段的确认</p>
-<p><img src="https://s1.ax1x.com/2018/02/27/9BlEc9.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/27/9BlEc9.png" alt=""></p>
 
       
     </div>
@@ -434,7 +434,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/TCP-IP/" rel="tag"># TCP/IP</a>
+            <a href="/web/tags/TCP-IP/" rel="tag"># TCP/IP</a>
           
         </div>
       
@@ -447,7 +447,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/02/26/TCP-IP协议学习笔记（五）TCP的保活定时器/" rel="next" title="TCP/IP学习笔记（五）TCP的保活定时器">
+              <a href="/web/2018/02/26/TCP-IP协议学习笔记（五）TCP的保活定时器/" rel="next" title="TCP/IP学习笔记（五）TCP的保活定时器">
                 <i class="fa fa-chevron-left"></i> TCP/IP学习笔记（五）TCP的保活定时器
               </a>
             
@@ -457,7 +457,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/02/28/TCP-IP学习笔记（七）四次挥手/" rel="prev" title="TCP/IP学习笔记（七）四次挥手">
+              <a href="/web/2018/02/28/TCP-IP学习笔记（七）四次挥手/" rel="prev" title="TCP/IP学习笔记（七）四次挥手">
                 TCP/IP学习笔记（七）四次挥手 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -531,7 +531,7 @@
               
                 <div class="site-state-item site-state-posts">
                 
-                  <a href="/archives/">
+                  <a href="/web/archives/">
                 
                     <span class="site-state-item-count">27</span>
                     <span class="site-state-item-name">日志</span>
@@ -543,7 +543,7 @@
                 
                 
                 <div class="site-state-item site-state-categories">
-                  <a href="/categories/index.html">
+                  <a href="/web/categories/index.html">
                     
                     
                       
@@ -566,7 +566,7 @@
                 
                 
                 <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
+                  <a href="/web/tags/index.html">
                     
                     
                       
@@ -593,12 +593,12 @@
             <div class="links-of-author motion-element">
               
                 <span class="links-of-author-item">
-                  <a href="https://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  <a href="/webhttps://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
                   
                 </span>
               
                 <span class="links-of-author-item">
-                  <a href="http://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  <a href="/webhttp://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
                   
                 </span>
               
@@ -629,7 +629,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Nagle算法"><span class="nav-number">1.</span> <span class="nav-text">Nagle算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#禁止Nagle"><span class="nav-number">2.</span> <span class="nav-text">禁止Nagle</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="/web#Nagle算法"><span class="nav-number">1.</span> <span class="nav-text">Nagle算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#禁止Nagle"><span class="nav-number">2.</span> <span class="nav-text">禁止Nagle</span></a></li></ol></div>
             
 
           </div>
@@ -663,7 +663,7 @@
 
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="/webhttps://hexo.io">Hexo</a> 强力驱动</div>
 
 
 
@@ -671,7 +671,7 @@
 
 
 
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="/webhttps://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
 
 
 
@@ -737,54 +737,54 @@
 
   
   
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/web/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/web/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/web/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/web/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
-
-
-
-  
-  
-
-
-  <script type="text/javascript" src="/js/src/affix.js?v=6.0.4"></script>
-
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.0.4"></script>
-
-
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+  <script type="text/javascript" src="/web/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/web/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/web/js/src/affix.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/web/js/src/schemes/pisces.js?v=6.0.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/web/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/web/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/web/js/src/bootstrap.js?v=6.0.4"></script>
 
 
 

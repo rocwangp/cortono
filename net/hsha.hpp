@@ -1,6 +1,4 @@
 #pragma once
-
-
 #include "poller.hpp"
 #include "connection.hpp"
 #include "acceptor.hpp"
@@ -25,8 +23,13 @@ namespace cortono::net
                 : loop_(loop),
                   acceptor_(loop, ip, port)
             {
+#ifdef CORTONO_USE_SSL
+                acceptor_.on_connection([this](int fd, SSL* ssl) {
+                    auto conn = std::make_shared<TcpConnection>(loop_, fd, ssl);
+#else
                 acceptor_.on_connection([this](int fd) {
                     auto conn = std::make_shared<TcpConnection>(loop_, fd);
+#endif
                     conn->on_read([this](auto c) {
                         if(msg_cb_) {
                             util::threadpool::instance().async([this, c]{

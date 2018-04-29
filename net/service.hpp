@@ -23,12 +23,20 @@ namespace cortono::net
                 : loop_(loop),
                   acceptor_(loop, ip, port)
             {
+#ifdef CORTONO_USE_SSL
+                acceptor_.on_connection([this](int fd, SSL* ssl) {
+#else
                 acceptor_.on_connection([this](int fd) {
+#endif
                     auto loop = eventloops_.empty()
                                     ? loop_
                                     : eventloops_[(++loop_idx_) % eventloops_.size()];
+#ifdef CORTONO_USE_SSL
+                    auto conn = std::make_shared<TcpConnection>(loop, fd, ssl);
+#else
                     auto conn = std::make_shared<TcpConnection>(loop, fd);
-                    conn->on_read([this](const auto& c) {
+#endif
+                    conn->on_read([](const auto& ) {
                         /* if(msg_cb_) { msg_cb_(c); } */
                         /* msg_cb_(c); */
                     });
@@ -63,6 +71,9 @@ namespace cortono::net
             }
         public:
             void start(int thread_nums = std::thread::hardware_concurrency()) {
+#ifdef CORTONO_USE_SSL
+                ip::tcp::ssl::init_ssl();
+#endif
                 while(thread_nums--) {
                     util::threadpool::instance().async([this] {
                         EventLoop loop;

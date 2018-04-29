@@ -35,18 +35,21 @@ int main()
     });
     /* app.register_rule("/<path>")([](std::string filename) -> std::string { */
     /*     using namespace std::experimental; */
-    /*     filename = "web/" + filename; */
+    /*     filename = cortono::http::html_codec::decode("web/" + filename); */
+    /*     log_debug(filename); */
     /*     if(filesystem::exists(filename)) { */
-    /*         log_debug(filename); */
     /*         std::size_t filesize = filesystem::file_size(filename); */
     /*         std::string buffer(filesize, '0'); */
     /*         std::ifstream fin{ filename, std::ios_base::in }; */
     /*         fin.read(&buffer[0], filesize); */
     /*         return buffer; */
     /*     } */
+    /*     else { */
+    /*         log_info("file is not exist"); */
+    /*     } */
     /*     return ""; */
     /* }); */
-    app.register_rule("/<path>")([](const cortono::http::Request&, cortono::http::Response& res, std::string s) {
+    app.register_rule("/web/<path>")([](const cortono::http::Request&, cortono::http::Response& res, std::string s) {
         res = cortono::http::Response(200);
         res.send_file("web/" + s);
     });

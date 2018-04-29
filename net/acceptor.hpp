@@ -9,6 +9,12 @@ namespace cortono::net
     class Acceptor
     {
         public:
+
+#ifdef CORTONO_USE_SSL
+            using ConnCallBack = std::function<void(int, SSL*)>;
+#else
+            using ConnCallBack = std::function<void(int)>;
+#endif
             Acceptor(EventLoop* loop, std::string_view ip, unsigned short port)
                 : idle_fd_(util::io::open("dev/null")),
                   loop_(loop)
@@ -26,7 +32,7 @@ namespace cortono::net
                 socket_.enable_reading();
                 socket_.listen();
             }
-            void on_connection(std::function<void(int)> cb) {
+            void on_connection(ConnCallBack cb) {
                 conn_cb_ = std::move(cb);
             }
         private:
@@ -42,19 +48,31 @@ namespace cortono::net
                         }
                         break;
                     }
-                    else if(conn_cb_) {
+#ifdef CORTONO_USE_SSL
+                    SSL* ssl = ip::tcp::ssl::new_ssl_and_set_fd(fd);
+                    ip::tcp::ssl::accept(ssl);
+                    if(conn_cb_) {
+                        conn_cb_(fd, ssl);
+                    }
+                    else {
+                        ip::tcp::sockets::close(fd);
+                        ip::tcp::ssl::close(ssl);
+                    }
+#else
+                    if(conn_cb_) {
                         conn_cb_(fd);
                     }
                     else {
                         ip::tcp::sockets::close(fd);
                         break;
                     }
+#endif
                 }
             }
         private:
             int idle_fd_;
             EventLoop* loop_;
             TcpSocket socket_;
-            std::function<void(int)> conn_cb_;
+            ConnCallBack conn_cb_;
     };
 }

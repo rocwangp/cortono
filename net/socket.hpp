@@ -10,7 +10,7 @@
 namespace cortono::net
 {
     class TcpSocket : public std::enable_shared_from_this<TcpSocket>,
-                       private util::noncopyable
+                      private util::noncopyable
     {
         public:
             enum socket_option
@@ -144,7 +144,7 @@ namespace cortono::net
             void set_close_callback(EventCallBack cb) {
                 poller_cbs_->close_cb = cb;
             }
-        private:
+        protected:
             int fd_;
             uint32_t events_;
             std::weak_ptr<EventPoller> weak_poller_;

@@ -53,7 +53,7 @@ namespace cortono::net
                 return periodic_;
             }
             void run() {
-                util::exitif(cb_ == nullptr, "timer callback is nullptr");
+                exitif(cb_ == nullptr, "timer callback is nullptr");
             }
             int expires_milliseconds() const {
                 return static_cast<int>(std::chrono::duration_cast<milliseconds>(

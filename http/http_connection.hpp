@@ -16,9 +16,11 @@ namespace cortono::http
             {
             }
             void handle_read(net::TcpConnection::Pointer conn_ptr) {
+                log_debug(conn_ptr->recv_buffer()->to_string());
                 int len = parser_.feed(conn_ptr->recv_buffer()->data(), conn_ptr->recv_buffer()->size());
                 conn_ptr->recv_buffer()->retrieve_read_bytes(len);
                 if(parser_.done()) {
+                    log_trace;
                     req_ = std::move(parser_.to_request());
                     bool add_keep_alive = false;
                     bool is_invalid_request = false;
@@ -39,7 +41,12 @@ namespace cortono::http
                         if(!req_.has_header("host")) {
                             is_invalid_request = true;
                             res_ = Response(400);
+                            log_info("no host, return Response(400)");
                         }
+                    }
+                    if(!is_invalid_request) {
+                        log_info("handle request");
+                        handler_.handle(req_, res_);
                     }
                     if(add_keep_alive) {
                         res_.set_header("Connection", "Keep-Alive");
@@ -47,13 +54,11 @@ namespace cortono::http
                     else {
                         res_.set_header("Connection", "Close");
                     }
-                    if(!is_invalid_request) {
-                        handler_.handle(req_, res_);
-                    }
+                    log_trace;
                     auto [sendfile, context] = std::move(complete_request());
                     conn_ptr->send(context);
                     if(sendfile) {
-                        log_debug(context);
+                        log_info("start send file");
                         conn_ptr->sendfile(res_.filename);
                     }
                     if(!add_keep_alive) {
@@ -109,11 +114,11 @@ namespace cortono::http
                     }
                 }
                 buffer << crlf;
+                log_debug(buffer.str());
                 if(res_.is_send_file()) {
                     return { true, buffer.str() };
                 }
                 else {
-                    log_debug(buffer.str());
                     buffer << res_.body;
                     return { false, buffer.str() };
                 }

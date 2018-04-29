@@ -43,7 +43,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/web/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -51,21 +51,21 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/web/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+<link href="/web/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/web/images/apple-touch-icon-next.png?v=6.0.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/web/images/favicon-32x32-next.png?v=6.0.4">
 
 
-  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/web/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/web/images/logo.svg?v=6.0.4" color="#222">
 
 
 
@@ -130,7 +130,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/03/01/TCP-IP学习笔记（八）复位报文段/"/>
+  <link rel="canonical" href="/webhttp://yoursite.com/2018/03/01/TCP-IP学习笔记（八）复位报文段/"/>
 
 
 
@@ -195,7 +195,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+      <a href="/web/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">「.Roc.」</span>
         <span class="logo-line-after"><i></i></span>
@@ -223,31 +223,31 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
+          <a href="/web/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
         </li>
       
         
         <li class="menu-item menu-item-about">
-          <a href="/about/" rel="section">
+          <a href="/web/about/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
         </li>
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
+          <a href="/web/tags/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
         </li>
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
+          <a href="/web/categories/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
         </li>
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
+          <a href="/web/archives/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
         </li>
       
@@ -292,7 +292,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/01/TCP-IP学习笔记（八）复位报文段/">
+    <link itemprop="mainEntityOfPage" href="/webhttp://yoursite.com/2018/03/01/TCP-IP学习笔记（八）复位报文段/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -342,7 +342,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP/IP</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/web/categories/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP/IP</span></a></span>
 
                 
                 
@@ -384,11 +384,11 @@
 <li>另一端异常崩溃导致连接处于半关闭状态，此时正常的一端向已关闭的一端发送报文段</li>
 </ul>
 <a id="more"></a>
-<h1 id="向不存在的端口发送连接请求"><a href="#向不存在的端口发送连接请求" class="headerlink" title="向不存在的端口发送连接请求"></a>向不存在的端口发送连接请求</h1><p>如果客户端尝试连接到port端口上而这个端口根本就没有服务器监听，那么当客户端发送三次握手的第一个SYN报文段时另一端会以复位报文段回应</p>
+<h1 id="向不存在的端口发送连接请求"><a href="/web#向不存在的端口发送连接请求" class="headerlink" title="向不存在的端口发送连接请求"></a>向不存在的端口发送连接请求</h1><p>如果客户端尝试连接到port端口上而这个端口根本就没有服务器监听，那么当客户端发送三次握手的第一个SYN报文段时另一端会以复位报文段回应</p>
 <p>可以在终端使用telnet ip port命令向&lt;ip,port&gt;发送连接请求，通过wireshark观察报文段发送情况（需要保证没有服务器监听port端口）</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ telnet localhost 9999</span><br><span class="line">Trying 127.0.0.1...</span><br><span class="line">telnet: Unable to connect to remote host: Connection refused</span><br><span class="line">➜  ~</span><br></pre></td></tr></table></figure>
-<p><img src="https://s1.ax1x.com/2018/03/01/9rp2t0.png" alt=""></p>
-<h1 id="主动关闭的一方设置了SO-LINGER选项"><a href="#主动关闭的一方设置了SO-LINGER选项" class="headerlink" title="主动关闭的一方设置了SO_LINGER选项"></a>主动关闭的一方设置了SO_LINGER选项</h1><p>SO_LINGER选项用于对连接关闭提供更多的控制，它影响的是close函数的行为。需要配合struct linger结构使用</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/01/9rp2t0.png" alt=""></p>
+<h1 id="主动关闭的一方设置了SO-LINGER选项"><a href="/web#主动关闭的一方设置了SO-LINGER选项" class="headerlink" title="主动关闭的一方设置了SO_LINGER选项"></a>主动关闭的一方设置了SO_LINGER选项</h1><p>SO_LINGER选项用于对连接关闭提供更多的控制，它影响的是close函数的行为。需要配合struct linger结构使用</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">linger</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> l_onoff;	<span class="comment">// 开关选项</span></span><br><span class="line">    <span class="keyword">int</span> l_linger;	<span class="comment">// 超时时间</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 <p>使用方法为</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">linger</span> <span class="title">so_linger</span>;</span></span><br><span class="line">so_linger.l_onoff = m;</span><br><span class="line">so_linger.l_linger = n;</span><br><span class="line">::setsockopt(sockfd, SOL_SOCKET, SO_LINGER, &amp;so_linger, <span class="keyword">sizeof</span>(so_linger));</span><br></pre></td></tr></table></figure>
@@ -406,12 +406,12 @@
 </ul>
 <p>服务器输出错误信息</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">➜  server ./server</span><br><span class="line">Connection reset by peer</span><br></pre></td></tr></table></figure>
-<p><img src="https://s1.ax1x.com/2018/03/01/9rCIoR.png" alt="">复位报文段不需要对端应答，因为RST代表连接出现错误，双方只要各自关闭就可以了</p>
-<h1 id="半关闭连接情况下发送数据"><a href="#半关闭连接情况下发送数据" class="headerlink" title="半关闭连接情况下发送数据"></a>半关闭连接情况下发送数据</h1><p>在介绍保活定时器(KEEPALIVE)时提到过，如果通信双方的一端突然崩溃，会导致连接处于半关闭状态，也就是一端已经关闭，而另一端仍处于打开状态。在这种情况下，如果正常的一端向已关闭的一端发送数据，由于对端已经重启，丢失了所有连接信息，会返回一个复位报文段</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/01/9rCIoR.png" alt="">复位报文段不需要对端应答，因为RST代表连接出现错误，双方只要各自关闭就可以了</p>
+<h1 id="半关闭连接情况下发送数据"><a href="/web#半关闭连接情况下发送数据" class="headerlink" title="半关闭连接情况下发送数据"></a>半关闭连接情况下发送数据</h1><p>在介绍保活定时器(KEEPALIVE)时提到过，如果通信双方的一端突然崩溃，会导致连接处于半关闭状态，也就是一端已经关闭，而另一端仍处于打开状态。在这种情况下，如果正常的一端向已关闭的一端发送数据，由于对端已经重启，丢失了所有连接信息，会返回一个复位报文段</p>
 <p>借用&lt;TCP/IP详解&gt;中的例子，在连接正常的情况下断开服务器以太网电缆并重启，随后客户端发送数据</p>
-<p><img src="https://s1.ax1x.com/2018/03/01/9r1iUx.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/01/9r1iUx.png" alt=""></p>
 <p>观察tcpdump结果</p>
-<p><img src="https://s1.ax1x.com/2018/03/01/9r1APK.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/01/9r1APK.png" alt=""></p>
 <p>最终，服务器由于无法识别发来的连接，发送给客户端复位报文段以告知对方关闭连接</p>
 
       
@@ -433,7 +433,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/TCP-IP/" rel="tag"># TCP/IP</a>
+            <a href="/web/tags/TCP-IP/" rel="tag"># TCP/IP</a>
           
         </div>
       
@@ -446,7 +446,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/02/28/TCP-IP学习笔记（七）四次挥手/" rel="next" title="TCP/IP学习笔记（七）四次挥手">
+              <a href="/web/2018/02/28/TCP-IP学习笔记（七）四次挥手/" rel="next" title="TCP/IP学习笔记（七）四次挥手">
                 <i class="fa fa-chevron-left"></i> TCP/IP学习笔记（七）四次挥手
               </a>
             
@@ -456,7 +456,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/03/02/TCP-IP学习笔记（九）TCP报文段首部格式/" rel="prev" title="TCP/IP学习笔记（九）TCP报文段首部格式">
+              <a href="/web/2018/03/02/TCP-IP学习笔记（九）TCP报文段首部格式/" rel="prev" title="TCP/IP学习笔记（九）TCP报文段首部格式">
                 TCP/IP学习笔记（九）TCP报文段首部格式 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -530,7 +530,7 @@
               
                 <div class="site-state-item site-state-posts">
                 
-                  <a href="/archives/">
+                  <a href="/web/archives/">
                 
                     <span class="site-state-item-count">27</span>
                     <span class="site-state-item-name">日志</span>
@@ -542,7 +542,7 @@
                 
                 
                 <div class="site-state-item site-state-categories">
-                  <a href="/categories/index.html">
+                  <a href="/web/categories/index.html">
                     
                     
                       
@@ -565,7 +565,7 @@
                 
                 
                 <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
+                  <a href="/web/tags/index.html">
                     
                     
                       
@@ -592,12 +592,12 @@
             <div class="links-of-author motion-element">
               
                 <span class="links-of-author-item">
-                  <a href="https://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  <a href="/webhttps://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
                   
                 </span>
               
                 <span class="links-of-author-item">
-                  <a href="http://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  <a href="/webhttp://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
                   
                 </span>
               
@@ -628,7 +628,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#向不存在的端口发送连接请求"><span class="nav-number">1.</span> <span class="nav-text">向不存在的端口发送连接请求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#主动关闭的一方设置了SO-LINGER选项"><span class="nav-number">2.</span> <span class="nav-text">主动关闭的一方设置了SO_LINGER选项</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#半关闭连接情况下发送数据"><span class="nav-number">3.</span> <span class="nav-text">半关闭连接情况下发送数据</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="/web#向不存在的端口发送连接请求"><span class="nav-number">1.</span> <span class="nav-text">向不存在的端口发送连接请求</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#主动关闭的一方设置了SO-LINGER选项"><span class="nav-number">2.</span> <span class="nav-text">主动关闭的一方设置了SO_LINGER选项</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#半关闭连接情况下发送数据"><span class="nav-number">3.</span> <span class="nav-text">半关闭连接情况下发送数据</span></a></li></ol></div>
             
 
           </div>
@@ -662,7 +662,7 @@
 
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="/webhttps://hexo.io">Hexo</a> 强力驱动</div>
 
 
 
@@ -670,7 +670,7 @@
 
 
 
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="/webhttps://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
 
 
 
@@ -736,54 +736,54 @@
 
   
   
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/web/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/web/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/web/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/web/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
-
-
-
-  
-  
-
-
-  <script type="text/javascript" src="/js/src/affix.js?v=6.0.4"></script>
-
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.0.4"></script>
-
-
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+  <script type="text/javascript" src="/web/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/web/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/web/js/src/affix.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/web/js/src/schemes/pisces.js?v=6.0.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/web/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/web/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/web/js/src/bootstrap.js?v=6.0.4"></script>
 
 
 

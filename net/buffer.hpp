@@ -45,6 +45,9 @@ namespace cortono::net
 
             void retrieve_read_bytes(int bytes) {
                 read_idx_ += bytes;
+                if(read_idx_ == write_idx_) {
+                    clear();
+                }
             }
 
             void retrieve_write_bytes(int bytes) {
@@ -73,7 +76,7 @@ namespace cortono::net
                     read_idx_ = 0;
                     if(writeable() >= bytes)
                         return;
-                    buffer_.resize(buffer_.size() + bytes);
+                    buffer_.resize(buffer_.size() + bytes - writeable());
                 }
             }
 
@@ -117,6 +120,9 @@ namespace cortono::net
                 else {
                     return { data(), static_cast<std::size_t>(size()) };
                 }
+            }
+            std::string to_string() {
+                return std::string(data(), size());
             }
         private:
             std::size_t read_idx_, write_idx_;

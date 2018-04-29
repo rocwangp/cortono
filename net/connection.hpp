@@ -1,12 +1,16 @@
 #pragma once
 
 #include "../std.hpp"
+#include "../util/noncopyable.hpp"
 #include "socket.hpp"
+#include "ssl_socket.hpp"
 #include "eventloop.hpp"
+
 
 namespace cortono::net
 {
-    class TcpConnection : public std::enable_shared_from_this<TcpConnection>
+    class TcpConnection : public std::enable_shared_from_this<TcpConnection>,
+                          private util::noncopyable
     {
         public:
             typedef std::shared_ptr<TcpConnection>                     Pointer;
@@ -14,9 +18,14 @@ namespace cortono::net
             typedef TcpConnection::MessageCallBack                     CloseCallBack;
             typedef TcpConnection::MessageCallBack                     ErrorCallBack;
 
+#ifdef CORTONO_USE_SSL
+            TcpConnection(EventLoop* loop, int fd, SSL* ssl)
+                : socket_(fd, ssl),
+#else
             TcpConnection(EventLoop* loop, int fd)
-                : loop_(loop),
-                  socket_(fd),
+                : socket_(fd),
+#endif
+                  loop_(loop),
                   recv_buffer_(std::make_shared<Buffer>()),
                   send_buffer_(std::make_shared<Buffer>())
             {
@@ -26,11 +35,12 @@ namespace cortono::net
                 socket_.set_close_callback(std::bind(&TcpConnection::handle_close, this));
                 socket_.set_write_callback(std::bind(&TcpConnection::handle_write, this));
                 socket_.enable_reading();
-                socket_.enable_writing();
+                /* socket_.enable_writing(); */
             }
             void on_read(MessageCallBack cb) {
                 read_cb_ = std::move(cb);
             }
+
             void on_write(MessageCallBack cb) {
                 write_cb_ = std::move(cb);
             }
@@ -57,15 +67,14 @@ namespace cortono::net
             }
             std::string name() {
                 return name_;
-                /* if(name_.empty()) { */
-                /*     return {}; */
-                /* } */
-                /* else { */
-                /*     return { name_.data(), name_.length() }; */
-                /* } */
+            }
+            EventLoop* loop() {
+                return loop_;
             }
             void close() {
-                handle_close();
+                if(!is_closed) {
+                    handle_close();
+                }
             }
             void send(const std::string& msg) {
                 if(msg.empty()) {
@@ -75,7 +84,11 @@ namespace cortono::net
                     send_buffer_->append(msg);
                     return;
                 }
+#ifdef CORTONO_USE_SSL
+                auto bytes = ip::tcp::ssl::send(socket_.ssl(), msg.data(), msg.size());
+#else
                 auto bytes = ip::tcp::sockets::send(socket_.fd(), msg.data(), msg.size());
+#endif
                 if(bytes == 0) {
                     handle_close();
                 }
@@ -89,17 +102,17 @@ namespace cortono::net
                     send_buffer_->append(msg.substr(bytes));
                 }
             }
-            void sendfile(std::string_view filename) {
+            void sendfile(const std::string& filename) {
                 if(filename.empty()) {
                     return;
                 }
-                filename_ = std::string{ filename.data(), filename.length() };
                 fileoffet_ = 0;
                 filesize_ = util::get_filesize(filename);
                 if(filesize_ == 0) {
                     return;
                 }
                 sendfile_ = true;
+                filename_ = filename;
                 /* fin.open(filename_, std::ios_base::in); */
                 if(!send_buffer_->empty()) {
                     return;
@@ -142,14 +155,18 @@ namespace cortono::net
             void handle_read() {
                 auto bytes = ip::tcp::sockets::readable(socket_.fd());
                 recv_buffer_->enable_bytes(bytes);
+#ifdef CORTONO_USE_SSL
+                bytes = ip::tcp::ssl::recv(socket_.ssl(), recv_buffer_->end(), bytes);
+#else
                 bytes = ip::tcp::sockets::recv(socket_.fd(), recv_buffer_->end(), bytes);
+#endif
                 if(bytes == 0) {
                     /* log_info("close connection"); */
                     handle_close();
                 }
                 else if(bytes == -1) {
                     log_error("read error");
-                    handle_read();
+                    /* handle_read(); */
                 }
                 else {
                     recv_buffer_->retrieve_write_bytes(bytes);
@@ -161,7 +178,11 @@ namespace cortono::net
             }
             void handle_write() {
                 if(!send_buffer_->empty()) {
+#ifdef CORTONO_USE_SSL
+                    auto bytes = ip::tcp::ssl::send(socket_.ssl(),
+#else
                     auto bytes = ip::tcp::sockets::send(socket_.fd(),
+#endif
                                                         send_buffer_->begin(),
                                                         send_buffer_->readable());
                     if(bytes == -1) {
@@ -179,6 +200,7 @@ namespace cortono::net
                         send_buffer_->clear();
                         if(sendfile_) {
                             socket_.set_write_callback(std::bind(&TcpConnection::handle_sendfile, this));
+                            handle_sendfile();
                         }
                         else {
                             socket_.disable_writing();
@@ -193,6 +215,7 @@ namespace cortono::net
                 }
             }
             void handle_close() {
+                is_closed = true;
                 socket_.disable_all();
                 if(close_cb_)
                     close_cb_(shared_from_this());
@@ -219,21 +242,28 @@ namespace cortono::net
                     filesize_ -= bytes;
                 }
                 else {
+                    socket_.disable_writing();
                     sendfile_ = false;
+                    filesize_ = 0;
+                    fileoffet_ = 0;
                 }
             }
             void handle_none() {
 
             }
-        private:
+        protected:
             std::string name_;
             std::string filename_;
             std::size_t filesize_ = 0;
             off_t fileoffet_ = 0;
             bool sendfile_ = false;
 
-            EventLoop* loop_;
+#ifdef CORTONO_USE_SSL
+            SSLSocket socket_;
+#else
             TcpSocket socket_;
+#endif
+            EventLoop* loop_;
             MessageCallBack read_cb_, write_cb_;
             ErrorCallBack error_cb_;
             CloseCallBack close_cb_;
@@ -242,5 +272,7 @@ namespace cortono::net
             /* char file_buffer_[4 * 1024]; */
             int buffer_size_ = 0;
             std::ifstream fin;
+
+            bool is_closed{ false };
     };
 }

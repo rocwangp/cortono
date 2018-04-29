@@ -43,7 +43,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/web/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
 
 
 
@@ -51,21 +51,21 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/web/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+<link href="/web/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/web/images/apple-touch-icon-next.png?v=6.0.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/web/images/favicon-32x32-next.png?v=6.0.4">
 
 
-  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/web/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/web/images/logo.svg?v=6.0.4" color="#222">
 
 
 
@@ -132,7 +132,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2018/02/26/TCP-IP协议学习笔记（五）TCP的保活定时器/"/>
+  <link rel="canonical" href="/webhttp://yoursite.com/2018/02/26/TCP-IP协议学习笔记（五）TCP的保活定时器/"/>
 
 
 
@@ -197,7 +197,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+      <a href="/web/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">「.Roc.」</span>
         <span class="logo-line-after"><i></i></span>
@@ -225,31 +225,31 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
+          <a href="/web/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
         </li>
       
         
         <li class="menu-item menu-item-about">
-          <a href="/about/" rel="section">
+          <a href="/web/about/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
         </li>
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
+          <a href="/web/tags/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
         </li>
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
+          <a href="/web/categories/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
         </li>
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
+          <a href="/web/archives/" rel="section">
             <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
         </li>
       
@@ -294,7 +294,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/26/TCP-IP协议学习笔记（五）TCP的保活定时器/">
+    <link itemprop="mainEntityOfPage" href="/webhttp://yoursite.com/2018/02/26/TCP-IP协议学习笔记（五）TCP的保活定时器/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -344,7 +344,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP/IP</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/web/categories/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP/IP</span></a></span>
 
                 
                 
@@ -381,7 +381,7 @@
         <p>正常情况下，TCP连接的终止需要经历四次挥手阶段，体现在代码上就是某一端主动调用close函数关闭套接字，随后TCP向对端发送FIN位被置为1的报文段标志着连接的结束，同时对端响应应答报文段，并在随后的某一时刻同样调用close函数，发送FIN报文段，当确认完成后就标志着TCP连接正常终止。</p>
 <p>然而，考虑一种情况，在TCP连接建立成功后，客户端主机突然崩溃（断电，断网等），导致客户端的TCP还没来得及将FIN发送给服务器就已经关闭了（或者由于断网导致FIN无法到达对端），而服务器通常又不会主动发送数据给客户端。在这种情况下，客户端已经关闭，服务器却不知道，依然保持着维护一个连接应该有的所有东西（包括文件描述符，TCP缓冲区等），一个还好，当有大量这种半开连接存在于服务器中，会造成大量的浪费</p>
 <a id="more"></a>
-<h1 id="保活定时器"><a href="#保活定时器" class="headerlink" title="保活定时器"></a>保活定时器</h1><p>在TCP协议中，有一个被称作保活定时器的组件，它就是为了解决上述问题被引进的。该定时器的原理也非常简单，当通信双方在定时器规定的这段时间内没有进行数据交互，那么开启保活选项的一端TCP就会发送一个探查报文段，当对端TCP接收到报文段发现这是个探查报文时，会响应应答信息。</p>
+<h1 id="保活定时器"><a href="/web#保活定时器" class="headerlink" title="保活定时器"></a>保活定时器</h1><p>在TCP协议中，有一个被称作保活定时器的组件，它就是为了解决上述问题被引进的。该定时器的原理也非常简单，当通信双方在定时器规定的这段时间内没有进行数据交互，那么开启保活选项的一端TCP就会发送一个探查报文段，当对端TCP接收到报文段发现这是个探查报文时，会响应应答信息。</p>
 <blockquote>
 <p>上述过程是TCP独立于应用程序进行的，应用程序不会知道探查报文的发送和到达</p>
 <p>此外，保活定时器的定时时间是两小时，是系统级别的参数，可以更改，但是最好不要更改，会影响到系统进程</p>
@@ -394,27 +394,27 @@
 <li>客户端主机正常运行，但是从服务器不可达。这种情况通常是由于传输路径中的某个路由器关闭导致，此种情况与客户端主机崩溃并正在重启时处理方式相同，因为都是收不到应答</li>
 </ul>
 <p>下面通过tcpdump抓包分析后三种情况，分析时假设崩溃的一方是服务器，随后观察客户端TCP探查报文段发送情况</p>
-<h2 id="另一端主机崩溃，已关闭或正在重启"><a href="#另一端主机崩溃，已关闭或正在重启" class="headerlink" title="另一端主机崩溃，已关闭或正在重启"></a>另一端主机崩溃，已关闭或正在重启</h2><p>借用&lt;TCP/IP详解&gt;中的示例，建立TCP连接后等待四小时后断开服务器以太网电缆，观察客户端探查报文段发送情况</p>
-<p><img src="https://s1.ax1x.com/2018/02/26/90ZUyT.png" alt=""></p>
+<h2 id="另一端主机崩溃，已关闭或正在重启"><a href="/web#另一端主机崩溃，已关闭或正在重启" class="headerlink" title="另一端主机崩溃，已关闭或正在重启"></a>另一端主机崩溃，已关闭或正在重启</h2><p>借用&lt;TCP/IP详解&gt;中的示例，建立TCP连接后等待四小时后断开服务器以太网电缆，观察客户端探查报文段发送情况</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/26/90ZUyT.png" alt=""></p>
 <p>观察tcpdump输出结果（省略了三次握手的报文段）</p>
-<p><img src="https://s1.ax1x.com/2018/02/26/90ZaOU.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/26/90ZaOU.png" alt=""></p>
 <p>结果中前三行表示客户端发送”hello world”报文段，服务器对该报文段进行应答并回显”hello world”报文段，客户端对服务器的报文段进行应答</p>
 <p>随后的四小时内，客户端先后两次尝试探查服务器是否关闭，首先看到的是一个ARP请求和ARP应答，随后发送探查报文段并得到回应</p>
 <p>接下来断开服务器以太网电缆，并在两个小时之后又进行探查，然而由于服务器主机以太网断开，无法回应客户端ARP请求，随后的每75秒进行一次超时重传，最终放弃，错误码为“连接超时”</p>
 <blockquote>
 <p>ARP请求主要用来获取对端的物理地址，首先需要知道对方地址，才能发送数据，而由于服务器以太网断开无法回应ARP请求，所以上述过程没有看到TCP报文的发送就已经可以确认对方崩溃</p>
 </blockquote>
-<h2 id="另一端崩溃并重新启动"><a href="#另一端崩溃并重新启动" class="headerlink" title="另一端崩溃并重新启动"></a>另一端崩溃并重新启动</h2><p>借用&lt;TCP/IP详解&gt;中的示例，在建立连接后将服务器以太网断开，重新启动，然后再连接到网络上。由于服务器已重启，对于之前所有的TCP连接信息都已丢失，当接收到客户端发来的探查报文段时，会回复一个复位报文段</p>
-<p><img src="https://s1.ax1x.com/2018/02/26/90e8BD.png" alt=""></p>
+<h2 id="另一端崩溃并重新启动"><a href="/web#另一端崩溃并重新启动" class="headerlink" title="另一端崩溃并重新启动"></a>另一端崩溃并重新启动</h2><p>借用&lt;TCP/IP详解&gt;中的示例，在建立连接后将服务器以太网断开，重新启动，然后再连接到网络上。由于服务器已重启，对于之前所有的TCP连接信息都已丢失，当接收到客户端发来的探查报文段时，会回复一个复位报文段</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/26/90e8BD.png" alt=""></p>
 <p>观察tcpdump输出结果（省去了连接建立过程）</p>
-<p><img src="https://s1.ax1x.com/2018/02/26/90etNd.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/26/90etNd.png" alt=""></p>
 <p>可以看到，由于服务器以太网连接正常，ARP请求得到应答，随后客户端发送探查报文段，但是服务器已经重启，没有关于该连接的信息，只能返回一个复位报文段</p>
-<h2 id="另一端不可达"><a href="#另一端不可达" class="headerlink" title="另一端不可达"></a>另一端不可达</h2><p>再次使用&lt;TCP/IP详解&gt;中的示例，连接建立后先确认可以正常通讯，等待两小时后发送探查报文并收到回应，随后将中间链路断开，观察结果</p>
-<p><img src="https://s1.ax1x.com/2018/02/26/90eb59.png" alt=""></p>
+<h2 id="另一端不可达"><a href="/web#另一端不可达" class="headerlink" title="另一端不可达"></a>另一端不可达</h2><p>再次使用&lt;TCP/IP详解&gt;中的示例，连接建立后先确认可以正常通讯，等待两小时后发送探查报文并收到回应，随后将中间链路断开，观察结果</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/26/90eb59.png" alt=""></p>
 <p>观察tcpdump输出结果（省略掉连接的建立过程）</p>
-<p><img src="https://s1.ax1x.com/2018/02/26/90ejv6.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/26/90ejv6.png" alt=""></p>
 <p>前三行是正常的回显流程，4,5行是两小时后的探查报文，随后的若干行由于中间链路被断开，引发来自客户端主机路由器的ICMP不可达错误，随后又连续发送了9个探查报文，最终返回给应用程序“没有到达主机的路由”错误</p>
-<h1 id="SO-KEEPALIVE选项"><a href="#SO-KEEPALIVE选项" class="headerlink" title="SO_KEEPALIVE选项"></a>SO_KEEPALIVE选项</h1><p>linux内核中有关于保活定时器的三个参数</p>
+<h1 id="SO-KEEPALIVE选项"><a href="/web#SO-KEEPALIVE选项" class="headerlink" title="SO_KEEPALIVE选项"></a>SO_KEEPALIVE选项</h1><p>linux内核中有关于保活定时器的三个参数</p>
 <ul>
 <li>tcp_keepalive_time，指空闲时长，tcp_keepalive_time时间没有数据交互就发送探查报文段，默认7200s(2h)</li>
 <li>tcp_keepalive_intvl，发送探查报文段后如果没有收到应答，tcp_keepalive_intvl时间后会重新发送，默认是75s</li>
@@ -448,7 +448,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/TCP-IP/" rel="tag"># TCP/IP</a>
+            <a href="/web/tags/TCP-IP/" rel="tag"># TCP/IP</a>
           
         </div>
       
@@ -461,7 +461,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/02/25/TCP-IP协议学习笔记（四）TCP超时重传及拥塞控制/" rel="next" title="TCP/IP学习笔记（四）TCP超时重传及拥塞控制">
+              <a href="/web/2018/02/25/TCP-IP协议学习笔记（四）TCP超时重传及拥塞控制/" rel="next" title="TCP/IP学习笔记（四）TCP超时重传及拥塞控制">
                 <i class="fa fa-chevron-left"></i> TCP/IP学习笔记（四）TCP超时重传及拥塞控制
               </a>
             
@@ -471,7 +471,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/02/27/TCP-IP学习笔记（六）Nagle算法/" rel="prev" title="TCP/IP学习笔记（六）Nagle算法">
+              <a href="/web/2018/02/27/TCP-IP学习笔记（六）Nagle算法/" rel="prev" title="TCP/IP学习笔记（六）Nagle算法">
                 TCP/IP学习笔记（六）Nagle算法 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -545,7 +545,7 @@
               
                 <div class="site-state-item site-state-posts">
                 
-                  <a href="/archives/">
+                  <a href="/web/archives/">
                 
                     <span class="site-state-item-count">27</span>
                     <span class="site-state-item-name">日志</span>
@@ -557,7 +557,7 @@
                 
                 
                 <div class="site-state-item site-state-categories">
-                  <a href="/categories/index.html">
+                  <a href="/web/categories/index.html">
                     
                     
                       
@@ -580,7 +580,7 @@
                 
                 
                 <div class="site-state-item site-state-tags">
-                  <a href="/tags/index.html">
+                  <a href="/web/tags/index.html">
                     
                     
                       
@@ -607,12 +607,12 @@
             <div class="links-of-author motion-element">
               
                 <span class="links-of-author-item">
-                  <a href="https://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  <a href="/webhttps://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
                   
                 </span>
               
                 <span class="links-of-author-item">
-                  <a href="http://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  <a href="/webhttp://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
                   
                 </span>
               
@@ -643,7 +643,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#保活定时器"><span class="nav-number">1.</span> <span class="nav-text">保活定时器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#另一端主机崩溃，已关闭或正在重启"><span class="nav-number">1.1.</span> <span class="nav-text">另一端主机崩溃，已关闭或正在重启</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#另一端崩溃并重新启动"><span class="nav-number">1.2.</span> <span class="nav-text">另一端崩溃并重新启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#另一端不可达"><span class="nav-number">1.3.</span> <span class="nav-text">另一端不可达</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SO-KEEPALIVE选项"><span class="nav-number">2.</span> <span class="nav-text">SO_KEEPALIVE选项</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="/web#保活定时器"><span class="nav-number">1.</span> <span class="nav-text">保活定时器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="/web#另一端主机崩溃，已关闭或正在重启"><span class="nav-number">1.1.</span> <span class="nav-text">另一端主机崩溃，已关闭或正在重启</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="/web#另一端崩溃并重新启动"><span class="nav-number">1.2.</span> <span class="nav-text">另一端崩溃并重新启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="/web#另一端不可达"><span class="nav-number">1.3.</span> <span class="nav-text">另一端不可达</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#SO-KEEPALIVE选项"><span class="nav-number">2.</span> <span class="nav-text">SO_KEEPALIVE选项</span></a></li></ol></div>
             
 
           </div>
@@ -677,7 +677,7 @@
 
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="/webhttps://hexo.io">Hexo</a> 强力驱动</div>
 
 
 
@@ -685,7 +685,7 @@
 
 
 
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="/webhttps://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
 
 
 
@@ -751,54 +751,54 @@
 
   
   
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/web/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/web/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/web/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/web/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
-
-
-
-  
-  
-
-
-  <script type="text/javascript" src="/js/src/affix.js?v=6.0.4"></script>
-
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.0.4"></script>
-
-
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+  <script type="text/javascript" src="/web/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/web/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/web/js/src/affix.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/web/js/src/schemes/pisces.js?v=6.0.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/web/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/web/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/web/js/src/bootstrap.js?v=6.0.4"></script>
 
 
 
