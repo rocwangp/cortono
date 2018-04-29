@@ -37,6 +37,7 @@ namespace cortono::http
                     log_info(conn_ptr->recv_all());
                 });
                 loop_.runAfter(std::chrono::milliseconds(500), [&]() {
+                    log_trace;
                     client_conn->send(gen_request());
                 });
                 loop_.loop();

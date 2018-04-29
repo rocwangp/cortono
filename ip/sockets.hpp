@@ -232,7 +232,7 @@ namespace cortono::ip
                     ::SSL_free(ssl);
                 }
                 static void connect(::SSL* ssl) {
-                    if(::SSL_connect(ssl) == -1) {
+                    if(::SSL_connect(ssl) != 1) {
                         ::ERR_print_errors_fp(stdout);
                         log_fatal("connec to server ssl error");
                     }

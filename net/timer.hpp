@@ -65,6 +65,7 @@ namespace cortono::net
             }
             void run() {
                 exitif(cb_ == nullptr, "timer callback is nullptr");
+                cb_();
             }
             int expires_milliseconds() const {
                 return static_cast<int>(std::chrono::duration_cast<milliseconds>(

@@ -33,6 +33,9 @@ namespace cortono::net
                 }
             }
             void loop_once() {
+                if(!timers_.empty() && timers_.top().expires_milliseconds() <= 0) {
+                    handle_time_func();
+                }
                 int timeout = timers_.empty() ? -1 : timers_.top().expires_milliseconds();
                 poller_->wait(timeout);
                 handle_pending_func();
@@ -104,7 +107,7 @@ namespace cortono::net
             std::shared_ptr<Watcher> watcher_;
             std::shared_ptr<TcpSocket> watch_socket_;
             std::vector<std::function<void()>> pending_functors_;
-            std::priority_queue<Timer> timers_;
+            std::priority_queue<Timer, std::vector<Timer>, std::greater<Timer>> timers_;
 
     };
 }

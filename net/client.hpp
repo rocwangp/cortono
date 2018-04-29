@@ -28,15 +28,16 @@ namespace cortono::net
                     return nullptr;
                 }
                 log_info("connect to server socket done");
-                ip::tcp::sockets::set_nonblock(fd);
 #ifdef CORTONO_USE_SSL
                 SSL* ssl = ip::tcp::ssl::new_ssl_and_set_fd(fd);
                 log_info("connect to server ssl");
+                ip::tcp::ssl::connect(ssl);
                 log_info("connect to server ssl done");
                 auto conn_ptr = std::make_shared<TcpConnection>(loop, fd, ssl);
 #else
                 auto conn_ptr = std::make_shared<TcpConnection>(loop, fd);
 #endif
+                ip::tcp::sockets::set_nonblock(fd);
                 conn_ptr->on_read(std::move(read_cb));
                 conn_ptr->on_write(std::move(write_cb));
                 conn_ptr->on_close(std::move(close_cb));
