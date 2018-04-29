@@ -25,6 +25,7 @@ namespace cortono::http
         private:
             void init_callback() {
                 service_.on_conn([&](auto conn_ptr) {
+                    log_info(conn_ptr->name());
                     auto c = std::make_shared<Connection<Handler>>(handler_);
                     conn_ptr->on_read([c](auto conn_ptr) {
                         c->handle_read(conn_ptr);

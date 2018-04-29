@@ -59,8 +59,17 @@
 #ifdef CORTONO_USE_SSL
 #include <openssl/ssl.h>
 #include <openssl/err.h>
-#include <openssl/rand.h>
 #include <openssl/bio.h>
-#define OPENSSL_API_COMPAT 0x0908
+/* #define CA_CERT_FILE "ca.crt" */
+/* #define SERVER_CERT_FILE "server.crt" */
+/* #define SERVER_KEY_FILE "server.key" */
+/* #define CLIENT_CERT_FILE "client.crt" */
+/* #define CLIENT_KEY_FILE "client.key" */
+#define CA_CERT_FILE "../ssl/ca.crt"
+#define SERVER_CERT_FILE "../ssl/server.crt"
+#define SERVER_KEY_FILE "../ssl/server.key"
+#define CLIENT_CERT_FILE "../ssl/client.crt"
+#define CLIENT_KEY_FILE "../ssl/client.key"
+/* #define OPENSSL_API_COMPAT 0x0908 */
 #endif
 

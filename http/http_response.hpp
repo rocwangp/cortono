@@ -66,6 +66,14 @@ namespace cortono::http
                 code = 404;
             }
         }
+        void read_file_to_body(const std::string& file) {
+            using namespace std::experimental;
+            filesize = filesystem::file_size(file);
+            body.resize(filesize);
+            std::ifstream fin{ file, std::ios_base::in };
+            fin.read(&body[0], filesize);
+            fin.close();
+        }
         bool is_send_file() const {
             return sendfile;
         }

@@ -47,7 +47,11 @@ namespace cortono::http
                 const char* end = std::find(buffer, buffer + len, '\n');
                 if(end != buffer + len) {
                     std::string_view sv(buffer, end - buffer + 1);
+#ifdef CORTONO_USE_SSL
                     std::regex e("^([^ ]+) ([^ ]+) HTTP/([0-9]).([0-9])\r\n$");
+#else
+                    std::regex e("^([^ ]+) ([^ ]+) HTTP/([0-9]).([0-9])\r\n$");
+#endif
                     std::match_results<std::string_view::const_iterator> match;
                     if(std::regex_match(sv.cbegin(), sv.cend(), match, e)) {
                         parse_method(std::move(match[1]));

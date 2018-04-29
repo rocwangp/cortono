@@ -36,9 +36,8 @@ namespace cortono::net
 #else
                     auto conn = std::make_shared<TcpConnection>(loop, fd);
 #endif
-                    conn->on_read([](const auto& ) {
-                        /* if(msg_cb_) { msg_cb_(c); } */
-                        /* msg_cb_(c); */
+                    conn->on_read([this](const auto& c) {
+                        if(msg_cb_) { msg_cb_(c); }
                     });
                     conn->on_error([this](const auto& c) {
                         if(error_cb_) { error_cb_(c); }
@@ -72,7 +71,7 @@ namespace cortono::net
         public:
             void start(int thread_nums = std::thread::hardware_concurrency()) {
 #ifdef CORTONO_USE_SSL
-                ip::tcp::ssl::init_ssl();
+                ip::tcp::ssl::init_ssl(CA_CERT_FILE, SERVER_CERT_FILE, SERVER_KEY_FILE);
 #endif
                 while(thread_nums--) {
                     util::threadpool::instance().async([this] {

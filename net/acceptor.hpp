@@ -48,9 +48,13 @@ namespace cortono::net
                         }
                         break;
                     }
+                    log_info("accept client with fd:", fd);
 #ifdef CORTONO_USE_SSL
+
                     SSL* ssl = ip::tcp::ssl::new_ssl_and_set_fd(fd);
+                    log_info("start accept ssl");
                     ip::tcp::ssl::accept(ssl);
+                    log_info("accept ssl done");
                     if(conn_cb_) {
                         conn_cb_(fd, ssl);
                     }
@@ -64,7 +68,6 @@ namespace cortono::net
                     }
                     else {
                         ip::tcp::sockets::close(fd);
-                        break;
                     }
 #endif
                 }

@@ -211,6 +211,8 @@ namespace cortono::net
                     }
                     else {
                         send_buffer_->retrieve_read_bytes(bytes);
+                        socket_.enable_writing();
+                        socket_.set_write_callback(std::bind(&TcpConnection::handle_write, this));
                     }
                 }
             }

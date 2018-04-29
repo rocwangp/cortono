@@ -6,7 +6,7 @@ int main()
     HttpClient{}
         .ip("127.0.0.1")
         .port(9999)
-        .url("127.0.0.1:10000")
+        .url("/")
         .version(1, 1)
         .keep_alive(false)
         .connect();

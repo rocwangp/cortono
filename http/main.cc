@@ -33,26 +33,31 @@ int main()
         oss << req.body;
         return oss.str();
     });
-    /* app.register_rule("/<path>")([](std::string filename) -> std::string { */
-    /*     using namespace std::experimental; */
-    /*     filename = cortono::http::html_codec::decode("web/" + filename); */
-    /*     log_debug(filename); */
-    /*     if(filesystem::exists(filename)) { */
-    /*         std::size_t filesize = filesystem::file_size(filename); */
-    /*         std::string buffer(filesize, '0'); */
-    /*         std::ifstream fin{ filename, std::ios_base::in }; */
-    /*         fin.read(&buffer[0], filesize); */
-    /*         return buffer; */
-    /*     } */
-    /*     else { */
-    /*         log_info("file is not exist"); */
-    /*     } */
-    /*     return ""; */
-    /* }); */
+#ifdef CORTONO_USE_SSL
+    app.register_rule("/web/<path>")([](const cortono::http::Request&, cortono::http::Response& res, std::string filename) {
+        using namespace std::experimental;
+        filename = cortono::http::html_codec::decode("web/" + filename);
+        log_debug(filename);
+        if(filesystem::exists(filename)) {
+        /* 如果filename表示一个目录，那么filesystem::file_size(filename)会阻塞
+         * 标准没有规定计算目录size的情况 */
+            if(filesystem::is_directory(filename)) {
+                filename.append("index.html");
+            }
+            res = cortono::http::Response(200);
+            res.read_file_to_body(filename);
+        }
+        else {
+            res = cortono::http::Response(404);
+            log_info("file is not exist");
+        }
+    });
+#else
     app.register_rule("/web/<path>")([](const cortono::http::Request&, cortono::http::Response& res, std::string s) {
         res = cortono::http::Response(200);
         res.send_file("web/" + s);
     });
+#endif
     app.multithread().run();
     return 0;
 }

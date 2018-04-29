@@ -33,15 +33,23 @@ namespace cortono::http
             }
             void connect() {
                 auto client_conn = net::TcpClient::connect(&loop_, ip_, port_);
-                client_conn->send(gen_request());
                 client_conn->on_read([](auto conn_ptr) {
                     log_info(conn_ptr->recv_all());
+                });
+                loop_.runAfter(std::chrono::milliseconds(500), [&]() {
+                    client_conn->send(gen_request());
                 });
                 loop_.loop();
             }
             std::string gen_request() {
                 std::stringstream oss;
-                oss  << "GET " << url_ << " HTTP/" << version_.first << "." << version_.second << "\r\n";
+                oss  << "GET " << url_ <<
+#ifdef CORTONO_USE_SSL
+                    " HTTP/"
+#else
+                    " HTTP/"
+#endif
+                    << version_.first << "." << version_.second << "\r\n";
                 if(keep_alive_) {
                     oss << "Connection: Keep-Alive\r\n";
                 }

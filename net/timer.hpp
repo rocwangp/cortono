@@ -42,8 +42,19 @@ namespace cortono::net
             }
 
             Timer& operator=(const Timer& t) {
-                Timer tmp(t);
-                std::swap(*this, tmp);
+                if(this != &t) {
+                    Timer tmp(t);
+                    std::swap(*this, tmp);
+                }
+                return *this;
+            }
+            Timer& operator=(Timer&& t) {
+                if(this != &t) {
+                    periodic_ = std::move(t.periodic_);
+                    expires_time_ = std::move(t.expires_time_);
+                    interval_ = std::move(t.interval_);
+                    cb_ = std::move(t.cb_);
+                }
                 return *this;
             }
             bool is_expires() const {
