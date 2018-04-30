@@ -57,9 +57,9 @@ namespace cortono::http
                         return;
                     }
                     std::weak_ptr client_weak_conn{ conn_ptr };
-                    auto read_cb = [client_weak_conn](auto proxy_conn_ptr) {
+                    auto read_cb = [conn_ptr](auto proxy_conn_ptr) {
                         /* if(auto strong_conn = client_weak_conn.lock(); strong_conn) { */
-                            proxy_conn_ptr->clear_recv_buffer();
+                        conn_ptr->send(proxy_conn_ptr->recv_all());
                             /* strong_conn->send(std::move(proxy_conn_ptr->recv_all())); */
                         /* } */
                         /* else { */
@@ -82,14 +82,7 @@ namespace cortono::http
                         if(req_.method == HttpMethod::CONNECT) {
                             conn_ptr->clear_recv_buffer();
                             conn_ptr->on_read([proxy_conn](auto& conn_ptr) {
-                                try {
-                                    proxy_conn->send(conn_ptr->recv_buffer()->data(), conn_ptr->recv_buffer()->size());
-                                    conn_ptr->clear_recv_buffer();
-                                    /* proxy_conn->send(conn_ptr->recv_all()); */
-                                }
-                                catch(...) {
-                                    log_error("proxy conn send error");
-                                }
+                                proxy_conn->send(conn_ptr->recv_all());
                             });
                             conn_ptr->send("HTTP/1.1 200 Connection Established\r\n\r\n");
                         }
