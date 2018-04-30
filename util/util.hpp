@@ -25,9 +25,14 @@ namespace cortono
         }
 
         inline std::string current_thread() {
-            std::stringstream oss;
-            oss << std::this_thread::get_id();
-            return oss.str();
+            try{
+                std::stringstream oss;
+                oss << std::this_thread::get_id();
+                return oss.str();
+            }
+            catch(...) {
+                return "";
+            }
         }
 
         class exitcall

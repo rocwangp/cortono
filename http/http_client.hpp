@@ -18,6 +18,10 @@ namespace cortono::http
                 ip_ = std::move(req_ip);
                 return *this;
             }
+            self_t& host(std::string&& req_host) {
+                host_ = std::move(req_host);
+                return *this;
+            }
             self_t& port(unsigned short req_port) {
                 port_ = req_port;
                 return *this;
@@ -29,6 +33,10 @@ namespace cortono::http
             }
             self_t& keep_alive(bool req_keep_alive) {
                 keep_alive_ = req_keep_alive;
+                return *this;
+            }
+            self_t& proxy_client() {
+                proxy_client_ = true;
                 return *this;
             }
             void connect() {
@@ -51,14 +59,20 @@ namespace cortono::http
                     " HTTP/"
 #endif
                     << version_.first << "." << version_.second << "\r\n";
-                if(keep_alive_) {
-                    oss << "Connection: Keep-Alive\r\n";
+                if(proxy_client_) {
+                    oss << "Proxy-Connection: ";
                 }
                 else {
-                    oss << "Connection: Close\r\n";
+                    oss << "Connection: ";
+                }
+                if(keep_alive_) {
+                    oss << "Keep-Alive\r\n";
+                }
+                else {
+                    oss << "Close\r\n";
                 }
                 if(version_.first == 1 && version_.second == 1) {
-                    oss << "Host: 127.0.0.1:10000\r\n";
+                    oss << "Host: " << host_ << "\r\n";
                 }
                 oss << "\r\n";
                 log_debug(oss.str());
@@ -69,7 +83,9 @@ namespace cortono::http
             std::pair<int, int> version_;
             std::string url_;
             std::string ip_;
+            std::string host_;
             unsigned short port_{ 80 };
             bool keep_alive_{ false };
+            bool proxy_client_{ false };
     };
 }

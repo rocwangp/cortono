@@ -4,6 +4,16 @@
 
 namespace cortono::http::black_magic
 {
+    template <typename...>
+    struct template_arg_traits;
+
+    template <template <typename...> class ClassType, typename... Args>
+    struct template_arg_traits<ClassType<Args...>>
+    {
+        template <std::size_t N>
+        using arg_type = std::tuple_element_t<N, std::tuple<Args...>>;
+    };
+
     template <typename T>
     struct function_traits;
 

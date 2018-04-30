@@ -7,16 +7,16 @@
 
 namespace cortono::http
 {
-    template <typename Handler>
-    class Connection
+    template <typename Handler, typename Connection>
+    class WebConnection
     {
         public:
-            Connection(Handler& handler)
+            WebConnection(Handler& handler)
                 : handler_(handler)
             {
             }
-            void handle_read(net::TcpConnection::Pointer conn_ptr) {
-                log_debug(conn_ptr->recv_buffer()->to_string());
+            void handle_read(typename Connection::Pointer& conn_ptr) {
+                /* log_debug(conn_ptr->recv_buffer()->to_string()); */
                 int len = parser_.feed(conn_ptr->recv_buffer()->data(), conn_ptr->recv_buffer()->size());
                 conn_ptr->recv_buffer()->retrieve_read_bytes(len);
                 if(parser_.done()) {

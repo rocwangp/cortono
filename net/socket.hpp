@@ -9,8 +9,7 @@
 
 namespace cortono::net
 {
-    class TcpSocket : public std::enable_shared_from_this<TcpSocket>,
-                      private util::noncopyable
+    class TcpSocket
     {
         public:
             enum socket_option
@@ -50,21 +49,17 @@ namespace cortono::net
             bool listen(long long int listen_nums = INT64_MAX) {
                 return ip::tcp::sockets::listen(fd_, listen_nums);
             }
-
             int accept() {
                 return ip::tcp::sockets::accept(fd_);
             }
-
             bool close() {
                 assert(poller_cbs_->close_cb);
                 poller_cbs_->close_cb();
                 return true;
             }
-
             bool connect(std::string_view ip, unsigned short port) {
                 return ip::tcp::sockets::connect(fd_, ip, port);
             }
-
             void tie(std::shared_ptr<EventPoller> poller) {
                 weak_poller_ = poller;
             }
@@ -122,14 +117,14 @@ namespace cortono::net
                 return ip::address::peer_address(fd_);
             }
 
-            void set_option() { }
-
             template <class... Args>
             void set_option(socket_option opt, Args... args) {
                 if(!opt_functors_[opt](fd_)) {
                     log_error("fail to set option", static_cast<int>(opt), fd_);
                 }
-                set_option(args...);
+                if constexpr (sizeof...(Args) > 0) {
+                    set_option(args...);
+                }
             }
 
             int fd() {
@@ -144,7 +139,32 @@ namespace cortono::net
             void set_close_callback(EventCallBack cb) {
                 poller_cbs_->close_cb = cb;
             }
+            int send(const char* buffer, int len) {
+                if(!is_ssl_) {
+                    return ip::tcp::sockets::send(fd_, buffer, len);
+                }
+                else {
+                    return ip::tcp::ssl::send(ssl_, buffer, len);
+                }
+            }
+            int recv(char* buffer, int len) {
+                if(!is_ssl_) {
+                    return ip::tcp::sockets::recv(fd_, buffer, len);
+                }
+                else {
+                    return ip::tcp::ssl::recv(ssl_, buffer, len);
+                }
+            }
+            void reset_to_ssl_socket() {
+                ip::tcp::ssl::load_certificate(CA_CERT_FILE, SERVER_CERT_FILE, SERVER_KEY_FILE);
+                ssl_ = ip::tcp::ssl::new_ssl_and_set_fd(fd_);
+                ip::tcp::ssl::accept(ssl_);
+                /* ip::tcp::ssl::handshake(ssl_); */
+                is_ssl_ = true;
+            }
         protected:
+            ::SSL* ssl_{ nullptr };
+            bool is_ssl_{ false };
             int fd_;
             uint32_t events_;
             std::weak_ptr<EventPoller> weak_poller_;

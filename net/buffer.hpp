@@ -68,7 +68,9 @@ namespace cortono::net
             void append(char *str) {
                 append(std::string(str));
             }
-
+            void append(const char* s, int len) {
+                append(std::string(s, len));
+            }
             void enable_bytes(int bytes) {
                 if(writeable() < bytes) {
                     std::move_backward(begin(), end(), buffer_.begin() + size() - 1);
@@ -81,7 +83,7 @@ namespace cortono::net
             }
 
             std::string read_all() {
-                std::string info(begin(), end());
+                std::string info(data(), size());
                 read_idx_ = write_idx_ = 0;
                 return info;
             }
@@ -129,7 +131,7 @@ namespace cortono::net
             std::vector<char> buffer_;
     };
 
-    class Buffer : public BaseBuffer<1024>
+    class Buffer : public BaseBuffer<2048>
     {
 
     };

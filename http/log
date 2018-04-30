@@ -1,0 +1,59 @@
+Mon Apr 30 20:57:11 2018 [140254450236224] [../net/../ip/sockets.hpp:init_ssl:185] [info ] ssl library inited
+Mon Apr 30 20:57:12 2018 [140254450236224] [http_proxy_server.hpp:operator():33] [trace] 
+Mon Apr 30 20:57:12 2018 [140254423746304] [../net/connection.hpp:handle_read:146] [info ] read callback
+Mon Apr 30 20:57:12 2018 [140254423746304] [http_proxy_server.hpp:operator():36] [trace] 
+Mon Apr 30 20:57:12 2018 [140254423746304] [http_proxy_connection.hpp:handle_read:17] [debug] CONNECT www.baidu.com:443 HTTP/1.1
+Host: www.baidu.com:443
+Proxy-Connection: keep-alive
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.117 Safari/537.36
+
+
+Mon Apr 30 20:57:12 2018 [140254423746304] [http_proxy_connection.hpp:handle_read:56] [debug] www.baidu.com 443
+Mon Apr 30 20:57:12 2018 [140254423746304] [../net/../ip/sockets.hpp:init_ssl:185] [info ] ssl library inited
+Mon Apr 30 20:57:12 2018 [140254423746304] [../net/client.hpp:connect:54] [info ] start to connect to server: 119.75.213.61 443
+Mon Apr 30 20:57:12 2018 [140254423746304] [../net/client.hpp:connect:60] [info ] connect to server socket done
+Mon Apr 30 20:57:12 2018 [140254423746304] [../net/client.hpp:connect:62] [info ] connect to server ssl
+Mon Apr 30 20:57:13 2018 [140254423746304] [../net/client.hpp:connect:64] [info ] connect to server ssl done
+Mon Apr 30 20:57:13 2018 [140254423746304] [http_proxy_connection.hpp:handle_read:86] [info ] send connection established to client
+Mon Apr 30 20:57:13 2018 [140254423746304] [../net/connection.hpp:handle_read:146] [info ] read callback
+Mon Apr 30 20:57:13 2018 [140254423746304] [../net/../ip/sockets.hpp:recv:255] [debug] 28 0 2 3
+Mon Apr 30 20:57:13 2018 [140254423746304] [../net/../ip/sockets.hpp:recv:256] [debug] 8 7 4 1 0 5
+Mon Apr 30 20:57:13 2018 [140254423746304] [../net/../ip/sockets.hpp:recv:257] [debug] Success
+Mon Apr 30 20:57:13 2018 [140254423746304] [../net/../ip/sockets.hpp:recv:261] [debug] error:00000000:lib(0):func(0):reason(0)
+Mon Apr 30 20:57:13 2018 [140254423746304] [../net/connection.hpp:handle_read:146] [info ] read callback
+Mon Apr 30 20:57:13 2018 [140254423746304] [../net/connection.hpp:handle_read:146] [info ] read callback
+Mon Apr 30 20:57:13 2018 [140254423746304] [../net/connection.hpp:handle_read:136] [info ] read 0 bytes, close connection...
+Mon Apr 30 20:57:13 2018 [140254423746304] [http_proxy_connection.hpp:operator():77] [info ] close proxy connection
+Mon Apr 30 20:57:13 2018 [140254450236224] [http_proxy_server.hpp:operator():33] [trace] 
+Mon Apr 30 20:57:13 2018 [140254406960896] [../net/connection.hpp:handle_read:146] [info ] read callback
+Mon Apr 30 20:57:13 2018 [140254406960896] [http_proxy_server.hpp:operator():36] [trace] 
+Mon Apr 30 20:57:13 2018 [140254406960896] [http_proxy_connection.hpp:handle_read:17] [debug] GET http://www.gstatic.com/generate_204 HTTP/1.1
+Host: www.gstatic.com
+Proxy-Connection: keep-alive
+Pragma: no-cache
+Cache-Control: no-cache
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.117 Safari/537.36
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US,en;q=0.9
+
+
+Mon Apr 30 20:57:13 2018 [140254406960896] [http_proxy_connection.hpp:handle_read:56] [debug] www.gstatic.com 443
+Mon Apr 30 20:57:13 2018 [140254406960896] [../net/client.hpp:connect:54] [info ] start to connect to server: 203.208.51.47 443
+Mon Apr 30 20:57:13 2018 [140254406960896] [../net/client.hpp:connect:60] [info ] connect to server socket done
+Mon Apr 30 20:57:13 2018 [140254406960896] [../net/client.hpp:connect:62] [info ] connect to server ssl
+Mon Apr 30 20:57:13 2018 [140254406960896] [../net/client.hpp:connect:64] [info ] connect to server ssl done
+Mon Apr 30 20:57:13 2018 [140254406960896] [http_proxy_connection.hpp:handle_read:90] [debug] GET http://www.gstatic.com/generate_204 HTTP/1.1
+Host: www.gstatic.com
+Proxy-Connection: keep-alive
+Pragma: no-cache
+Cache-Control: no-cache
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.117 Safari/537.36
+Accept-Encoding: gzip, deflate
+Accept-Language: en-US,en;q=0.9
+
+
+Mon Apr 30 20:57:13 2018 [140254406960896] [../net/../ip/sockets.hpp:recv:255] [debug] 83 0 2 3
+Mon Apr 30 20:57:13 2018 [140254406960896] [../net/../ip/sockets.hpp:recv:256] [debug] 8 7 4 1 0 5
+Mon Apr 30 20:57:13 2018 [140254406960896] [../net/../ip/sockets.hpp:recv:257] [debug] Success
+Mon Apr 30 20:57:13 2018 [140254406960896] [../net/../ip/sockets.hpp:recv:261] [debug] error:00000000:lib(0):func(0):reason(0)
+Mon Apr 30 20:57:13 2018 [140254406960896] [../net/connection.hpp:handle_read:146] [info ] read callback

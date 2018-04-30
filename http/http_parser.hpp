@@ -104,6 +104,9 @@ namespace cortono::http
                 else if(utils::iequal(method.data(), method.length(), "POST")) {
                     method_ = HttpMethod::POST;
                 }
+                else if(utils::iequal(method.data(), method.length(), "CONNECT")) {
+                    method_ = HttpMethod::CONNECT;
+                }
                 else {
                     method_ = HttpMethod::GET;
                 }

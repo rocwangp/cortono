@@ -5,28 +5,27 @@
 namespace cortono::net
 {
 #ifdef CORTONO_USE_SSL
-    class SSLSocket : public TcpSocket
+    class SslSocket : public TcpSocket
     {
         public:
-            using sockets = ip::tcp::sockets;
             using ssl_sockets = ip::tcp::ssl;
-            SSLSocket()
+            SslSocket()
                 : TcpSocket(),
                   ssl_(ssl_sockets::new_ssl_and_set_fd(fd_))
             {
             }
-            SSLSocket(int fd)
+            SslSocket(int fd)
                 : TcpSocket(fd),
                   ssl_(ssl_sockets::new_ssl_and_set_fd(fd_))
             {
             }
-            SSLSocket(int fd, ::SSL* ssl)
+            SslSocket(int fd, ::SSL* ssl)
                 : TcpSocket(fd),
                   ssl_(ssl)
             {
             }
 
-            ~SSLSocket() {
+            ~SslSocket() {
                 ssl_sockets::close(ssl_);
             }
             void close() {
@@ -36,17 +35,11 @@ namespace cortono::net
             SSL* ssl() {
                 return ssl_;
             }
-            SSL* accept() {
-                int fd = TcpSocket::accept();
-                if(fd != -1) {
-                    ::SSL* ssl = ssl_sockets::new_ssl_and_set_fd(fd);
-                    if(ssl_sockets::accept(ssl)) {
-                        return ssl;
-                    }
-                    sockets::close(fd);
-                    ssl_sockets::close(ssl);
-                }
-                return nullptr;
+            int send(const char* buffer, int len) {
+                return ssl_sockets::send(ssl_, buffer, len);
+            }
+            int recv(char* buffer, int len) {
+                return ssl_sockets::recv(ssl_, buffer, len);
             }
         protected:
             ::SSL* ssl_;

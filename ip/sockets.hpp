@@ -14,8 +14,7 @@ namespace cortono::ip
                 std::memset(&addr, 0, sizeof(sockaddr));
                 addr.sin_family = AF_INET;
                 addr.sin_port = htons(port);
-                std::string ip_addr { ip.data(), ip.length() };
-                ::inet_pton(AF_INET, ip_addr.data(), &addr.sin_addr);
+                ::inet_pton(AF_INET, ip.data(), &addr.sin_addr);
                 struct sockaddr sockaddr;
                 std::memmove(&sockaddr, &addr, sizeof(addr));
                 return sockaddr;
@@ -168,59 +167,63 @@ namespace cortono::ip
         class ssl
         {
             public:
-                static bool init_ssl(const char* ca_cert_file,
-                                     const char* cert_file,
-                                     const char* key_file,
-                                     bool verify_cert = false,
-                                     bool load_private_key = true) {
+                static bool init_ssl() {
                     SSLeay_add_ssl_algorithms();
                     OpenSSL_add_all_algorithms();
                     SSL_load_error_strings();
                     ERR_load_BIO_strings();
-                    /* ::SSL_load_error_strings(); */
-                    /* int r = ::SSL_library_init(); */
-                    /* exitif(!r, "SSL_library_init failed"); */
-                    /* ::OPENSSL_add_all_algorithms_conf(); */
+                    ::SSL_load_error_strings();
+                    ::SSL_library_init();
                     ssl_ctx = ::SSL_CTX_new(::SSLv23_method());
                     exitif(ssl_ctx == nullptr, "SSL_CTX_new failed");
 
-                    if(verify_cert) {
-                        ::SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_PEER, NULL);
-                    }
-                    else {
-                        ::SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_NONE, NULL);
-                    }
-                    if(!::SSL_CTX_load_verify_locations(ssl_ctx, ca_cert_file, nullptr)) {
-                        log_error("SSL_CTX_load_verify_locations error");
-                        ::ERR_print_errors_fp(stderr);
-                        ::exit(1);
-                    }
-                    if(::SSL_CTX_use_certificate_file(ssl_ctx, cert_file, SSL_FILETYPE_PEM) <= 0) {
-                        log_error("SSL_CTX_use_certificate_file error");
-                        ::ERR_print_errors_fp(stdout);
-                        ::exit(1);
-                    }
-                    if(load_private_key) {
-                        if(::SSL_CTX_use_PrivateKey_file(ssl_ctx, key_file, SSL_FILETYPE_PEM) <= 0) {
-                            log_error("SSL_CTX_use_PrivateKey_file error");
-                            ::ERR_print_errors_fp(stdout);
-                            ::exit(1);
-                        }
-                        if(!::SSL_CTX_check_private_key(ssl_ctx)) {
-                            log_error("SSL_CTX_check_private_key error");
-                            ::ERR_print_errors_fp(stdout);
-                            ::exit(1);
-                        }
-                    }
                     static util::exitcall ec([]{
                         ::BIO_free(err_bio);
                         ::SSL_CTX_free(ssl_ctx);
                         ::ERR_free_strings();
                     });
                     log_info("ssl library inited");
+                    return true;
+                }
+                static bool load_certificate(const char* ca_cert_file,
+                                             const char* cert_file,
+                                             const char* key_file,
+                                             bool verify_cert = false,
+                                             bool load_private_key = true) {
+
+                    if(verify_cert) {
+                        ::SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_PEER, NULL);
+                        /* ::SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_NONE, NULL); */
+                    }
+                    else {
+                        ::SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_NONE, NULL);
+                    }
+                    if(load_private_key) {
+                        if(!::SSL_CTX_load_verify_locations(ssl_ctx, ca_cert_file, nullptr)) {
+                            log_error("SSL_CTX_load_verify_locations error");
+                            ::ERR_print_errors_fp(stderr);
+                            /* ::exit(1); */
+                        }
+                        if(::SSL_CTX_use_certificate_file(ssl_ctx, cert_file, SSL_FILETYPE_PEM) <= 0) {
+                            log_error("SSL_CTX_use_certificate_file error");
+                            ::ERR_print_errors_fp(stdout);
+                            /* ::exit(1); */
+                        }
+                        if(::SSL_CTX_use_PrivateKey_file(ssl_ctx, key_file, SSL_FILETYPE_PEM) <= 0) {
+                            log_error("SSL_CTX_use_PrivateKey_file error");
+                            ::ERR_print_errors_fp(stdout);
+                            /* ::exit(1); */
+                        }
+                        if(!::SSL_CTX_check_private_key(ssl_ctx)) {
+                            log_error("SSL_CTX_check_private_key error");
+                            ::ERR_print_errors_fp(stdout);
+                            /* ::exit(1); */
+                        }
+                    }
                     return 0;
                 }
                 static ::SSL* new_ssl_and_set_fd(int fd) {
+                    exitif(ssl_ctx == nullptr, "ssl_ctx is nullptr");
                     ::SSL* ssl = ::SSL_new(ssl_ctx);
                     exitif(ssl == nullptr, "SSL_new failed");
                     int r = ::SSL_set_fd(ssl, fd);
@@ -234,11 +237,14 @@ namespace cortono::ip
                 static void connect(::SSL* ssl) {
                     if(::SSL_connect(ssl) != 1) {
                         ::ERR_print_errors_fp(stdout);
-                        log_fatal("connec to server ssl error");
+                        log_error("connec to server ssl error");
                     }
                 }
                 static bool accept(::SSL* ssl) {
-                    return ::SSL_accept(ssl) == -1 ? false : true;
+                    int ret = ::SSL_accept(ssl);
+                    log_debug(ret);
+                    return ret != 1 ? false : true;
+                    /* return ::SSL_accept(ssl) != 1 ? false : true; */
                 }
                 static int readable(::SSL* ssl) {
                     return ::SSL_pending(ssl);
@@ -246,7 +252,14 @@ namespace cortono::ip
                 static int recv(::SSL* ssl, char* buffer, int bytes) {
                     int read_bytes = ::SSL_read(ssl, buffer, bytes);
                     int ssl_error = ::SSL_get_error(ssl, read_bytes);
-                    if(read_bytes < 0 && ssl_error == SSL_ERROR_WANT_READ) {
+                    /* log_debug(read_bytes, ssl_error, SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE); */
+                    /* log_debug(SSL_ERROR_WANT_ACCEPT, SSL_ERROR_WANT_CONNECT, SSL_ERROR_WANT_X509_LOOKUP, SSL_ERROR_SSL, SSL_ERROR_NONE, SSL_ERROR_SYSCALL); */
+                    /* log_debug(std::strerror(errno)); */
+                    /* ::ERR_print_errors_fp(stdout); */
+                    /* char err_buffer[1024] = "\0"; */
+                    /* ::ERR_error_string(ssl_error, err_buffer); */
+                    /* log_debug(err_buffer); */
+                    if(read_bytes < 0 && (ssl_error == SSL_ERROR_WANT_READ || ssl_error == SSL_ERROR_WANT_WRITE)) {
                         log_error("SSL_read error", ssl_error, "errno", errno, "msg", std::strerror(errno));
                     }
                     return read_bytes;
@@ -258,6 +271,17 @@ namespace cortono::ip
                         log_error("SSL_write error", ssl_error, "errno", errno, "msg", std::strerror(errno));
                     }
                     return write_bytes;
+                }
+                static bool handshake(::SSL* ssl) {
+                    ::SSL_set_accept_state(ssl);
+                    int ret = ::SSL_do_handshake(ssl);
+                    if(ret == 1) {
+                        return true;
+                    }
+                    else {
+                        log_error("handshake error");
+                        return false;
+                    }
                 }
             private:
                 static ::BIO* err_bio;

@@ -8,6 +8,7 @@ namespace cortono::http
     {
         GET = 0,
         POST,
+        CONNECT,
 
         METHOD_NUMS
     };
@@ -32,6 +33,9 @@ namespace cortono::http
             }
             else if(method == HttpMethod::POST) {
                 return "POST";
+            }
+            else if(method== HttpMethod::CONNECT) {
+                return "CONNECT";
             }
             else {
                 return "GET";
