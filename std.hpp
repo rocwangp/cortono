@@ -38,6 +38,7 @@
 #include <unistd.h>
 #include <wait.h>
 #include <sys/epoll.h>
+#include <poll.h>
 
 #include <sys/sendfile.h>
 #include <sys/types.h>

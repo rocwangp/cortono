@@ -35,6 +35,7 @@ namespace cortono::http
                     conn_ptr->on_read([proxy_conn = std::move(proxy_conn)](auto conn_ptr) {
                         log_trace;
                         proxy_conn->handle_read(conn_ptr);
+                        log_trace;
                     });
                 });
             }

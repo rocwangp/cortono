@@ -16,7 +16,7 @@ namespace cortono::http
             {  }
 
             void handle_read(typename Connection::Pointer& conn_ptr) {
-                /* log_debug(conn_ptr->recv_buffer()->to_string()); */
+                log_debug(conn_ptr->recv_buffer()->to_string());
                 int len = parser_.feed(conn_ptr->recv_buffer()->data() + parse_len_,
                                        conn_ptr->recv_buffer()->size() - parse_len_);
 
@@ -40,7 +40,8 @@ namespace cortono::http
                         }
                         else {
 #ifdef CORTONO_USE_SSL
-                            if(std::is_same_v<Client, net::SslClient>) {
+                            log_info("defined CORTONO_USE_SSL, use port 443");
+                            if(std::is_same_v<typename Client::ClientConnType, Connection>) {
                                 port = 443;
                             }
                             else {
@@ -56,20 +57,20 @@ namespace cortono::http
                         conn_ptr->close();
                         return;
                     }
+                    log_debug(ip, port);
                     std::weak_ptr client_weak_conn{ conn_ptr };
-                    auto read_cb = [conn_ptr](auto proxy_conn_ptr) {
-                        /* if(auto strong_conn = client_weak_conn.lock(); strong_conn) { */
-                        conn_ptr->send(proxy_conn_ptr->recv_all());
-                            /* strong_conn->send(std::move(proxy_conn_ptr->recv_all())); */
-                        /* } */
-                        /* else { */
-                        /*     proxy_conn_ptr->close(); */
-                        /* } */
+                    auto read_cb = [client_weak_conn](auto proxy_conn_ptr) {
+                        if(auto strong_conn = client_weak_conn.lock(); strong_conn) {
+                            strong_conn->send(proxy_conn_ptr->recv_all());
+                        }
+                        else {
+                            proxy_conn_ptr->close();
+                        }
                     };
                     auto close_cb = [keep_alive, client_weak_conn](auto) {
                         if(auto strong_conn = client_weak_conn.lock(); strong_conn) {
                             if(!keep_alive) {
-                                /* log_info("close client connection"); */
+                                log_info("close client connection");
                                 strong_conn->close();
                             }
                         }
@@ -81,9 +82,6 @@ namespace cortono::http
                         });
                         if(req_.method == HttpMethod::CONNECT) {
                             conn_ptr->clear_recv_buffer();
-                            conn_ptr->on_read([proxy_conn](auto& conn_ptr) {
-                                proxy_conn->send(conn_ptr->recv_all());
-                            });
                             conn_ptr->send("HTTP/1.1 200 Connection Established\r\n\r\n");
                         }
                         else if(req_.method == HttpMethod::GET) {
@@ -93,14 +91,18 @@ namespace cortono::http
                             conn_ptr->send("HTTP/1.1 500 Internal Server Error");
                             conn_ptr->close();
                         }
+                        conn_ptr->on_read([proxy_conn = std::move(proxy_conn)](auto conn_ptr) {
+                            proxy_conn->send(conn_ptr->recv_all());
+                        });
+                        /* conn_ptr->reset_to_ssl(); */
                     }
                     else {
-                        /* log_info("connect to server error"); */
                         conn_ptr->send("HTTP/1.1 500 Internal Server Error");
                         conn_ptr->close();
                     }
-                    parser_.clear();
-                    parse_len_ = 0;
+                    /* FIXME: boom!!!! why??? */
+                    /* parser_.clear(); */
+                    /* parse_len_ = 0; */
                 }
             }
         private:

@@ -60,13 +60,16 @@ namespace cortono::net
                     events_.resize(event_nums_);
                 int n = ::epoll_wait(epollfd_, &events_[0], events_.size(), timeout);
                 for(int i = 0; i < n; ++i) {
-                    if(readable_event(events_[i].events)) {
+                    bool io_event = false;
+                    if(readable_event(events_[i].events) && events_[i].data.ptr != nullptr) {
                         static_cast<PollerCB*>(events_[i].data.ptr)->read_cb();
+                        io_event = true;
                     }
-                    else if(writeable_event(events_[i].events)) {
+                    if(writeable_event(events_[i].events) && events_[i].data.ptr != nullptr) {
                         static_cast<PollerCB*>(events_[i].data.ptr)->write_cb();
+                        io_event = true;
                     }
-                    else {
+                    if(!io_event && events_[i].data.ptr != nullptr) {
                         static_cast<PollerCB*>(events_[i].data.ptr)->close_cb();
                     }
                 }

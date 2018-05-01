@@ -47,22 +47,28 @@ namespace cortono::http
             }
             void run() {
                 if(is_proxy_server_) {
+#ifdef CORTONO_USE_SSL
                     if(is_https_) {
                         https_proxy_server_ = std::make_unique<https_proxy_server_t>(*this, bindaddr_, port_, concurrency_);
                         https_proxy_server_->run();
                     }
-                    else {
+                    else
+#endif
+                    {
                         http_proxy_server_ = std::make_unique<http_proxy_server_t>(*this, bindaddr_, port_, concurrency_);
                         http_proxy_server_->run();
                     }
                 }
                 else {
                     router_.volidate();
+#ifdef CORTONO_USE_SSL
                     if(is_https_) {
                         https_server_ = std::make_unique<https_server_t>(*this, bindaddr_, port_, concurrency_);
                         https_server_->run();
                     }
-                    else {
+                    else
+#endif
+                    {
                         http_server_ = std::make_unique<http_server_t>(*this, bindaddr_, port_, concurrency_);
                         http_server_->run();
                     }
@@ -74,7 +80,7 @@ namespace cortono::http
         private:
             Router router_;
             bool is_proxy_server_{ false };
-            bool is_https_{ true };
+            bool is_https_{ false };
             unsigned short port_{ 9999 };
             std::string bindaddr_ { "0.0.0.0" };
             std::size_t concurrency_{ 1 };

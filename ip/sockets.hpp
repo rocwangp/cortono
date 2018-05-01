@@ -110,6 +110,24 @@ namespace cortono::ip
                     struct sockaddr addr = ip::address::to_sockaddr(ip, port);
                     return (::connect(fd, &addr, sizeof(addr)) == 0) ? true : false;
                 }
+                static bool is_connecting() {
+                    return errno == EINPROGRESS;
+                }
+                static bool is_connected(int fd) {
+                    int error = 0;
+                    socklen_t len = sizeof(error);
+                    if(::getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &len) != 0) {
+                        return false;
+                    }
+                    else {
+                        if(error == 0) {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                }
                 static bool close(int fd) {
                     return (::close(fd) == 0) ? true : false;
                 }
@@ -192,7 +210,7 @@ namespace cortono::ip
                                              bool load_private_key = true) {
 
                     if(verify_cert) {
-                        ::SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_PEER, NULL);
+                        /* ::SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_PEER, NULL); */
                         /* ::SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_NONE, NULL); */
                     }
                     else {
@@ -234,10 +252,24 @@ namespace cortono::ip
                     ::SSL_shutdown(ssl);
                     ::SSL_free(ssl);
                 }
-                static void connect(::SSL* ssl) {
-                    if(::SSL_connect(ssl) != 1) {
-                        ::ERR_print_errors_fp(stdout);
+                static bool connect(::SSL* ssl) {
+                    int ret = ::SSL_connect(ssl);
+                    log_debug(ret);
+                    if(ret != 1) {
                         log_error("connec to server ssl error");
+                        return false;
+                    }
+                    else {
+                        return true;
+                    }
+                }
+                static bool is_connecting(::SSL* ssl) {
+                    int err = ::SSL_get_error(ssl, -1);
+                    if(err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE) {
+                        return true;
+                    }
+                    else {
+                        return false;
                     }
                 }
                 static bool accept(::SSL* ssl) {
@@ -252,14 +284,7 @@ namespace cortono::ip
                 static int recv(::SSL* ssl, char* buffer, int bytes) {
                     int read_bytes = ::SSL_read(ssl, buffer, bytes);
                     int ssl_error = ::SSL_get_error(ssl, read_bytes);
-                    /* log_debug(read_bytes, ssl_error, SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE); */
-                    /* log_debug(SSL_ERROR_WANT_ACCEPT, SSL_ERROR_WANT_CONNECT, SSL_ERROR_WANT_X509_LOOKUP, SSL_ERROR_SSL, SSL_ERROR_NONE, SSL_ERROR_SYSCALL); */
-                    /* log_debug(std::strerror(errno)); */
-                    /* ::ERR_print_errors_fp(stdout); */
-                    /* char err_buffer[1024] = "\0"; */
-                    /* ::ERR_error_string(ssl_error, err_buffer); */
-                    /* log_debug(err_buffer); */
-                    if(read_bytes < 0 && (ssl_error == SSL_ERROR_WANT_READ || ssl_error == SSL_ERROR_WANT_WRITE)) {
+                    if(read_bytes < 0 && (ssl_error == SSL_ERROR_WANT_READ)) {
                         log_error("SSL_read error", ssl_error, "errno", errno, "msg", std::strerror(errno));
                     }
                     return read_bytes;

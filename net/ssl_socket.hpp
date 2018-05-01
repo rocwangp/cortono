@@ -32,6 +32,22 @@ namespace cortono::net
                 TcpSocket::close();
                 ssl_sockets::close(ssl_);
             }
+            bool handshake() {
+                struct pollfd pfd;
+                pfd.fd = fd_;
+                pfd.events = POLLOUT | POLLERR;
+                if(::poll(&pfd, 1, 0) == 1) {
+                    // TODO: 采用非阻塞
+                    set_option(TcpSocket::block);
+                    bool ret = ip::tcp::ssl::connect(ssl_);
+                    set_option(TcpSocket::non_block);
+                    if(ret) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             SSL* ssl() {
                 return ssl_;
             }

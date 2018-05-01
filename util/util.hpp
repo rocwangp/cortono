@@ -94,16 +94,15 @@ namespace cortono
                         ::abort();
                 }
 
-                template <typename T>
-                logger& operator()(T msg) {
-                    buffer_ << msg;
-                    return *this;
-                }
-
                 template <typename T, typename... Args>
                 logger& operator()(T msg, Args... args) {
                     buffer_ << msg << " ";
-                    return operator()(args...);
+                    if constexpr(sizeof...(Args) == 0) {
+                        return *this;
+                    }
+                    else {
+                        return operator()(args...);
+                    }
                 }
 
 

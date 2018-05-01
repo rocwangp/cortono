@@ -25,40 +25,46 @@ namespace cortono::net
             typedef std::function<void()>      EventCallBack;
         public:
 
-            TcpSocket()
-                : TcpSocket(ip::tcp::sockets::block_socket())
-            {
-            }
+            TcpSocket() : TcpSocket(ip::tcp::sockets::block_socket())
+            { }
 
             TcpSocket(int fd)
                 : fd_(fd),
                   events_(EventPoller::NONE_EVENT),
                   poller_cbs_(std::make_shared<EventPoller::PollerCB>())
-            {
-            }
+            { }
 
-            ~TcpSocket() {
-                ip::tcp::sockets::close(fd_);
-                /* log_info("~TcpSocket"); */
-            }
+            ~TcpSocket() { ip::tcp::sockets::close(fd_); }
 
             bool bind(std::string_view ip, unsigned short port) {
                 return ip::tcp::sockets::bind(fd_, ip, port);
             }
 
-            bool listen(long long int listen_nums = INT64_MAX) {
+            bool listen(long long int listen_nums = std::numeric_limits<int>::max()) {
                 return ip::tcp::sockets::listen(fd_, listen_nums);
             }
             int accept() {
                 return ip::tcp::sockets::accept(fd_);
             }
             bool close() {
-                assert(poller_cbs_->close_cb);
+                exitif(poller_cbs_->close_cb != nullptr, "close cb is nullptr");
                 poller_cbs_->close_cb();
                 return true;
             }
             bool connect(std::string_view ip, unsigned short port) {
                 return ip::tcp::sockets::connect(fd_, ip, port);
+            }
+            // 非阻塞connect的后续处理，当fd可读时会调用，进而判断是否可写
+            bool handshake() {
+                struct pollfd pfd;
+                pfd.fd = fd_;
+                pfd.events = POLLOUT | POLLERR;
+                if(::poll(&pfd, 1, 0) == 1) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
             void tie(std::shared_ptr<EventPoller> poller) {
                 weak_poller_ = poller;
@@ -127,7 +133,7 @@ namespace cortono::net
                 }
             }
 
-            int fd() {
+            int fd() const {
                 return fd_;
             }
             void set_read_callback(EventCallBack cb) {
@@ -140,31 +146,41 @@ namespace cortono::net
                 poller_cbs_->close_cb = cb;
             }
             int send(const char* buffer, int len) {
-                if(!is_ssl_) {
-                    return ip::tcp::sockets::send(fd_, buffer, len);
-                }
-                else {
+#ifdef CORTONO_USE_SSL
+                if(is_ssl_) {
                     return ip::tcp::ssl::send(ssl_, buffer, len);
+                }
+                else
+#endif
+                {
+                    return ip::tcp::sockets::send(fd_, buffer, len);
                 }
             }
             int recv(char* buffer, int len) {
-                if(!is_ssl_) {
-                    return ip::tcp::sockets::recv(fd_, buffer, len);
-                }
-                else {
+#ifdef CORTONO_USE_SSL
+                if(is_ssl_) {
                     return ip::tcp::ssl::recv(ssl_, buffer, len);
                 }
+                else
+#endif
+                {
+                    return ip::tcp::sockets::recv(fd_, buffer, len);
+                }
             }
+#ifdef CORTONO_USE_SSL
             void reset_to_ssl_socket() {
                 ip::tcp::ssl::load_certificate(CA_CERT_FILE, SERVER_CERT_FILE, SERVER_KEY_FILE);
                 ssl_ = ip::tcp::ssl::new_ssl_and_set_fd(fd_);
-                ip::tcp::ssl::accept(ssl_);
-                /* ip::tcp::ssl::handshake(ssl_); */
+                /* ip::tcp::ssl::accept(ssl_); */
+                ip::tcp::ssl::handshake(ssl_);
                 is_ssl_ = true;
             }
+#endif
         protected:
+#ifdef CORTONO_USE_SSL
             ::SSL* ssl_{ nullptr };
             bool is_ssl_{ false };
+#endif
             int fd_;
             uint32_t events_;
             std::weak_ptr<EventPoller> weak_poller_;
