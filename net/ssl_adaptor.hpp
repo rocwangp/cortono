@@ -3,7 +3,6 @@
 #include "../std.hpp"
 #include "eventloop.hpp"
 #include "adaptor.hpp"
-#include "ssl_connection.hpp"
 
 namespace cortono::net
 {

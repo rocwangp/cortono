@@ -7,6 +7,7 @@
 
 namespace cortono::http
 {
+    // Connection仅仅用来定义不同的连接类型，作为handle_read的参数
     template <typename Handler, typename Connection>
     class WebConnection
     {
@@ -15,6 +16,8 @@ namespace cortono::http
                 : handler_(handler)
             {
             }
+            // 对于TCP和SSL，handle_read的处理完全相同
+            // 不同之处完全隐藏在TcpConnection和SslConnection的同名接口下
             void handle_read(typename Connection::Pointer& conn_ptr) {
                 /* log_debug(conn_ptr->recv_buffer()->to_string()); */
                 int len = parser_.feed(conn_ptr->recv_buffer()->data(), conn_ptr->recv_buffer()->size());
@@ -122,8 +125,6 @@ namespace cortono::http
                     buffer << res_.body;
                     return { false, buffer.str() };
                 }
-                /* buffer << res_.body; */
-                /* return buffer.str(); */
             }
         private:
             Handler& handler_;

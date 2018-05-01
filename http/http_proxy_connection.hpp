@@ -80,21 +80,24 @@ namespace cortono::http
                         conn_ptr->on_close([proxy_conn](auto) {
                             proxy_conn->close();
                         });
+                        // 如果首次是CONNECT请求，需要在连接到目标服务器之后返回”连接成功“信息
                         if(req_.method == HttpMethod::CONNECT) {
                             conn_ptr->clear_recv_buffer();
                             conn_ptr->send("HTTP/1.1 200 Connection Established\r\n\r\n");
                         }
+                        // 如果首次是GET请求，直接转发
                         else if(req_.method == HttpMethod::GET) {
                             proxy_conn->send(conn_ptr->recv_all());
                         }
+                        // TODO: 支持其它请求类型
                         else {
                             conn_ptr->send("HTTP/1.1 500 Internal Server Error");
                             conn_ptr->close();
                         }
+                        // 处理完首次请求后重置可读回调，直接转发来往数据
                         conn_ptr->on_read([proxy_conn = std::move(proxy_conn)](auto conn_ptr) {
                             proxy_conn->send(conn_ptr->recv_all());
                         });
-                        /* conn_ptr->reset_to_ssl(); */
                     }
                     else {
                         conn_ptr->send("HTTP/1.1 500 Internal Server Error");

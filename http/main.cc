@@ -58,6 +58,7 @@ int main()
         res.send_file("web/" + s);
     });
 #endif
-    app.multithread().port(10000).run();
+
+    app.multithread().https().port(10000).run();
     return 0;
 }

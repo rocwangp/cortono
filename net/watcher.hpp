@@ -8,7 +8,8 @@ namespace cortono::net
     {
         public:
             Watcher() {
-                ::pipe(fd_);
+                int ret = ::pipe(fd_);
+                (void)ret;
             }
 
             ~Watcher() {
@@ -17,12 +18,14 @@ namespace cortono::net
             }
 
             void notify() {
-                ::write(fd_[1], "0", 1);
+                int ret = ::write(fd_[1], "0", 1);
+                (void)ret;
             }
 
             void clear() {
                 char buffer[2];
-                ::read(fd_[0], buffer, sizeof(buffer));
+                int ret = ::read(fd_[0], buffer, sizeof(buffer));
+                (void)ret;
             }
 
             int read_fd() {

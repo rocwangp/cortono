@@ -1,5 +1,4 @@
 #pragma once
-#include "config.hpp"
 #include "../std.hpp"
 #include "http_server.hpp"
 #include "http_router.hpp"
@@ -44,6 +43,7 @@ namespace cortono::http
             }
             self_t& https() {
                 is_https_ = true;
+                return *this;
             }
             void run() {
                 if(is_proxy_server_) {

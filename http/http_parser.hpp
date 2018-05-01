@@ -19,6 +19,7 @@ namespace cortono::http
                 PARSE_DONE,
                 PARSE_ERROR
             };
+            // TODO: 改用状态机解析HTTP请求报文段
             int feed(const char* buffer, int len) {
                 int feed_len = 0;
                 int ret = 0;

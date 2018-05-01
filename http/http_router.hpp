@@ -59,6 +59,9 @@ namespace cortono::http
         static constexpr std::size_t pos = P;
     };
 
+    // std::vector<int64_t> std::vector<uint64_t> std::vector<double> std::string<std::string>四种容器中都存储若干数据
+    // 给出目标函数的参数类型列表，如int64_t, std::string, double, int64_t, uint64_t, ....
+    // 需要依次将容器中的数据传给目标函数，保证类型匹配
     template <typename F, int Nint, int Nuint, int Ndouble, int Nstring, typename S1, typename S2>
     struct call {};
 
@@ -104,6 +107,13 @@ namespace cortono::http
         }
     };
 
+    // 目标函数的参数列表可以是
+    //  1.const Request&, Response&, ...(int64_t, uint64_t, double, std::string中的一个或若干个(可重复))
+    //  2.const Request&, ...(int64_t, uint64_t, double, std::string中的一个或若干个(可重复))
+    //  3....(int64_t, uint64_t, double, std::string中的一个或若干个(可重复))
+    // 将这三种函数类型统一包装成
+    //   const Request&, Response&, ...(int64_t, uint64_t, double, std::string中的一个或若干个(可重复))
+    // 且调用时仍然以原参数类型传参
     template <typename Func, typename... ArgsWrapper>
     struct function_wrapper
     {
@@ -134,6 +144,8 @@ namespace cortono::http
                 };
             }
         }
+
+        // 提取参数列表中非const Request&, Response&中的参数类型
         template <typename... Args>
         struct handler_type_helper
         {

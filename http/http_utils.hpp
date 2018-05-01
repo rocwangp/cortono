@@ -4,6 +4,7 @@
 
 namespace cortono::http::black_magic
 {
+    // 提取模板类的模板参数
     template <typename...>
     struct template_arg_traits;
 
@@ -14,9 +15,11 @@ namespace cortono::http::black_magic
         using arg_type = std::tuple_element_t<N, std::tuple<Args...>>;
     };
 
+    // 提取函数的返回值，参数个数以及参数类型
     template <typename T>
     struct function_traits;
 
+    // 对函数对象的特化版本
     template <typename ClassType, typename R, typename... Args>
     struct function_traits<R(ClassType::*)(Args...)>
     {
@@ -48,12 +51,14 @@ namespace cortono::http::black_magic
         using arg = typename parent_t::template arg<N>;
     };
 
+    // 获取第N个参数类型
     template <std::size_t N, typename... Args>
     struct get_nth_type
     {
         using type = std::tuple_element_t<N, std::tuple<Args...>>;
     };
 
+    // 静态容器，保存类型，可在头尾插入
     template <typename... T>
     struct S
     {
@@ -69,6 +74,7 @@ namespace cortono::http::black_magic
         using type = T;
     };
 
+    // 仅仅用于进行类型映射，因为url参数中只支持<int> <uint> <double> <string>四种
 #define INTERNAL_TYPE_MAPPING(t1, t2) \
     template <> \
     struct promote<t1> \
