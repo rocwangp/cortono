@@ -128,6 +128,12 @@ namespace cortono::ip
                         }
                     }
                 }
+                static int get_error(int fd) {
+                    int err = 0;
+                    socklen_t len = sizeof(err);
+                    ::getsockopt(fd, SOL_SOCKET, SO_ERROR, &err, &len);
+                    return err;
+                }
                 static bool close(int fd) {
                     return (::close(fd) == 0) ? true : false;
                 }

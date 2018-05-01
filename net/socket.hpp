@@ -59,7 +59,7 @@ namespace cortono::net
                 struct pollfd pfd;
                 pfd.fd = fd_;
                 pfd.events = POLLOUT | POLLERR;
-                if(::poll(&pfd, 1, 0) == 1) {
+                if(::poll(&pfd, 1, 0) == 1 && ip::tcp::sockets::get_error(fd_) == 0) {
                     return true;
                 }
                 else {
