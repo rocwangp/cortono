@@ -36,11 +36,11 @@ namespace cortono::net
             }
         protected:
             int accept_client() {
-                int fd = ip::tcp::sockets::accept(socket_.fd());
+                int fd = socket_.accept();
                 if(fd == -1) {
                     if(errno == EMFILE) {
                         util::io::close(idle_fd_);
-                        fd = ip::tcp::sockets::accept(socket_.fd());
+                        fd = socket_.accept();
                         ip::tcp::sockets::close(fd);
                         idle_fd_ = util::io::open("dev/null");
                     }
