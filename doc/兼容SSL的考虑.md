@@ -1,6 +1,6 @@
 # 兼容SSL的考虑
 
-由于之前的网络框架都只集中在对TCP连接的封装，所以当遇到需要兼容SSL的时候就需要对程序做些修改
+由于之前的网络框架都只集中在对TCP连接的封装，所以当遇到需要兼容SSL的时候就要对程序做些修改
 
 在修改初期，只是通过宏定义来有选择的执行TCP操作或SSL操作，如对于读取数据的操作
 
@@ -22,7 +22,7 @@
 template <typename Socket>
 class Connection : public std::enable_shared_from_this<Socket>
 {
-	public:
+    public:
     	using socket_t = Socket;
     	...
     private:
@@ -40,14 +40,14 @@ using SslConnection = Connection<SslSocket>;
 
 ## 重新实现TcpSocket和SslSocket
 
-所以接下来的主要任务是实现TcpSocket以及SslSocket，而TcpSocket直接沿用之前的定义即可，无需变化。对于SslSocket，它实际上是在TCP上封装了一层SSL，也就是除了需要的套接字fd之外，还需要ssl，那么完全可以令SslSocket继承自TcpSocket，然后增加ssl成员变量
+接下来的主要任务是实现TcpSocket以及SslSocket，而TcpSocket直接沿用之前的定义即可，无需变化。对于SslSocket，它实际上是在TCP上封装了一层SSL，也就是除了需要的套接字fd之外，还需要ssl，那么完全可以令SslSocket继承自TcpSocket，然后增加ssl成员变量
 
 同时，TCP和SSL实际上也只是读写api的不同，那么就可以直接在SslSocket中隐藏掉TcpSocket的同名接口重新实现（这里无需采用虚函数的覆盖，因为没有多态的使用需求）
 
 ```c++
 class TcpSocket
 {
-	public:
+    public:
     	TcpSocket(int fd) : fd_(fd) {}
     	...
     	
@@ -60,7 +60,7 @@ class TcpSocket
 
 class SslSocket : public TcpSocket
 {
-	public:
+    public:
     	SslSocket(int fd, SSL* ssl) : TcpSocket(fd), ssl_(ssl) {}
     	...
     	
@@ -80,7 +80,7 @@ class SslSocket : public TcpSocket
 template <typename Socket>
 class Connection : public std::enable_shared_from_this<Socket>
 {
-	public:
+    public:
     	using socket_t = Socket;
     	
     	template <typename... Args>
@@ -98,5 +98,24 @@ class Connection : public std::enable_shared_from_this<Socket>
 
 ------
 
-至此Connection设计完成，其中大部分组件沿用之前的实现，完整代码参考[connection.hpp](https://github.com/rocwangp/cortono/blob/master/net/connection.hpp)，[socket.hpp](https://github.com/rocwangp/cortono/blob/master/net/socket.hpp)以及[ssl_socket.hpp](https://github.com/rocwangp/cortono/blob/master/net/ssl_socket.hpp)
+至此Connection设计完成，其中大部分组件沿用之前的实现
+
+沿用这个思路，又实现了TcpAdaptor和SslAdaptor分别对应TCP和SSL的监听对象，其中SslAdaptor继承自TcpAdaptor，重新实现了接收请求的回调方法
+
+最后继续修改服务器的总框架Service，继续沿用模板技巧，分别定义TcpService和SslService
+
+```c++
+using TcpService = Service<TcpConnection, TcpAdaptor>
+using SslService = Service<SslConnection, SslAdaptor>
+```
+
+另外一个修改是之前Connection对象的构造是在Service中进行，而如今程序兼容SSL，Connection对象的构造函数参数个数不确定，所以改为在Adaptor中构造完传回Service
+
+完整代码参考
+
+连接对象[connection.hpp](https://github.com/rocwangp/cortono/blob/master/net/connection.hpp)，[socket.hpp](https://github.com/rocwangp/cortono/blob/master/net/socket.hpp)以及[ssl_socket.hpp](https://github.com/rocwangp/cortono/blob/master/net/ssl_socket.hpp)，
+
+接收对象与服务器[adaptor.hpp](https://github.com/rocwangp/cortono/blob/master/net/adaptor.hpp)，[ssl_adaptor.hpp](https://github.com/rocwangp/cortono/blob/master/net/ssl_adaptor.hpp)和[service.hpp](https://github.com/rocwangp/cortono/blob/master/net/service.hpp)
+
+
 
