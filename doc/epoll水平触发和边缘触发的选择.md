@@ -36,5 +36,5 @@ epoll中有两种触发模式，一种是水平触发（LT），另一种是边�
 
 ------
 
-边缘触发接收/发送数据的完整代码[参考这里](https://github.com/rocwangp/cortono/blob/master/net/connection.hpp)的handle_read/handle_write函数
+边缘触发接收/发送数据的完整代码[参考这里](https://github.com/rocwangp/cortono/blob/master/net/connection.hpp#L201)
 

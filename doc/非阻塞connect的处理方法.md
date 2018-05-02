@@ -89,5 +89,5 @@ void handle_read() {
 
 ------
 
-完整代码参考[客户端连接服务器](https://github.com/rocwangp/cortono/blob/master/net/client.hpp)和[正在建立连接状态的处理](https://github.com/rocwangp/cortono/blob/master/net/connection.hpp)的handle_read/handle_handshake函数
+完整代码参考[客户端连接服务器](https://github.com/rocwangp/cortono/blob/master/net/client.hpp#L26)和[连接状态的处理](https://github.com/rocwangp/cortono/blob/master/net/connection.hpp#L201)
 
