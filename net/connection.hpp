@@ -62,18 +62,18 @@ namespace cortono::net
                     socket_.set_close_callback(std::bind(&Connection::handle_close, this));
                     socket_.set_write_callback(std::bind(&Connection::handle_write, this));
                     socket_.enable_reading();
-                    // 由于采用边缘触发，即使打开可读监听也不会无限调用可读回调
+                    // 由于采用边缘触发，即使打开可读监听也不会无限调用可写回调
                     socket_.enable_writing();
                 }
 
+                ConnState conn_state() const {
+                    return conn_state_;
+                }
                 bool is_closed() {
                     return conn_state_ == ConnState::Closed;
                 }
                 void set_conn_state(ConnState state) {
                     conn_state_ = state;
-                }
-                ConnState conn_state() const {
-                    return conn_state_;
                 }
                 // TcpSocket提升到SslSocket，用处不大
                 void reset_to_ssl() {
@@ -114,11 +114,11 @@ namespace cortono::net
                 void on_error(ErrorCallBack cb) {
                     error_cb_ = std::move(cb);
                 }
-                std::string name() {
-                    return name_;
-                }
                 EventLoop* loop() {
                     return loop_;
+                }
+                std::string name() {
+                    return name_;
                 }
                 std::string recv_all() {
                     return recv_buffer_->read_all();

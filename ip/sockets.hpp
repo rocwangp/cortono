@@ -192,12 +192,12 @@ namespace cortono::ip
         {
             public:
                 static bool init_ssl() {
-                    SSLeay_add_ssl_algorithms();
-                    OpenSSL_add_all_algorithms();
-                    SSL_load_error_strings();
-                    ERR_load_BIO_strings();
+                    ::SSLeay_add_ssl_algorithms();
+                    ::OpenSSL_add_all_algorithms();
                     ::SSL_load_error_strings();
+                    ::ERR_load_BIO_strings();
                     ::SSL_library_init();
+                    // 使用SSL V3,V2
                     ssl_ctx = ::SSL_CTX_new(::SSLv23_method());
                     exitif(ssl_ctx == nullptr, "SSL_CTX_new failed");
 
@@ -216,32 +216,37 @@ namespace cortono::ip
                                              bool load_private_key = true) {
 
                     if(verify_cert) {
+                        // 要求核查对方证书
                         /* ::SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_PEER, NULL); */
-                        /* ::SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_NONE, NULL); */
                     }
                     else {
+                        // 不要求核查证书
                         ::SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_NONE, NULL);
                     }
                     if(load_private_key) {
+                        // 加载CA证书
                         if(!::SSL_CTX_load_verify_locations(ssl_ctx, ca_cert_file, nullptr)) {
                             log_error("SSL_CTX_load_verify_locations error");
                             ::ERR_print_errors_fp(stderr);
-                            /* ::exit(1); */
+                            ::exit(1);
                         }
+                        // 加载自己的证书
                         if(::SSL_CTX_use_certificate_file(ssl_ctx, cert_file, SSL_FILETYPE_PEM) <= 0) {
                             log_error("SSL_CTX_use_certificate_file error");
                             ::ERR_print_errors_fp(stdout);
-                            /* ::exit(1); */
+                            ::exit(1);
                         }
+                        // 加载自己的私钥
                         if(::SSL_CTX_use_PrivateKey_file(ssl_ctx, key_file, SSL_FILETYPE_PEM) <= 0) {
                             log_error("SSL_CTX_use_PrivateKey_file error");
                             ::ERR_print_errors_fp(stdout);
-                            /* ::exit(1); */
+                            ::exit(1);
                         }
+                        // 判断私钥是否正确
                         if(!::SSL_CTX_check_private_key(ssl_ctx)) {
                             log_error("SSL_CTX_check_private_key error");
                             ::ERR_print_errors_fp(stdout);
-                            /* ::exit(1); */
+                            ::exit(1);
                         }
                     }
                     return 0;
@@ -282,7 +287,6 @@ namespace cortono::ip
                     int ret = ::SSL_accept(ssl);
                     log_debug(ret);
                     return ret != 1 ? false : true;
-                    /* return ::SSL_accept(ssl) != 1 ? false : true; */
                 }
                 static int readable(::SSL* ssl) {
                     return ::SSL_pending(ssl);
