@@ -24,8 +24,8 @@ namespace cortono::net
                 int fd = ip::tcp::sockets::nonblock_socket();
                 bool connected = false;
                 if(!ip::tcp::sockets::connect(fd, ip_address, port)) {
-                    // error == EINPROGRESS
-                    // FIXME: 多线程下error的安全性
+                    // errno == EINPROGRESS
+                    // FIXME: 多线程下errno的安全性
                     if(!ip::tcp::sockets::is_connecting()) {
                         log_error("fail to connect to server...", ip, port, std::strerror(errno));
                         return nullptr;

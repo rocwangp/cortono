@@ -45,7 +45,6 @@ namespace cortono::net
                 for(auto& cb : pending_functors_) {
                     cb();
                 }
-                /* decltype(pending_functors_)().swap(pending_functors_); */
                 pending_functors_.clear();
             }
             void handle_time_func() {

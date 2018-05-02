@@ -165,29 +165,6 @@ namespace cortono::net
                 }
                 void send(const std::string& msg) {
                     send(msg.data(), msg.size());
-                    /* if(msg.empty()) { */
-                    /*     return; */
-                    /* } */
-                    /* if(!send_buffer_->empty() || conn_state_ == ConnState::HandShaking) { */
-                    /*     log_trace("handshaking, store data to send_buffer"); */
-                    /*     send_buffer_->append(msg); */
-                    /*     return; */
-                    /* } */
-                    /* auto bytes = socket_.send(msg.data(), msg.size()); */
-                    /* if(bytes == 0) { */
-                    /*     log_info("send return 0, close connection..."); */
-                    /*     handle_close(); */
-                    /* } */
-                    /* else if(bytes == -1) { */
-                    /*     /1* if(errno == EINTR || errno == EAGAIN) { *1/ */
-                    /*         /1* log_info("send is -1 and errno is EINTR | EAGAIN, call send again..."); *1/ */
-                    /*         /1* /2* send(msg); *2/ *1/ */
-                    /*     /1* } *1/ */
-                    /* } */
-                    /* else if(bytes != static_cast<int>(msg.size())) { */
-                    /*     socket_.set_write_callback(std::bind(&Connection::handle_write, this)); */
-                    /*     send_buffer_->append(msg.substr(bytes)); */
-                    /* } */
                 }
                 void sendfile(const std::string& filename) {
                     if(filename.empty()) {
@@ -293,7 +270,6 @@ namespace cortono::net
                     }
                 }
                 void handle_close() {
-                    /* is_closed_ = true; */
                     conn_state_ = ConnState::Closed;
                     socket_.disable_all();
                     if(close_cb_)
