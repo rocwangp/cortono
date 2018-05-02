@@ -37,6 +37,8 @@ SSL_CTX_use_PrivateKey_file(ssl_ctx, SERVER_KEY_FILE, SSL_FILETYPE_PEM);
 SSL_CTX_check_private_key(ssl_ctx);
 ```
 
+> 注：上述三步只需要在程序启动时执行一次，后续无须多次执行
+
 ## 建立连接
 
 当需要建立连接时，首先调用TCP相关接口接收到连接套接字fd，然后创建和绑定SSL对象
@@ -77,6 +79,8 @@ SSL_free(ssl);
 ```c
 SSL_CTX_free(ssl_ctx);
 ```
+
+
 
 ------
 
