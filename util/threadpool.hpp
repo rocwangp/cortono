@@ -12,7 +12,11 @@ namespace cortono::util
             {  }
 
             ~threadpool()
-            { }
+            {
+                if(!quit_) {
+                    quit();
+                }
+            }
 
             void start(int thread_nums = std::thread::hardware_concurrency()) {
                 for(int i = 0; i < thread_nums; ++i) {

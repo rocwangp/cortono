@@ -152,13 +152,13 @@ namespace cortono::http
                 return version_.first == head && version_.second == tail;
             }
             void clear() {
-                state_ = ParseState::PARSE_LINE;
-                method_ = HttpMethod::GET;
-                raw_url_.clear();
-                req_url_.clear();
-                body_.clear();
-                query_kv_pairs_.clear();
-                header_kv_pairs_.clear();
+                /* state_ = ParseState::PARSE_LINE; */
+                /* method_ = HttpMethod::GET; */
+                /* raw_url_.clear(); */
+                /* req_url_.clear(); */
+                /* body_.clear(); */
+                /* query_kv_pairs_.clear(); */
+                /* header_kv_pairs_.clear(); */
             }
         private:
             ParseState state_ { ParseState::PARSE_LINE };

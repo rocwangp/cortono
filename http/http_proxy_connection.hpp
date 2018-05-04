@@ -94,6 +94,10 @@ namespace cortono::http
                             conn_ptr->close();
                         }
                         // 处理完首次请求后重置可读回调，直接转发来往数据
+                        // **********注意*************
+                        // 当前WebProxyConnection对象唯一的一个智能指针保存在conn_ptr的on_read里面
+                        // 一旦conn_ptr的可读回调被更改，WebProxyConnection对象也就会被析构
+                        // 所以末尾的两行注释如果在conn_ptr->on_read(...)之后执行就会出错
                         conn_ptr->on_read([proxy_conn = std::move(proxy_conn)](auto conn_ptr) {
                             proxy_conn->send(conn_ptr->recv_all());
                         });
@@ -102,9 +106,9 @@ namespace cortono::http
                         conn_ptr->send("HTTP/1.1 500 Internal Server Error");
                         conn_ptr->close();
                     }
-                    /* FIXME: boom!!!! why??? */
-                    /* parser_.clear(); */
+                    /* *********Boom********* */
                     /* parse_len_ = 0; */
+                    /* parser_.clear(); */
                 }
             }
         private:

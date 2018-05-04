@@ -202,7 +202,7 @@ namespace cortono::ip
                     exitif(ssl_ctx == nullptr, "SSL_CTX_new failed");
 
                     static util::exitcall ec([]{
-                        ::BIO_free(err_bio);
+                        /* ::BIO_free(err_bio); */
                         ::SSL_CTX_free(ssl_ctx);
                         ::ERR_free_strings();
                     });
@@ -319,10 +319,8 @@ namespace cortono::ip
                     }
                 }
             private:
-                static ::BIO* err_bio;
                 static ::SSL_CTX* ssl_ctx;
         };
-        ::BIO* ssl::err_bio = nullptr;
         ::SSL_CTX* ssl::ssl_ctx = nullptr;
 #endif
     }

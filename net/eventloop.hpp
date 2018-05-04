@@ -25,7 +25,9 @@ namespace cortono::net
             }
 
             void quit() {
+                log_info("eventloop is quiting");
                 quit_.store(true);
+                wake_up();
             }
             void loop() {
                 while(!quit_) {

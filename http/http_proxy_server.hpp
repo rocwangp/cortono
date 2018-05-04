@@ -25,6 +25,9 @@ namespace cortono::http
 
             void run() {
                 service_.start(concurrency_);
+                /* loop_.runAfter(std::chrono::seconds(2), [this]{ */
+                /*     service_.stop(); */
+                /* }); */
                 loop_.loop();
             }
         private:

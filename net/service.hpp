@@ -56,8 +56,8 @@ namespace cortono::net
             }
 
             ~Service() {
-                for(auto loop : eventloops_) {
-                    loop->quit();
+                if(!is_quit_) {
+                    stop();
                 }
             }
             void on_conn(ConnCallBack cb) {
@@ -89,8 +89,24 @@ namespace cortono::net
                         loop.loop();
                     });
                 }
-                util::threadpool::instance().start();
+                util::threadpool::instance().start(thread_nums);
                 acceptor_.start();
+            }
+            void stop() {
+                for(auto it = connections_.begin(); it != connections_.end();) {
+                    (it++)->second->close();
+                }
+                log_info("connection close done, start quit eventloops");
+                for(auto& loop : eventloops_) {
+                    loop->quit();
+                }
+                log_info("eventloops quit done, start close threadpool");
+                util::threadpool::instance().quit();
+                log_info("threadpool close done, start quit main loop");
+                loop_->quit();
+                log_info("main loop quit done, service quit done");
+
+                is_quit_ = true;
             }
         private:
             void remove_connection(const typename Connection::Pointer& conn) {
@@ -108,6 +124,8 @@ namespace cortono::net
             MessageCallBack msg_cb_{ nullptr };
             ErrorCallBack error_cb_{ nullptr };
             CloseCallBack close_cb_{ nullptr };
+
+            bool is_quit_{ false };
     };
 
     using TcpService = Service<>;
