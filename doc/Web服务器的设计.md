@@ -38,7 +38,7 @@ app.register_rule("/adder/<int>/<int>")([](int a, int b) {
     oss << a + b;
     return oss.str();
 });
-// 接收一个一个请求对象，一个响应对象，一个路径（默认是string类型）
+// 接收一个请求对象，一个响应对象，一个路径（默认是string类型）
 app.register_rule("/web/<path>")([](const Request& req, Response& res, std::string path) {
     ...
 });
@@ -81,7 +81,7 @@ std::function<void(const Request&, Response&, const routing_params&)> handler;
 
 至此，当程序解析完HTTP请求信息后准备传参给用户执行函数时，只需要传入固定类型给handler即可（routing_params的构造会在最后提及）
 
-现在handler拥有用于想要或者不想要的所有参数数据，接下来的首要任务是当进入到handler后如何将用户想要的哪些参数传过去，这里涉及到模板元编程的技巧
+现在handler拥有用户想要或者不想要的所有参数数据，接下来的首要任务是如何将用户想要的参数传过去，这里涉及到模板元编程的技巧
 
 获取函数的返回值，参数个数以及参数类型
 
@@ -146,7 +146,7 @@ struct function_traits : public function_traits<decltype(&T::operator())>
 
 ## 路由函数的二次包装
 
-函数萃取的主要目的是获取每个参数的类型，接下来就可以进行特定的类型绑定了，回想一下handler的类型
+函数萃取的主要目的是获取每个参数的类型，实际上这里只用于获取是否包含Request和Response两个类型，接下来就可以进行特定的类型绑定了，回想一下handler的类型
 
 ```c++
 std::function<void(const Request&, Response&, const routing_params&)> handler0;
@@ -158,7 +158,7 @@ std::function<void(const Request&, Response&, const routing_params&)> handler0;
 std::function<void(const Request&, Response&, Args...)> handler;
 ```
 
-实际上这是两个handler，作用在不同的作用域下（注意为了区分已经将第一个handler改名成handler0）
+实际上这是两个handler，作用在不同的作用域下（为了区分已经将第一个handler改名成handler0）
 
 
 
@@ -167,7 +167,8 @@ std::function<void(const Request&, Response&, Args...)> handler;
 ```c++
 // 原始类型是std::function<std::string(const routing_params&)>;
 // 也就是Args... 等价于 const routing_params
-// std::function<void(const Request&, Response&, Args...)>与目标类型std::function<void(const Request&, Response&, const routing_params&)>匹配
+// std::function<void(const Request&, Response&, Args...)>与目标类型
+// std::function<void(const Request&, Response&, const routing_params&)>匹配
 template <typename Func typename... Args>
 void set_(Func f) {
 	handler = [f = std::move(f)](const Request&, Response& res, Args... args) {
@@ -216,5 +217,5 @@ void set_(Func f) {
 
 实际上handler0只是handler的又一层包装，handler仅仅作用在一个函数对象中，因为C++允许一个重载了operator()函数的类隐式转换成std::funciton<...>对象，这里可以参考源码[http_router.hpp](https://github.com/rocwangp/cortono/blob/master/http/http_router.hpp#L118)
 
-最后的任务就是传参问题了，在后端的解析过程中，已经将所有值类型的参数保存在routing_params中了，现在的问题是如何根据目标参数列表将routing_params中的值按照类型依次填到形参中，方法是根据当前特点类型进行特化，分别特化出int64_t，uint64_t，double，string四种版本，同时采用4个int类型的模板参数记录每个类型是当前第几个遇到的（实际上就是在type_params中的下标），完整代码可以参考[http_router.hpp](https://github.com/rocwangp/cortono/blob/master/http/http_router.hpp#L172)
+最后的任务就是传参问题了，在后端的解析过程中，已经将所有值类型的参数保存在routing_params中了，现在的问题是如何根据目标参数列表将routing_params中的值按照类型依次填到形参中，方法是根据特定类型进行特化，分别特化出int64_t，uint64_t，double，string四种版本，同时采用4个int类型的模板参数记录每个类型出现的个数（实际上就是在type_params中的下标），完整代码可以参考[http_router.hpp](https://github.com/rocwangp/cortono/blob/master/http/http_router.hpp#L172)
 
