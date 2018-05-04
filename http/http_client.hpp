@@ -52,13 +52,14 @@ namespace cortono::http
             }
             std::string gen_request() {
                 std::stringstream oss;
-                oss  << "GET " << url_ <<
+                oss  << "GET " << url_
+                     <<
 #ifdef CORTONO_USE_SSL
-                    " HTTP/"
+                     " HTTP/"
 #else
-                    " HTTP/"
+                     " HTTP/"
 #endif
-                    << version_.first << "." << version_.second << "\r\n";
+                     << version_.first << "." << version_.second << "\r\n";
                 if(proxy_client_) {
                     oss << "Proxy-Connection: ";
                 }

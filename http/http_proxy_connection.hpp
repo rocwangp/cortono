@@ -19,7 +19,6 @@ namespace cortono::http
                 log_debug(conn_ptr->recv_buffer()->to_string());
                 int len = parser_.feed(conn_ptr->recv_buffer()->data() + parse_len_,
                                        conn_ptr->recv_buffer()->size() - parse_len_);
-
                 parse_len_ += len;
                 if(parser_.done()) {
                     req_ = std::move(parser_.to_request());

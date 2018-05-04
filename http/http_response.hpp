@@ -51,15 +51,8 @@ namespace cortono::http
                 filesize = 0;
                 if(filesystem::is_directory(filename)) {
                     filename.append("index.html");
-                    /* for(auto& p : filesystem::recursive_directory_iterator(filename)) { */
-                    /*     if(filesystem::is_regular_file(p)) { */
-                    /*         filesize += filesystem::file_size(p); */
-                    /*     } */
-                    /* } */
                 }
-                /* else { */
-                    filesize = filesystem::file_size(filename);
-                /* } */
+                filesize = filesystem::file_size(filename);
             }
             else {
                 log_info("file is not exist");
