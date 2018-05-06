@@ -89,9 +89,12 @@ namespace cortono::net
 
             Timer::timer_id set_timer(Timer::time_point&& point, Timer::milliseconds&& interval, std::function<void()>&& cb) {
                 Timer timer(std::move(point), std::move(interval), std::move(cb));
-                timers_.emplace(timer);
-                id_to_timers_.emplace(timer.id(), timer);
-                return timer.id();
+                auto id = timer.id();
+                safe_call([this, timer = std::move(timer)] {
+                    timers_.emplace(timer);
+                    id_to_timers_.emplace(timer.id(), timer);
+                });
+                return id;
             }
             Timer::timer_id run_at(Timer::time_point point, std::function<void()> cb) {
                 Timer::milliseconds interval{0};

@@ -28,7 +28,6 @@ namespace cortono::net
             auto conn_ptr() {
                 return conn_ptr_;
             }
-
         private:
             void handle_read() {
                 conn_ptr_->handle_read();
@@ -44,5 +43,6 @@ namespace cortono::net
             int sockfd_;
             std::shared_ptr<Connection> conn_ptr_;
             std::shared_ptr<EventPoller::PollerCB> poller_cb_;
+
     };
 }
