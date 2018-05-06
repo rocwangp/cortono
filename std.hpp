@@ -4,6 +4,7 @@
 #include <vector>
 #include <list>
 #include <queue>
+#include <bitset>
 #include <string>
 #include <string_view>
 #include <set>

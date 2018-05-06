@@ -66,8 +66,14 @@ namespace cortono::ip
                 ::inet_ntop(hptr->h_addrtype, hptr->h_addr_list[0], buffer, sizeof(buffer));
                 return std::string(buffer);
             }
-    };
 
+            static std::pair<std::string, unsigned short> parse_ip_port(struct sockaddr_in& sockaddr) {
+                char ip[1024] = "\0";
+                ::inet_ntop(AF_INET, (struct sockaddr*)&sockaddr, ip, sizeof(ip));
+                unsigned short port = ::ntohs(sockaddr.sin_port);
+                return { std::string{ ip }, port };
+            }
+    };
 
     namespace tcp
     {
@@ -89,7 +95,6 @@ namespace cortono::ip
                     int flag = ::fcntl(sockfd, F_GETFL);
                     flag &= (~O_NONBLOCK);
                     return (::fcntl(sockfd, F_SETFL, flag) == 0) ? true : false;
-;
                 }
                 static bool set_nonblock(int sockfd) {
                     int flag = ::fcntl(sockfd, F_GETFL);
@@ -182,8 +187,6 @@ namespace cortono::ip
                     util::io::close(in_fd);
                     return n;
                 }
-            private:
-                static int idle_fd;
         };
 
 #ifdef CORTONO_USE_SSL
@@ -323,5 +326,50 @@ namespace cortono::ip
         };
         ::SSL_CTX* ssl::ssl_ctx = nullptr;
 #endif
+    }
+
+    namespace udp
+    {
+        class sockets
+        {
+            public:
+                static int block_socket(bool ip4 = true) {
+                    (void)ip4;
+                    return ::socket(AF_INET, SOCK_DGRAM, 0);
+                }
+                static int nonblock_socket(bool ip4 = true) {
+                    int fd = block_socket(ip4);
+                    return set_nonblock(fd);
+                }
+                static bool set_nonblock(int fd) {
+                    return tcp::sockets::set_nonblock(fd);
+                }
+                static bool set_block(int fd) {
+                    return tcp::sockets::set_block(fd);
+                }
+                static bool close(int fd) {
+                    return tcp::sockets::close(fd);
+                }
+                static bool bind(int fd, std::string_view ip, unsigned short port) {
+                    return tcp::sockets::bind(fd, ip, port);
+                }
+                static int readable(int fd) {
+                    return tcp::sockets::readable(fd);
+                }
+                static int recv(int fd, char* buffer, int len, std::string& ip, unsigned short& port) {
+                    struct sockaddr_in sockaddr;
+                    socklen_t size = sizeof(sockaddr);
+                    int bytes = ::recvfrom(fd, buffer, len, 0, (struct sockaddr*)&sockaddr, &size);
+                    auto [ip_addr, p] = address::parse_ip_port(sockaddr);
+                    ip = std::move(ip_addr);
+                    port = std::move(p);
+                    return bytes;
+                }
+                static int send(int fd, const char* buffer, int len, std::string_view ip, unsigned short port) {
+                    struct sockaddr addr = address::to_sockaddr(ip, port);
+                    int bytes = ::sendto(fd, buffer, len, 0, &addr, sizeof(addr));
+                    return bytes;
+                }
+        };
     }
 }

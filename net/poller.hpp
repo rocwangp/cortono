@@ -12,6 +12,7 @@ namespace cortono::net
         public:
             struct PollerCB
             {
+                PollerCB() { clear(); }
                 void clear() { read_cb = write_cb = close_cb = nullptr; }
                 std::function<void()> read_cb, write_cb, close_cb;
             };
@@ -65,11 +66,11 @@ namespace cortono::net
                         static_cast<PollerCB*>(events_[i].data.ptr)->read_cb();
                         io_event = true;
                     }
-                    if(writeable_event(events_[i].events) && events_[i].data.ptr != nullptr) {
+                    else if(writeable_event(events_[i].events) && events_[i].data.ptr != nullptr) {
                         static_cast<PollerCB*>(events_[i].data.ptr)->write_cb();
                         io_event = true;
                     }
-                    if(!io_event && events_[i].data.ptr != nullptr) {
+                    else if(!io_event && events_[i].data.ptr != nullptr) {
                         static_cast<PollerCB*>(events_[i].data.ptr)->close_cb();
                     }
                 }

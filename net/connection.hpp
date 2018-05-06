@@ -75,12 +75,6 @@ namespace cortono::net
                 void set_conn_state(ConnState state) {
                     conn_state_ = state;
                 }
-                // TcpSocket提升到SslSocket，用处不大
-                void reset_to_ssl() {
-                    if(std::is_same_v<Socket, TcpSocket>) {
-                        socket_.reset_to_ssl_socket();
-                    }
-                }
                 void close() {
                     // 防止二次关闭
                     if(conn_state_ != ConnState::Closed) {
@@ -203,7 +197,7 @@ namespace cortono::net
                     if(conn_state_ == ConnState::HandShaking) {
                         handle_handshake();
                     }
-                    auto bytes = ip::tcp::sockets::readable(socket_.fd());
+                    auto bytes = socket_.readable();
                     if(bytes == 0) {
                         return;
                     }
@@ -279,7 +273,7 @@ namespace cortono::net
                     if(!sendfile_) {
                         return;
                     }
-                    int bytes = ip::tcp::sockets::sendfile(socket_.fd(), filename_, fileoffet_, filesize_);
+                    int bytes = socket_.sendfile(filename_, fileoffet_, filesize_);
                     if(bytes == 0) {
                         handle_close();
                     }
@@ -320,12 +314,6 @@ namespace cortono::net
                 std::shared_ptr<Buffer> recv_buffer_, send_buffer_;
 
                 ConnState conn_state_ { ConnState::Closed };
-            private:
-                static_assert(std::is_same_v<Socket, TcpSocket>
-#ifdef CORTONO_USE_SSL
-                    || std::is_same_v<Socket, SslSocket>
-#endif
-                    , "Socket is not TcpSocket or SSLSocket");
         };
 
     using TcpConnection = Connection<TcpSocket>;

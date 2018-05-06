@@ -87,6 +87,12 @@ namespace cortono::net
                 read_idx_ = write_idx_ = 0;
                 return info;
             }
+            std::string read_bytes(int n) {
+                n = std::min(n, size());
+                std::string info(data(), n);
+                retrieve_read_bytes(n);
+                return info;
+            }
 
             std::string read_util(std::string_view s) {
                 log_trace;

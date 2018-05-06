@@ -27,7 +27,9 @@ namespace cortono::net
             void quit() {
                 log_info("eventloop is quiting");
                 quit_.store(true);
-                wake_up();
+                if(std::this_thread::get_id() != tid_) {
+                    wake_up();
+                }
             }
             void loop() {
                 while(!quit_) {
@@ -35,10 +37,10 @@ namespace cortono::net
                 }
             }
             void loop_once() {
-                if(!timers_.empty() && timers_.top().expires_milliseconds() <= 0) {
+                if(!timers_.empty() && timers_.begin()->expires_milliseconds() <= 0) {
                     handle_time_func();
                 }
-                int timeout = timers_.empty() ? -1 : timers_.top().expires_milliseconds();
+                int timeout = timers_.empty() ? -1 : timers_.begin()->expires_milliseconds();
                 poller_->wait(timeout);
                 handle_pending_func();
                 handle_time_func();
@@ -50,13 +52,17 @@ namespace cortono::net
                 pending_functors_.clear();
             }
             void handle_time_func() {
-                while(!timers_.empty() && timers_.top().is_expires()) {
-                    auto t = timers_.top();
-                    timers_.pop();
+                while(!timers_.empty() && timers_.begin()->is_expires()) {
+                    auto t = *timers_.begin();
+                    timers_.erase(timers_.begin());
                     t.run();
                     if(t.is_periodic()) {
                         t.update_time();
                         timers_.emplace(std::move(t));
+                        id_to_timers_[t.id()] = t;
+                    }
+                    else {
+                        id_to_timers_.erase(t.id());
                     }
                 }
             }
@@ -81,24 +87,33 @@ namespace cortono::net
                 return poller_;
             }
 
-            void set_timer(Timer::time_point&& point, Timer::milliseconds&& interval, std::function<void()>&& cb) {
-                timers_.emplace(std::move(point), std::move(interval), std::move(cb));
+            Timer::timer_id set_timer(Timer::time_point&& point, Timer::milliseconds&& interval, std::function<void()>&& cb) {
+                Timer timer(std::move(point), std::move(interval), std::move(cb));
+                timers_.emplace(timer);
+                id_to_timers_.emplace(timer.id(), timer);
+                return timer.id();
             }
-            void runAt(Timer::time_point point, std::function<void()> cb) {
+            Timer::timer_id run_at(Timer::time_point point, std::function<void()> cb) {
                 Timer::milliseconds interval{0};
-                set_timer(std::move(point), std::move(interval), std::move(cb));
+                return set_timer(std::move(point), std::move(interval), std::move(cb));
             }
-            void runAt(Timer::time_point point, Timer::milliseconds interval, std::function<void()> cb) {
-                set_timer(std::move(point), std::move(interval), std::move(cb));
+            Timer::timer_id run_at(Timer::time_point point, Timer::milliseconds interval, std::function<void()> cb) {
+                return set_timer(std::move(point), std::move(interval), std::move(cb));
             }
-            void runAfter(Timer::milliseconds interval, std::function<void()> cb) {
-                runAt(Timer::now() + interval, cb);
+            Timer::timer_id run_after(Timer::milliseconds interval, std::function<void()> cb) {
+                return run_at(Timer::now() + interval, cb);
             }
-            void runAfter(Timer::milliseconds interval1, Timer::milliseconds interval2, std::function<void()> cb) {
-                runAt(Timer::now() + interval1, interval2, cb);
+            Timer::timer_id run_after(Timer::milliseconds interval1, Timer::milliseconds interval2, std::function<void()> cb) {
+                return run_at(Timer::now() + interval1, interval2, cb);
             }
-            void runEvery(Timer::milliseconds interval, std::function<void()> cb) {
-                runAfter(interval, interval, cb);
+            Timer::timer_id run_every(Timer::milliseconds interval, std::function<void()> cb) {
+                return run_after(interval, interval, cb);
+            }
+            void cancel_timer(const Timer::timer_id& id) {
+                if(id_to_timers_.count(id)) {
+                    timers_.erase(id_to_timers_[id]);
+                    id_to_timers_.erase(id);
+                }
             }
         private:
             std::thread::id tid_;
@@ -108,8 +123,9 @@ namespace cortono::net
             std::shared_ptr<Watcher> watcher_;
             std::shared_ptr<TcpSocket> watch_socket_;
             std::vector<std::function<void()>> pending_functors_;
-            std::priority_queue<Timer, std::vector<Timer>, std::greater<Timer>> timers_;
-
+            /* std::priority_queue<Timer, std::vector<Timer>, std::greater<Timer>> timers_; */
+            std::set<Timer> timers_;
+            std::unordered_map<Timer::timer_id, Timer> id_to_timers_;
     };
 }
 

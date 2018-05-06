@@ -146,41 +146,18 @@ namespace cortono::net
                 poller_cbs_->close_cb = cb;
             }
             int send(const char* buffer, int len) {
-#ifdef CORTONO_USE_SSL
-                if(is_ssl_) {
-                    return ip::tcp::ssl::send(ssl_, buffer, len);
-                }
-                else
-#endif
-                {
-                    return ip::tcp::sockets::send(fd_, buffer, len);
-                }
+                return ip::tcp::sockets::send(fd_, buffer, len);
             }
             int recv(char* buffer, int len) {
-#ifdef CORTONO_USE_SSL
-                if(is_ssl_) {
-                    return ip::tcp::ssl::recv(ssl_, buffer, len);
-                }
-                else
-#endif
-                {
-                    return ip::tcp::sockets::recv(fd_, buffer, len);
-                }
+                return ip::tcp::sockets::recv(fd_, buffer, len);
             }
-#ifdef CORTONO_USE_SSL
-            void reset_to_ssl_socket() {
-                ip::tcp::ssl::load_certificate(CA_CERT_FILE, SERVER_CERT_FILE, SERVER_KEY_FILE);
-                ssl_ = ip::tcp::ssl::new_ssl_and_set_fd(fd_);
-                /* ip::tcp::ssl::accept(ssl_); */
-                ip::tcp::ssl::handshake(ssl_);
-                is_ssl_ = true;
+            int readable() {
+                return ip::tcp::sockets::readable(fd_);
             }
-#endif
+            int sendfile(const std::string& filename, off_t fileoffet, std::size_t filesize) {
+                return ip::tcp::sockets::sendfile(fd_, filename, fileoffet, filesize);
+            }
         protected:
-#ifdef CORTONO_USE_SSL
-            ::SSL* ssl_{ nullptr };
-            bool is_ssl_{ false };
-#endif
             int fd_;
             uint32_t events_;
             std::weak_ptr<EventPoller> weak_poller_;
