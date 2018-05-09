@@ -73,7 +73,11 @@ namespace cortono::net
             }
             void enable_bytes(int bytes) {
                 if(writeable() < bytes) {
-                    std::move_backward(begin(), end(), buffer_.begin() + size() - 1);
+                    std::memmove(&buffer_[0], &buffer_[read_idx_], size());
+                    // std::move_backward(first, last, d_last); (d_last - 1)是最后一个元素的位置
+                    // std::move_backward(begin(), end(), buffer_.begin() + size() - 1); error
+                    // std::move_backward(begin(), end(), buffer_.begin() + size()); ok
+                    // 如果d_last在[first, last)之间，则行为未定义
                     write_idx_ = size();
                     read_idx_ = 0;
                     if(writeable() >= bytes)

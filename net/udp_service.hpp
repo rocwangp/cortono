@@ -10,6 +10,8 @@ namespace cortono::net
     class UdpService
     {
         public:
+            using read_callback_t = std::function<void(std::shared_ptr<Connection>)>;
+
             UdpService(EventLoop* loop, const std::string& ip, std::uint16_t port)
                 : loop_(loop),
                   sockfd_(ip::udp::sockets::block_socket()),
@@ -28,10 +30,14 @@ namespace cortono::net
             auto conn_ptr() {
                 return conn_ptr_;
             }
+            void on_read(read_callback_t cb) {
+                read_cb_ = std::move(cb);
+            }
         private:
             void handle_read() {
-                conn_ptr_->handle_read();
-            }
+                exitif(read_cb_ == nullptr, "read_cb is nullptr");
+                read_cb_(conn_ptr_);
+
             void handle_write() {
                 log_info("in handle_write");
             }
@@ -44,5 +50,6 @@ namespace cortono::net
             std::shared_ptr<Connection> conn_ptr_;
             std::shared_ptr<EventPoller::PollerCB> poller_cb_;
 
+            read_callback_t read_cb_;
     };
 }

@@ -20,8 +20,8 @@ namespace cortono::net
             enum
             {
                 NONE_EVENT = 0,
-                READ_EVENT = EPOLLIN | EPOLLET,
-                WRITE_EVENT = EPOLLOUT | EPOLLET
+                READ_EVENT = EPOLLIN ,//| EPOLLET,
+                WRITE_EVENT = EPOLLOUT,// | EPOLLET
             };
 
         public:

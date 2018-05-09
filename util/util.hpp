@@ -79,13 +79,18 @@ namespace cortono
                 logger(level l, const std::string& file, const std::string& func, int line)
                     : l_(l)
                 {
-                    buffer_ << util::current_time()
-                            << " [" << util::current_thread() << "]"
-                            << " [" << file << ":" << func << ":" << line << "]"
-                            << " [" << format_level() << "] ";
+                    if(is_open) {
+                        buffer_ << util::current_time()
+                                << " [" << util::current_thread() << "]"
+                                << " [" << file << ":" << func << ":" << line << "]"
+                                << " [" << format_level() << "] ";
+                    }
                 }
 
                 ~logger() {
+                    if(!is_open) {
+                        return;
+                    }
                     buffer_ << std::endl;
                     auto msg(buffer_.str());
                     std::fwrite(msg.c_str(), 1, msg.size(), ::stdout);
@@ -96,6 +101,9 @@ namespace cortono
 
                 template <typename T, typename... Args>
                 logger& operator()(T msg, Args... args) {
+                    if(!is_open) {
+                        return *this;
+                    }
                     buffer_ << msg << " ";
                     if constexpr(sizeof...(Args) == 0) {
                         return *this;
@@ -105,6 +113,10 @@ namespace cortono
                     }
                 }
 
+
+                static void close_logger() {
+                    is_open = false;
+                }
 
            private:
                 std::string format_level()
@@ -129,7 +141,10 @@ namespace cortono
             private:
                 level l_;
                 std::stringstream buffer_;
+
+                static bool is_open;
         };
+        bool logger::is_open = true;
 
 
 

@@ -70,7 +70,7 @@ namespace cortono::ip
             static std::pair<std::string, unsigned short> parse_ip_port(struct sockaddr_in& sockaddr) {
                 char ip[1024] = "\0";
                 ::inet_ntop(AF_INET, (struct sockaddr*)&sockaddr, ip, sizeof(ip));
-                unsigned short port = ::ntohs(sockaddr.sin_port);
+                unsigned short port = ntohs(sockaddr.sin_port);
                 return { std::string{ ip }, port };
             }
     };
