@@ -5,6 +5,7 @@
 
 namespace cortono
 {
+
     template <std::uint64_t BufferSize, std::uint64_t WindowSize>
     class RecvModule
     {
@@ -49,8 +50,11 @@ namespace cortono
 
             template <typename Parser>
             bool check(Parser& parser) {
-                if(parser.is_recv_data_packet()) {
-                    if(recv_window_.full()) {
+                if(parser.is_error_packet()) {
+
+                }
+                else if(parser.is_recv_data_packet()) {
+                    if(!recv_window_.in_valid_range(parser.seq(), parser.seq() + parser.data_size()) || recv_window_.full()) {
                         return false;
                     }
                 }
@@ -67,7 +71,10 @@ namespace cortono
             }
             template <typename Parser>
             bool handle(Parser& parser) {
-                if(parser.is_recv_data_packet()) {
+                if(parser.is_error_packet()) {
+                    log_info("error packet");
+                }
+                else if(parser.is_recv_data_packet()) {
                     // recv data packet
                     // move recv window if the seq is in valid range([win_left_, win_right_))
                     // modify ack
@@ -93,6 +100,9 @@ namespace cortono
                 return true;
             }
 
+            std::string recv_all() {
+                return recv_window_.recv_all();
+            }
         private:
             SlideWindow<BufferSize, WindowSize> recv_window_;
 

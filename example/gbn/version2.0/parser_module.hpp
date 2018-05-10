@@ -5,6 +5,7 @@
 
 namespace cortono
 {
+
     template <typename T>
     struct bits_traits {};
 
@@ -129,8 +130,6 @@ namespace cortono
                 n += m;
                 n = MsgPacket<T>::MIN_SIZE;
                 packet_.message.assign(buffer + n, len - n);
-
-                print_packet();
                 return true;
             }
             void print_packet() {
@@ -138,10 +137,9 @@ namespace cortono
                          "des port:", des_port(),
                          "seq:", seq(),
                          "ack:", ack(),
-                         "message:", packet_.message);
+                         "message:", packet_.message.size());
             }
             std::string to_string() const {
-                log_trace;
                 std::string str;
                 str.append(conv_to_string(2, packet_.src_port, bits_traits_v<decltype(packet_.src_port)>));
                 str.append(conv_to_string(2, packet_.des_port, bits_traits_v<decltype(packet_.des_port)>));
@@ -175,16 +173,19 @@ namespace cortono
                 return packet_.message.data();
             }
             bool is_recv_ack_packet() const {
-                return port_ == packet_.des_port && packet_.control[1] == '1';
+                return !is_error_packet() && port_ == packet_.des_port && packet_.control[1] == '1';
             }
             bool is_recv_data_packet() const {
-                return port_ == packet_.des_port && packet_.control[1] == '0';
+                return !is_error_packet() && port_ == packet_.des_port && packet_.control[1] == '0';
             }
             bool is_send_ack_packet() const {
-                return port_ != packet_.des_port && packet_.control[1] == '1';
+                return !is_error_packet() && port_ != packet_.des_port && packet_.control[1] == '1';
             }
             bool is_send_data_packet() const {
-                return port_ != packet_.des_port && packet_.control[1] == '0';
+                return !is_error_packet() && port_ != packet_.des_port && packet_.control[1] == '0';
+            }
+            bool is_error_packet() const {
+                return packet_.src_port == packet_.des_port;
             }
             void swap_port() {
                 std::swap(packet_.src_port, packet_.des_port);
@@ -203,6 +204,9 @@ namespace cortono
             }
             void set_ack_flag() {
                 packet_.control[1] = '1';
+            }
+            void set_control(const char* buffer) {
+                std::memcpy(&packet_.control[0], buffer, packet_.control.size());
             }
             void clear_data() {
                 packet_.message.clear();

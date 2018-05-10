@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../../../std.hpp"
 #include "../../../cortono.hpp"
 
 namespace cortono
 {
+
     template <std::uint64_t BufferSize, std::uint64_t Time>
     class ResendModule
     {
@@ -39,7 +39,10 @@ namespace cortono
 
             template <typename Parser>
             bool check(Parser& parser) {
-                if(parser.is_recv_data_packet()) {
+                if(parser.is_error_packet()) {
+
+                }
+                else if(parser.is_recv_data_packet()) {
 
                 }
                 else if(parser.is_recv_ack_packet()) {
@@ -55,7 +58,11 @@ namespace cortono
             }
             template <typename Parser>
             bool handle(Parser& parser) {
-                if(parser.is_recv_data_packet()) {
+                if(parser.is_error_packet()) {
+                    log_info("error packet");
+
+                }
+                else if(parser.is_recv_data_packet()) {
                     // recv data packet
                     // don't do anything
                 }
@@ -89,6 +96,7 @@ namespace cortono
                     if(start_seq == ack) {
                         break;
                     }
+                    log_info("cancel timer:", start_seq, "to", end_seq);
                     loop_->cancel_timer(std::get<2>(timers_.front()));
                     timers_.pop_front();
                 }

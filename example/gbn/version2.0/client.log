@@ -1,0 +1,1729 @@
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 0 to 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 0 message: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():92] [info ] 1023 0 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 0 to 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1157 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 0 to 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 1023 3023 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 1023 message: 0 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():39] [info ] 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 1023 to 2046 
+Thu May 10 20:56:13 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 1023 ack: 0 message: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():92] [info ] 2046 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 2046 
+Thu May 10 20:56:13 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 1023 to 2046 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1157 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 1023 to 2046 
+Thu May 10 20:56:13 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 2046 4046 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 2046 
+Thu May 10 20:56:13 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 2046 message: 0 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():39] [info ] 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 2046 to 3069 
+Thu May 10 20:56:13 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 2046 ack: 0 message: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():92] [info ] 3069 2046 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 3069 
+Thu May 10 20:56:13 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 2046 to 3069 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1157 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 2046 to 3069 
+Thu May 10 20:56:13 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 3069 5069 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 3069 
+Thu May 10 20:56:13 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 3069 message: 0 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():39] [info ] 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 3069 to 4092 
+Thu May 10 20:56:13 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 3069 ack: 0 message: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():92] [info ] 4092 3069 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 4092 
+Thu May 10 20:56:13 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 3069 to 4092 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1157 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 3069 to 4092 
+Thu May 10 20:56:13 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 4092 6092 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 4092 
+Thu May 10 20:56:13 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 4092 message: 0 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():39] [info ] 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 4092 to 5115 
+Thu May 10 20:56:13 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 4092 ack: 0 message: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():92] [info ] 5115 4092 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 5115 
+Thu May 10 20:56:13 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 4092 to 5115 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1157 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 4092 to 5115 
+Thu May 10 20:56:13 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 5115 7115 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 5115 
+Thu May 10 20:56:13 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 5115 message: 0 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():39] [info ] 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 5115 to 6138 
+Thu May 10 20:56:13 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 5115 ack: 0 message: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():92] [info ] 6138 5115 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 6138 
+Thu May 10 20:56:13 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 5115 to 6138 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1157 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 5115 to 6138 
+Thu May 10 20:56:13 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 6138 8138 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 6138 
+Thu May 10 20:56:13 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 6138 message: 0 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():39] [info ] 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 6138 to 7161 
+Thu May 10 20:56:13 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 6138 ack: 0 message: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():92] [info ] 7161 6138 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 7161 
+Thu May 10 20:56:13 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 6138 to 7161 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1157 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 6138 to 7161 
+Thu May 10 20:56:13 2018 [140064625154880] [recv_module.hpp:handle:75] [info ] error packet 
+Thu May 10 20:56:13 2018 [140064625154880] [send_module.hpp:handle:51] [info ] error packet 
+Thu May 10 20:56:13 2018 [140064625154880] [resend_module.hpp:handle:62] [info ] error packet 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:203] [info ] error packet, maybe the packet is lost 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 7161 to 8184 
+Thu May 10 20:56:13 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 7161 ack: 0 message: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():92] [info ] 8184 6138 
+Thu May 10 20:56:13 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 8184 9207 
+Thu May 10 20:56:13 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 7161 to 9161 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():92] [info ] 8184 6138 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1157 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 6138 to 7161 
+Thu May 10 20:56:13 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 7161 9161 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 7161 
+Thu May 10 20:56:13 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 7161 message: 0 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():39] [info ] 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 8184 9207 
+Thu May 10 20:56:13 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 7161 to 9161 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():92] [info ] 8184 7161 
+Thu May 10 20:56:13 2018 [140064625154880] [resend_module.hpp:operator():113] [info ] resend packet: 7161 to 8184 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 8184 
+Thu May 10 20:56:13 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 7161 to 8184 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1157 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 7161 to 8184 
+Thu May 10 20:56:13 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 8184 10184 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 8184 
+Thu May 10 20:56:13 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 8184 message: 0 
+Thu May 10 20:56:13 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:13 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():39] [info ] 1023 
+Thu May 10 20:56:13 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 8184 to 9207 
+Thu May 10 20:56:14 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 8184 ack: 0 message: 1023 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():92] [info ] 9207 8184 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 9207 
+Thu May 10 20:56:14 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 8184 to 9207 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1157 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 8184 to 9207 
+Thu May 10 20:56:14 2018 [140064625154880] [recv_module.hpp:handle:75] [info ] error packet 
+Thu May 10 20:56:14 2018 [140064625154880] [send_module.hpp:handle:51] [info ] error packet 
+Thu May 10 20:56:14 2018 [140064625154880] [resend_module.hpp:handle:62] [info ] error packet 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:203] [info ] error packet, maybe the packet is lost 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 9207 to 10230 
+Thu May 10 20:56:14 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 9207 ack: 0 message: 1023 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():92] [info ] 10230 8184 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 10230 
+Thu May 10 20:56:14 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 9207 to 10230 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 10230 to 11253 
+Thu May 10 20:56:14 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 10230 ack: 0 message: 1023 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():92] [info ] 11253 8184 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 11253 
+Thu May 10 20:56:14 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 10230 to 11253 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1157 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 8184 to 9207 
+Thu May 10 20:56:14 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 9207 11207 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 9207 
+Thu May 10 20:56:14 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 9207 message: 0 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:14 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1023 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():39] [info ] 1023 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 11253 to 12276 
+Thu May 10 20:56:14 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 11253 ack: 0 message: 1023 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():92] [info ] 12276 9207 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 12276 
+Thu May 10 20:56:14 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 11253 to 12276 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 9207 to 10231 
+Thu May 10 20:56:14 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 10231 12231 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 10231 
+Thu May 10 20:56:14 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 10231 message: 0 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:14 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 12276 to 13299 
+Thu May 10 20:56:14 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 12276 ack: 0 message: 1023 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():92] [info ] 13299 10231 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 13299 
+Thu May 10 20:56:14 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 12276 to 13299 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 10231 to 11255 
+Thu May 10 20:56:14 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 11255 13255 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 11255 
+Thu May 10 20:56:14 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 11255 message: 0 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:14 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 13299 to 14322 
+Thu May 10 20:56:14 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 13299 ack: 0 message: 1023 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():92] [info ] 14322 11255 
+Thu May 10 20:56:14 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 14322 15345 
+Thu May 10 20:56:14 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 13299 to 15299 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():92] [info ] 14322 11255 
+Thu May 10 20:56:14 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 14322 15345 
+Thu May 10 20:56:14 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 13299 to 15299 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():92] [info ] 14322 11255 
+Thu May 10 20:56:14 2018 [140064625154880] [resend_module.hpp:operator():113] [info ] resend packet: 13299 to 14322 
+Thu May 10 20:56:14 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 14322 15345 
+Thu May 10 20:56:14 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 13299 to 15299 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():92] [info ] 14322 11255 
+Thu May 10 20:56:14 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 14322 15345 
+Thu May 10 20:56:14 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 13299 to 15299 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():92] [info ] 14322 11255 
+Thu May 10 20:56:14 2018 [140064625154880] [resend_module.hpp:operator():113] [info ] resend packet: 13299 to 14322 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 14322 
+Thu May 10 20:56:14 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 13299 to 14322 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 11255 to 12279 
+Thu May 10 20:56:14 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 12279 14279 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 12279 
+Thu May 10 20:56:14 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 12279 message: 0 
+Thu May 10 20:56:14 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:14 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:14 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 14322 to 15345 
+Thu May 10 20:56:15 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 14322 ack: 0 message: 1023 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():92] [info ] 15345 12279 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 15345 
+Thu May 10 20:56:15 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 14322 to 15345 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 12279 to 13303 
+Thu May 10 20:56:15 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 13303 15303 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 13303 
+Thu May 10 20:56:15 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 13303 message: 0 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 15345 to 16368 
+Thu May 10 20:56:15 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 15345 ack: 0 message: 1023 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():92] [info ] 16368 13303 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 16368 
+Thu May 10 20:56:15 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 15345 to 16368 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 13303 to 14327 
+Thu May 10 20:56:15 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 14327 16327 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 14327 
+Thu May 10 20:56:15 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 14327 message: 0 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 16368 to 17391 
+Thu May 10 20:56:15 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 16368 ack: 0 message: 1023 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():92] [info ] 17391 14327 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 17391 
+Thu May 10 20:56:15 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 16368 to 17391 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 14327 to 15351 
+Thu May 10 20:56:15 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 15351 17351 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 15351 
+Thu May 10 20:56:15 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 15351 message: 0 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 17391 to 18414 
+Thu May 10 20:56:15 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 17391 ack: 0 message: 1023 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():92] [info ] 18414 15351 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 18414 
+Thu May 10 20:56:15 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 17391 to 18414 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 15351 to 16375 
+Thu May 10 20:56:15 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 16375 18375 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 16375 
+Thu May 10 20:56:15 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 16375 message: 0 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 18414 to 19437 
+Thu May 10 20:56:15 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 18414 ack: 0 message: 1023 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():92] [info ] 19437 16375 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 19437 
+Thu May 10 20:56:15 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 18414 to 19437 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 16375 to 17399 
+Thu May 10 20:56:15 2018 [140064625154880] [recv_module.hpp:handle:75] [info ] error packet 
+Thu May 10 20:56:15 2018 [140064625154880] [send_module.hpp:handle:51] [info ] error packet 
+Thu May 10 20:56:15 2018 [140064625154880] [resend_module.hpp:handle:62] [info ] error packet 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:203] [info ] error packet, maybe the packet is lost 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 19437 to 20460 
+Thu May 10 20:56:15 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 19437 ack: 0 message: 1023 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():92] [info ] 20460 16375 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 20460 
+Thu May 10 20:56:15 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 19437 to 20460 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 20460 to 21483 
+Thu May 10 20:56:15 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 20460 ack: 0 message: 1023 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():92] [info ] 21483 16375 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 21483 
+Thu May 10 20:56:15 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 20460 to 21483 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 16375 to 17399 
+Thu May 10 20:56:15 2018 [140064625154880] [recv_module.hpp:handle:75] [info ] error packet 
+Thu May 10 20:56:15 2018 [140064625154880] [send_module.hpp:handle:51] [info ] error packet 
+Thu May 10 20:56:15 2018 [140064625154880] [resend_module.hpp:handle:62] [info ] error packet 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:203] [info ] error packet, maybe the packet is lost 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 21483 to 22506 
+Thu May 10 20:56:15 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 21483 ack: 0 message: 1023 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():92] [info ] 22506 16375 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 22506 
+Thu May 10 20:56:15 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 21483 to 22506 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 22506 to 23529 
+Thu May 10 20:56:15 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 22506 ack: 0 message: 1023 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():92] [info ] 23529 16375 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 16375 to 17399 
+Thu May 10 20:56:15 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 17399 19399 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 17399 
+Thu May 10 20:56:15 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 17399 message: 0 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:15 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 23529 24552 
+Thu May 10 20:56:15 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 22506 to 24506 
+Thu May 10 20:56:15 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:15 2018 [140064625154880] [client.cc:operator():92] [info ] 23529 17399 
+Thu May 10 20:56:16 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 23529 24552 
+Thu May 10 20:56:16 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 22506 to 24506 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():92] [info ] 23529 17399 
+Thu May 10 20:56:16 2018 [140064625154880] [resend_module.hpp:operator():113] [info ] resend packet: 22506 to 23529 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 23529 
+Thu May 10 20:56:16 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 22506 to 23529 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 17399 to 18423 
+Thu May 10 20:56:16 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 18423 20423 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 18423 
+Thu May 10 20:56:16 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 18423 message: 0 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 23529 to 24552 
+Thu May 10 20:56:16 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 23529 ack: 0 message: 1023 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():92] [info ] 24552 18423 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 24552 
+Thu May 10 20:56:16 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 23529 to 24552 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 18423 to 19447 
+Thu May 10 20:56:16 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 19447 21447 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 19447 
+Thu May 10 20:56:16 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 19447 message: 0 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 24552 to 25575 
+Thu May 10 20:56:16 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 24552 ack: 0 message: 1023 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():92] [info ] 25575 19447 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 25575 
+Thu May 10 20:56:16 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 24552 to 25575 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 19447 to 20471 
+Thu May 10 20:56:16 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 20471 22471 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 20471 
+Thu May 10 20:56:16 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 20471 message: 0 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 25575 to 26598 
+Thu May 10 20:56:16 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 25575 ack: 0 message: 1023 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():92] [info ] 26598 20471 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 26598 
+Thu May 10 20:56:16 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 25575 to 26598 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 20471 to 21495 
+Thu May 10 20:56:16 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 21495 23495 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 21495 
+Thu May 10 20:56:16 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 21495 message: 0 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 26598 to 27621 
+Thu May 10 20:56:16 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 26598 ack: 0 message: 1023 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():92] [info ] 27621 21495 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 27621 
+Thu May 10 20:56:16 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 26598 to 27621 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 21495 to 22519 
+Thu May 10 20:56:16 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 22519 24519 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 22519 
+Thu May 10 20:56:16 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 22519 message: 0 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 27621 to 28644 
+Thu May 10 20:56:16 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 27621 ack: 0 message: 1023 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():92] [info ] 28644 22519 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 28644 
+Thu May 10 20:56:16 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 27621 to 28644 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 22519 to 23543 
+Thu May 10 20:56:16 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 23543 25543 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 23543 
+Thu May 10 20:56:16 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 23543 message: 0 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 28644 to 29667 
+Thu May 10 20:56:16 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 28644 ack: 0 message: 1023 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():92] [info ] 29667 23543 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 29667 
+Thu May 10 20:56:16 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 28644 to 29667 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 23543 to 24567 
+Thu May 10 20:56:16 2018 [140064625154880] [recv_module.hpp:handle:75] [info ] error packet 
+Thu May 10 20:56:16 2018 [140064625154880] [send_module.hpp:handle:51] [info ] error packet 
+Thu May 10 20:56:16 2018 [140064625154880] [resend_module.hpp:handle:62] [info ] error packet 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:203] [info ] error packet, maybe the packet is lost 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 29667 to 30690 
+Thu May 10 20:56:16 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 29667 ack: 0 message: 1023 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():92] [info ] 30690 23543 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 30690 
+Thu May 10 20:56:16 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 29667 to 30690 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 30690 to 31713 
+Thu May 10 20:56:16 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 30690 ack: 0 message: 1023 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():92] [info ] 31713 23543 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 31713 
+Thu May 10 20:56:16 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 30690 to 31713 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 23543 to 24567 
+Thu May 10 20:56:16 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 24567 26567 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 24567 
+Thu May 10 20:56:16 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 24567 message: 0 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 31713 to 32736 
+Thu May 10 20:56:16 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 31713 ack: 0 message: 1023 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:16 2018 [140064625154880] [client.cc:operator():92] [info ] 32736 24567 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 32736 
+Thu May 10 20:56:16 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 31713 to 32736 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 24567 to 25591 
+Thu May 10 20:56:16 2018 [140064625154880] [recv_module.hpp:handle:75] [info ] error packet 
+Thu May 10 20:56:16 2018 [140064625154880] [send_module.hpp:handle:51] [info ] error packet 
+Thu May 10 20:56:16 2018 [140064625154880] [resend_module.hpp:handle:62] [info ] error packet 
+Thu May 10 20:56:16 2018 [140064625154880] [module.hpp:handle_packet:203] [info ] error packet, maybe the packet is lost 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 32736 to 33759 
+Thu May 10 20:56:17 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 32736 ack: 0 message: 1023 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():92] [info ] 33759 24567 
+Thu May 10 20:56:17 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 33759 34782 
+Thu May 10 20:56:17 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 32736 to 34736 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():92] [info ] 33759 24567 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 24567 to 25591 
+Thu May 10 20:56:17 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 25591 27591 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 25591 
+Thu May 10 20:56:17 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 25591 message: 0 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 33759 34782 
+Thu May 10 20:56:17 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 32736 to 34736 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():92] [info ] 33759 25591 
+Thu May 10 20:56:17 2018 [140064625154880] [resend_module.hpp:operator():113] [info ] resend packet: 32736 to 33759 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 33759 
+Thu May 10 20:56:17 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 32736 to 33759 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 25591 to 26615 
+Thu May 10 20:56:17 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 26615 28615 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 26615 
+Thu May 10 20:56:17 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 26615 message: 0 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 33759 to 34782 
+Thu May 10 20:56:17 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 33759 ack: 0 message: 1023 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():92] [info ] 34782 26615 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 34782 
+Thu May 10 20:56:17 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 33759 to 34782 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 26615 to 27639 
+Thu May 10 20:56:17 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 27639 29639 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 27639 
+Thu May 10 20:56:17 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 27639 message: 0 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 34782 to 35805 
+Thu May 10 20:56:17 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 34782 ack: 0 message: 1023 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():92] [info ] 35805 27639 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 35805 
+Thu May 10 20:56:17 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 34782 to 35805 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 27639 to 28663 
+Thu May 10 20:56:17 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 28663 30663 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 28663 
+Thu May 10 20:56:17 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 28663 message: 0 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 35805 to 36828 
+Thu May 10 20:56:17 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 35805 ack: 0 message: 1023 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():92] [info ] 36828 28663 
+Thu May 10 20:56:17 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 36828 37851 
+Thu May 10 20:56:17 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 35805 to 37805 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():92] [info ] 36828 28663 
+Thu May 10 20:56:17 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 36828 37851 
+Thu May 10 20:56:17 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 35805 to 37805 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():92] [info ] 36828 28663 
+Thu May 10 20:56:17 2018 [140064625154880] [resend_module.hpp:operator():113] [info ] resend packet: 35805 to 36828 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 36828 
+Thu May 10 20:56:17 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 35805 to 36828 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 28663 to 29687 
+Thu May 10 20:56:17 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 29687 31687 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 29687 
+Thu May 10 20:56:17 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 29687 message: 0 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 36828 to 37851 
+Thu May 10 20:56:17 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 36828 ack: 0 message: 1023 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():92] [info ] 37851 29687 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 37851 
+Thu May 10 20:56:17 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 36828 to 37851 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 29687 to 30711 
+Thu May 10 20:56:17 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 30711 32711 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 30711 
+Thu May 10 20:56:17 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 30711 message: 0 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 37851 to 38874 
+Thu May 10 20:56:17 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 37851 ack: 0 message: 1023 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():92] [info ] 38874 30711 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 38874 
+Thu May 10 20:56:17 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 37851 to 38874 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 30711 to 31735 
+Thu May 10 20:56:17 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 31735 33735 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 31735 
+Thu May 10 20:56:17 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 31735 message: 0 
+Thu May 10 20:56:17 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:17 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:17 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 38874 to 39897 
+Thu May 10 20:56:18 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 38874 ack: 0 message: 1023 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():92] [info ] 39897 31735 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 39897 
+Thu May 10 20:56:18 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 38874 to 39897 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 31735 to 32759 
+Thu May 10 20:56:18 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 32759 34759 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 32759 
+Thu May 10 20:56:18 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 32759 message: 0 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 39897 to 40920 
+Thu May 10 20:56:18 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 39897 ack: 0 message: 1023 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():92] [info ] 40920 32759 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 40920 
+Thu May 10 20:56:18 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 39897 to 40920 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 32759 to 33783 
+Thu May 10 20:56:18 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 33783 35783 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 33783 
+Thu May 10 20:56:18 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 33783 message: 0 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 40920 to 41943 
+Thu May 10 20:56:18 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 40920 ack: 0 message: 1023 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():92] [info ] 41943 33783 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 41943 
+Thu May 10 20:56:18 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 40920 to 41943 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 33783 to 34807 
+Thu May 10 20:56:18 2018 [140064625154880] [recv_module.hpp:handle:75] [info ] error packet 
+Thu May 10 20:56:18 2018 [140064625154880] [send_module.hpp:handle:51] [info ] error packet 
+Thu May 10 20:56:18 2018 [140064625154880] [resend_module.hpp:handle:62] [info ] error packet 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:203] [info ] error packet, maybe the packet is lost 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 41943 to 42966 
+Thu May 10 20:56:18 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 41943 ack: 0 message: 1023 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():92] [info ] 42966 33783 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 42966 
+Thu May 10 20:56:18 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 41943 to 42966 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 42966 to 43989 
+Thu May 10 20:56:18 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 42966 ack: 0 message: 1023 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():92] [info ] 43989 33783 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 33783 to 34807 
+Thu May 10 20:56:18 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 34807 36807 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 34807 
+Thu May 10 20:56:18 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 34807 message: 0 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 43989 45012 
+Thu May 10 20:56:18 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 42966 to 44966 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():92] [info ] 43989 34807 
+Thu May 10 20:56:18 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 43989 45012 
+Thu May 10 20:56:18 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 42966 to 44966 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():92] [info ] 43989 34807 
+Thu May 10 20:56:18 2018 [140064625154880] [resend_module.hpp:operator():113] [info ] resend packet: 42966 to 43989 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 43989 
+Thu May 10 20:56:18 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 42966 to 43989 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 34807 to 35831 
+Thu May 10 20:56:18 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 35831 37831 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 35831 
+Thu May 10 20:56:18 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 35831 message: 0 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 43989 to 45012 
+Thu May 10 20:56:18 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 43989 ack: 0 message: 1023 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():92] [info ] 45012 35831 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 45012 
+Thu May 10 20:56:18 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 43989 to 45012 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 35831 to 36855 
+Thu May 10 20:56:18 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 36855 38855 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 36855 
+Thu May 10 20:56:18 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 36855 message: 0 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 45012 to 46035 
+Thu May 10 20:56:18 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 45012 ack: 0 message: 1023 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():92] [info ] 46035 36855 
+Thu May 10 20:56:18 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 46035 47058 
+Thu May 10 20:56:18 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 45012 to 47012 
+Thu May 10 20:56:18 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:18 2018 [140064625154880] [client.cc:operator():92] [info ] 46035 36855 
+Thu May 10 20:56:19 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 46035 47058 
+Thu May 10 20:56:19 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 45012 to 47012 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():92] [info ] 46035 36855 
+Thu May 10 20:56:19 2018 [140064625154880] [resend_module.hpp:operator():113] [info ] resend packet: 45012 to 46035 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 46035 
+Thu May 10 20:56:19 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 45012 to 46035 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 36855 to 37879 
+Thu May 10 20:56:19 2018 [140064625154880] [recv_module.hpp:handle:75] [info ] error packet 
+Thu May 10 20:56:19 2018 [140064625154880] [send_module.hpp:handle:51] [info ] error packet 
+Thu May 10 20:56:19 2018 [140064625154880] [resend_module.hpp:handle:62] [info ] error packet 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:203] [info ] error packet, maybe the packet is lost 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 46035 to 47058 
+Thu May 10 20:56:19 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 46035 ack: 0 message: 1023 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():92] [info ] 47058 36855 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 47058 
+Thu May 10 20:56:19 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 46035 to 47058 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 47058 to 48081 
+Thu May 10 20:56:19 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 47058 ack: 0 message: 1023 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():92] [info ] 48081 36855 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 48081 
+Thu May 10 20:56:19 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 47058 to 48081 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 36855 to 37879 
+Thu May 10 20:56:19 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 37879 39879 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 37879 
+Thu May 10 20:56:19 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 37879 message: 0 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 48081 to 49104 
+Thu May 10 20:56:19 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 48081 ack: 0 message: 1023 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():92] [info ] 49104 37879 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 49104 
+Thu May 10 20:56:19 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 48081 to 49104 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 37879 to 38903 
+Thu May 10 20:56:19 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 38903 40903 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 38903 
+Thu May 10 20:56:19 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 38903 message: 0 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 49104 to 50127 
+Thu May 10 20:56:19 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 49104 ack: 0 message: 1023 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():92] [info ] 50127 38903 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 50127 
+Thu May 10 20:56:19 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 49104 to 50127 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 38903 to 39927 
+Thu May 10 20:56:19 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 39927 41927 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 39927 
+Thu May 10 20:56:19 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 39927 message: 0 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 50127 to 51150 
+Thu May 10 20:56:19 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 50127 ack: 0 message: 1023 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():92] [info ] 51150 39927 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 51150 
+Thu May 10 20:56:19 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 50127 to 51150 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 39927 to 40951 
+Thu May 10 20:56:19 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 40951 42951 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 40951 
+Thu May 10 20:56:19 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 40951 message: 0 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 51150 to 52173 
+Thu May 10 20:56:19 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 51150 ack: 0 message: 1023 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():92] [info ] 52173 40951 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 52173 
+Thu May 10 20:56:19 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 51150 to 52173 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 40951 to 41975 
+Thu May 10 20:56:19 2018 [140064625154880] [recv_module.hpp:handle:75] [info ] error packet 
+Thu May 10 20:56:19 2018 [140064625154880] [send_module.hpp:handle:51] [info ] error packet 
+Thu May 10 20:56:19 2018 [140064625154880] [resend_module.hpp:handle:62] [info ] error packet 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:203] [info ] error packet, maybe the packet is lost 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 52173 to 53196 
+Thu May 10 20:56:19 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 52173 ack: 0 message: 1023 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():92] [info ] 53196 40951 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 53196 
+Thu May 10 20:56:19 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 52173 to 53196 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 53196 to 54219 
+Thu May 10 20:56:19 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 53196 ack: 0 message: 1023 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():92] [info ] 54219 40951 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 40951 to 41975 
+Thu May 10 20:56:19 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 41975 43975 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 41975 
+Thu May 10 20:56:19 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 41975 message: 0 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:19 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 54219 55242 
+Thu May 10 20:56:19 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 53196 to 55196 
+Thu May 10 20:56:19 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:19 2018 [140064625154880] [client.cc:operator():92] [info ] 54219 41975 
+Thu May 10 20:56:20 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 54219 55242 
+Thu May 10 20:56:20 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 53196 to 55196 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():92] [info ] 54219 41975 
+Thu May 10 20:56:20 2018 [140064625154880] [resend_module.hpp:operator():113] [info ] resend packet: 53196 to 54219 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 54219 
+Thu May 10 20:56:20 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 53196 to 54219 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 41975 to 42999 
+Thu May 10 20:56:20 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 42999 44999 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 42999 
+Thu May 10 20:56:20 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 42999 message: 0 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 54219 to 55242 
+Thu May 10 20:56:20 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 54219 ack: 0 message: 1023 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():92] [info ] 55242 42999 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 55242 
+Thu May 10 20:56:20 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 54219 to 55242 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 42999 to 44023 
+Thu May 10 20:56:20 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 44023 46023 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 44023 
+Thu May 10 20:56:20 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 44023 message: 0 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 55242 to 56265 
+Thu May 10 20:56:20 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 55242 ack: 0 message: 1023 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():92] [info ] 56265 44023 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 56265 
+Thu May 10 20:56:20 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 55242 to 56265 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 44023 to 45047 
+Thu May 10 20:56:20 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 45047 47047 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 45047 
+Thu May 10 20:56:20 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 45047 message: 0 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 56265 to 57288 
+Thu May 10 20:56:20 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 56265 ack: 0 message: 1023 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():92] [info ] 57288 45047 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 57288 
+Thu May 10 20:56:20 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 56265 to 57288 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 45047 to 46071 
+Thu May 10 20:56:20 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 46071 48071 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 46071 
+Thu May 10 20:56:20 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 46071 message: 0 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 57288 to 58311 
+Thu May 10 20:56:20 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 57288 ack: 0 message: 1023 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():92] [info ] 58311 46071 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 58311 
+Thu May 10 20:56:20 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 57288 to 58311 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 46071 to 47095 
+Thu May 10 20:56:20 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 47095 49095 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 47095 
+Thu May 10 20:56:20 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 47095 message: 0 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 58311 to 59334 
+Thu May 10 20:56:20 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 58311 ack: 0 message: 1023 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():92] [info ] 59334 47095 
+Thu May 10 20:56:20 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 59334 60357 
+Thu May 10 20:56:20 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 58311 to 60311 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():92] [info ] 59334 47095 
+Thu May 10 20:56:20 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 59334 60357 
+Thu May 10 20:56:20 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 58311 to 60311 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():92] [info ] 59334 47095 
+Thu May 10 20:56:20 2018 [140064625154880] [resend_module.hpp:operator():113] [info ] resend packet: 58311 to 59334 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 59334 
+Thu May 10 20:56:20 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 58311 to 59334 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 47095 to 48119 
+Thu May 10 20:56:20 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 48119 50119 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 48119 
+Thu May 10 20:56:20 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 48119 message: 0 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 59334 to 60357 
+Thu May 10 20:56:20 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 59334 ack: 0 message: 1023 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():92] [info ] 60357 48119 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 60357 
+Thu May 10 20:56:20 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 59334 to 60357 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 48119 to 49143 
+Thu May 10 20:56:20 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 49143 51143 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 49143 
+Thu May 10 20:56:20 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 49143 message: 0 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 60357 to 61380 
+Thu May 10 20:56:20 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 60357 ack: 0 message: 1023 
+Thu May 10 20:56:20 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:20 2018 [140064625154880] [client.cc:operator():92] [info ] 61380 49143 
+Thu May 10 20:56:21 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 61380 62403 
+Thu May 10 20:56:21 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 60357 to 62357 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():92] [info ] 61380 49143 
+Thu May 10 20:56:21 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 61380 62403 
+Thu May 10 20:56:21 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 60357 to 62357 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():92] [info ] 61380 49143 
+Thu May 10 20:56:21 2018 [140064625154880] [resend_module.hpp:operator():113] [info ] resend packet: 60357 to 61380 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 61380 
+Thu May 10 20:56:21 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 60357 to 61380 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 49143 to 50167 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 50167 52167 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 50167 
+Thu May 10 20:56:21 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 50167 message: 0 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 61380 to 62403 
+Thu May 10 20:56:21 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 61380 ack: 0 message: 1023 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():92] [info ] 62403 50167 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 62403 
+Thu May 10 20:56:21 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 61380 to 62403 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 50167 to 51191 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 51191 53191 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 51191 
+Thu May 10 20:56:21 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 51191 message: 0 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 62403 to 63426 
+Thu May 10 20:56:21 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 62403 ack: 0 message: 1023 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():92] [info ] 63426 51191 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 63426 
+Thu May 10 20:56:21 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 62403 to 63426 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 51191 to 52215 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 52215 54215 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 52215 
+Thu May 10 20:56:21 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 52215 message: 0 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 63426 to 64449 
+Thu May 10 20:56:21 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 63426 ack: 0 message: 1023 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():92] [info ] 64449 52215 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 64449 
+Thu May 10 20:56:21 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 63426 to 64449 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 52215 to 53239 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 53239 55239 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 53239 
+Thu May 10 20:56:21 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 53239 message: 0 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 64449 to 65472 
+Thu May 10 20:56:21 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 64449 ack: 0 message: 1023 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():92] [info ] 65472 53239 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 65472 
+Thu May 10 20:56:21 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 64449 to 65472 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 53239 to 54263 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 54263 56263 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 54263 
+Thu May 10 20:56:21 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 54263 message: 0 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 65472 to 66495 
+Thu May 10 20:56:21 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 65472 ack: 0 message: 1023 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():92] [info ] 66495 54263 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 959 
+Thu May 10 20:56:21 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 65472 to 959 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 54263 to 55287 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 55287 57287 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 55287 
+Thu May 10 20:56:21 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 55287 message: 0 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 959 to 1982 
+Thu May 10 20:56:21 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 959 ack: 0 message: 1023 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():92] [info ] 67518 55287 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 1982 
+Thu May 10 20:56:21 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 959 to 1982 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 55287 to 56311 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 56311 58311 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 56311 
+Thu May 10 20:56:21 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 56311 message: 0 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 1982 to 3005 
+Thu May 10 20:56:21 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 1982 ack: 0 message: 1023 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():92] [info ] 68541 56311 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 3005 
+Thu May 10 20:56:21 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 1982 to 3005 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 56311 to 57335 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 57335 59335 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 57335 
+Thu May 10 20:56:21 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 57335 message: 0 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 3005 to 4028 
+Thu May 10 20:56:21 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 3005 ack: 0 message: 1023 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():92] [info ] 69564 57335 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 4028 
+Thu May 10 20:56:21 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 3005 to 4028 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 57335 to 58359 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 58359 60359 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 58359 
+Thu May 10 20:56:21 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 58359 message: 0 
+Thu May 10 20:56:21 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:21 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:21 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 4028 to 5051 
+Thu May 10 20:56:22 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 4028 ack: 0 message: 1023 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():92] [info ] 70587 58359 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 5051 
+Thu May 10 20:56:22 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 4028 to 5051 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 58359 to 59383 
+Thu May 10 20:56:22 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 59383 61383 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 59383 
+Thu May 10 20:56:22 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 59383 message: 0 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 5051 to 6074 
+Thu May 10 20:56:22 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 5051 ack: 0 message: 1023 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():92] [info ] 71610 59383 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 6074 
+Thu May 10 20:56:22 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 5051 to 6074 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 59383 to 60407 
+Thu May 10 20:56:22 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 60407 62407 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 60407 
+Thu May 10 20:56:22 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 60407 message: 0 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 6074 to 7097 
+Thu May 10 20:56:22 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 6074 ack: 0 message: 1023 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():92] [info ] 72633 60407 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 7097 
+Thu May 10 20:56:22 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 6074 to 7097 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 60407 to 61431 
+Thu May 10 20:56:22 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 61431 63431 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 61431 
+Thu May 10 20:56:22 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 61431 message: 0 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 7097 to 8120 
+Thu May 10 20:56:22 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 7097 ack: 0 message: 1023 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():92] [info ] 73656 61431 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 8120 
+Thu May 10 20:56:22 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 7097 to 8120 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 61431 to 62455 
+Thu May 10 20:56:22 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 62455 64455 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 62455 
+Thu May 10 20:56:22 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 62455 message: 0 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 8120 to 9143 
+Thu May 10 20:56:22 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 8120 ack: 0 message: 1023 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():92] [info ] 74679 62455 
+Thu May 10 20:56:22 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 9143 10166 
+Thu May 10 20:56:22 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 8120 to 10120 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():92] [info ] 74679 62455 
+Thu May 10 20:56:22 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 9143 10166 
+Thu May 10 20:56:22 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 8120 to 10120 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():92] [info ] 74679 62455 
+Thu May 10 20:56:22 2018 [140064625154880] [resend_module.hpp:operator():113] [info ] resend packet: 8120 to 9143 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 9143 
+Thu May 10 20:56:22 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 8120 to 9143 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 62455 to 63479 
+Thu May 10 20:56:22 2018 [140064625154880] [recv_module.hpp:handle:75] [info ] error packet 
+Thu May 10 20:56:22 2018 [140064625154880] [send_module.hpp:handle:51] [info ] error packet 
+Thu May 10 20:56:22 2018 [140064625154880] [resend_module.hpp:handle:62] [info ] error packet 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:203] [info ] error packet, maybe the packet is lost 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 9143 to 10166 
+Thu May 10 20:56:22 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 9143 ack: 0 message: 1023 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():92] [info ] 75702 62455 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 10166 
+Thu May 10 20:56:22 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 9143 to 10166 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 10166 to 11189 
+Thu May 10 20:56:22 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 10166 ack: 0 message: 1023 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():92] [info ] 76725 62455 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 11189 
+Thu May 10 20:56:22 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 10166 to 11189 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 62455 to 63479 
+Thu May 10 20:56:22 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 63479 65479 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 63479 
+Thu May 10 20:56:22 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 63479 message: 0 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 11189 to 12212 
+Thu May 10 20:56:22 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 11189 ack: 0 message: 1023 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():92] [info ] 77748 63479 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 12212 
+Thu May 10 20:56:22 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 11189 to 12212 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 63479 to 64503 
+Thu May 10 20:56:22 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 64503 967 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 64503 
+Thu May 10 20:56:22 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 64503 message: 0 
+Thu May 10 20:56:22 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:22 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:22 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 12212 to 13235 
+Thu May 10 20:56:23 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 12212 ack: 0 message: 1023 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():92] [info ] 78771 64503 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 13235 
+Thu May 10 20:56:23 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 12212 to 13235 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 64503 to 65527 
+Thu May 10 20:56:23 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 65527 1991 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 65527 
+Thu May 10 20:56:23 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 65527 message: 0 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 13235 to 14258 
+Thu May 10 20:56:23 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 13235 ack: 0 message: 1023 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():92] [info ] 79794 65527 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 14258 
+Thu May 10 20:56:23 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 13235 to 14258 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 65527 to 66551 
+Thu May 10 20:56:23 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 1015 3015 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 1015 
+Thu May 10 20:56:23 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 1015 message: 0 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 14258 to 15281 
+Thu May 10 20:56:23 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 14258 ack: 0 message: 1023 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():92] [info ] 80817 66551 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 15281 
+Thu May 10 20:56:23 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 14258 to 15281 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 1015 to 2039 
+Thu May 10 20:56:23 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 2039 4039 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 2039 
+Thu May 10 20:56:23 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 2039 message: 0 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 15281 to 16304 
+Thu May 10 20:56:23 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 15281 ack: 0 message: 1023 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():92] [info ] 81840 67575 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 16304 
+Thu May 10 20:56:23 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 15281 to 16304 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 2039 to 3063 
+Thu May 10 20:56:23 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 3063 5063 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 3063 
+Thu May 10 20:56:23 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 3063 message: 0 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 16304 to 17327 
+Thu May 10 20:56:23 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 16304 ack: 0 message: 1023 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():92] [info ] 82863 68599 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 17327 
+Thu May 10 20:56:23 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 16304 to 17327 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 3063 to 4087 
+Thu May 10 20:56:23 2018 [140064625154880] [recv_module.hpp:handle:75] [info ] error packet 
+Thu May 10 20:56:23 2018 [140064625154880] [send_module.hpp:handle:51] [info ] error packet 
+Thu May 10 20:56:23 2018 [140064625154880] [resend_module.hpp:handle:62] [info ] error packet 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:203] [info ] error packet, maybe the packet is lost 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 17327 to 18350 
+Thu May 10 20:56:23 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 17327 ack: 0 message: 1023 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():92] [info ] 83886 68599 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 18350 
+Thu May 10 20:56:23 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 17327 to 18350 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 18350 to 19373 
+Thu May 10 20:56:23 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 18350 ack: 0 message: 1023 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():92] [info ] 84909 68599 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 3063 to 4087 
+Thu May 10 20:56:23 2018 [140064625154880] [recv_module.hpp:handle:75] [info ] error packet 
+Thu May 10 20:56:23 2018 [140064625154880] [send_module.hpp:handle:51] [info ] error packet 
+Thu May 10 20:56:23 2018 [140064625154880] [resend_module.hpp:handle:62] [info ] error packet 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:203] [info ] error packet, maybe the packet is lost 
+Thu May 10 20:56:23 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 19373 20396 
+Thu May 10 20:56:23 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 18350 to 20350 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():92] [info ] 84909 68599 
+Thu May 10 20:56:23 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 19373 20396 
+Thu May 10 20:56:23 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 18350 to 20350 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():92] [info ] 84909 68599 
+Thu May 10 20:56:23 2018 [140064625154880] [resend_module.hpp:operator():113] [info ] resend packet: 18350 to 19373 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 19373 
+Thu May 10 20:56:23 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 18350 to 19373 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 3063 to 4087 
+Thu May 10 20:56:23 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 4087 6087 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 4087 
+Thu May 10 20:56:23 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 4087 message: 0 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 19373 to 20396 
+Thu May 10 20:56:23 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 19373 ack: 0 message: 1023 
+Thu May 10 20:56:23 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:23 2018 [140064625154880] [client.cc:operator():92] [info ] 85932 69623 
+Thu May 10 20:56:24 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 20396 21419 
+Thu May 10 20:56:24 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 19373 to 21373 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():92] [info ] 85932 69623 
+Thu May 10 20:56:24 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 20396 21419 
+Thu May 10 20:56:24 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 19373 to 21373 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():92] [info ] 85932 69623 
+Thu May 10 20:56:24 2018 [140064625154880] [resend_module.hpp:operator():113] [info ] resend packet: 19373 to 20396 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 20396 
+Thu May 10 20:56:24 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 19373 to 20396 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 4087 to 5111 
+Thu May 10 20:56:24 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 5111 7111 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 5111 
+Thu May 10 20:56:24 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 5111 message: 0 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 20396 to 21419 
+Thu May 10 20:56:24 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 20396 ack: 0 message: 1023 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():92] [info ] 86955 70647 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 21419 
+Thu May 10 20:56:24 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 20396 to 21419 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 5111 to 6135 
+Thu May 10 20:56:24 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 6135 8135 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 6135 
+Thu May 10 20:56:24 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 6135 message: 0 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 21419 to 22442 
+Thu May 10 20:56:24 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 21419 ack: 0 message: 1023 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():92] [info ] 87978 71671 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 22442 
+Thu May 10 20:56:24 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 21419 to 22442 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 6135 to 7159 
+Thu May 10 20:56:24 2018 [140064625154880] [recv_module.hpp:handle:75] [info ] error packet 
+Thu May 10 20:56:24 2018 [140064625154880] [send_module.hpp:handle:51] [info ] error packet 
+Thu May 10 20:56:24 2018 [140064625154880] [resend_module.hpp:handle:62] [info ] error packet 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:203] [info ] error packet, maybe the packet is lost 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 22442 to 23465 
+Thu May 10 20:56:24 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 22442 ack: 0 message: 1023 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():92] [info ] 89001 71671 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 23465 
+Thu May 10 20:56:24 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 22442 to 23465 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 23465 to 24488 
+Thu May 10 20:56:24 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 23465 ack: 0 message: 1023 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():92] [info ] 90024 71671 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 24488 
+Thu May 10 20:56:24 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 23465 to 24488 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 6135 to 7159 
+Thu May 10 20:56:24 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 7159 9159 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 7159 
+Thu May 10 20:56:24 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 7159 message: 0 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 24488 to 25511 
+Thu May 10 20:56:24 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 24488 ack: 0 message: 1023 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():92] [info ] 91047 72695 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 25511 
+Thu May 10 20:56:24 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 24488 to 25511 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 7159 to 8183 
+Thu May 10 20:56:24 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 8183 10183 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 8183 
+Thu May 10 20:56:24 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 8183 message: 0 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 25511 to 26534 
+Thu May 10 20:56:24 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 25511 ack: 0 message: 1023 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():92] [info ] 92070 73719 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 26534 
+Thu May 10 20:56:24 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 25511 to 26534 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 8183 to 9207 
+Thu May 10 20:56:24 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 9207 11207 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 9207 
+Thu May 10 20:56:24 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 9207 message: 0 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 26534 to 27557 
+Thu May 10 20:56:24 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 26534 ack: 0 message: 1023 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():92] [info ] 93093 74743 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 27557 
+Thu May 10 20:56:24 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 26534 to 27557 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 9207 to 10231 
+Thu May 10 20:56:24 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 10231 12231 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 10231 
+Thu May 10 20:56:24 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 10231 message: 0 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 27557 to 28580 
+Thu May 10 20:56:24 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 27557 ack: 0 message: 1023 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():92] [info ] 94116 75767 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 28580 
+Thu May 10 20:56:24 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 27557 to 28580 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 10231 to 11255 
+Thu May 10 20:56:24 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 11255 13255 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 11255 
+Thu May 10 20:56:24 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 11255 message: 0 
+Thu May 10 20:56:24 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:24 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:24 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 28580 to 29603 
+Thu May 10 20:56:25 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 28580 ack: 0 message: 1023 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():92] [info ] 95139 76791 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 29603 
+Thu May 10 20:56:25 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 28580 to 29603 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 11255 to 12279 
+Thu May 10 20:56:25 2018 [140064625154880] [recv_module.hpp:handle:75] [info ] error packet 
+Thu May 10 20:56:25 2018 [140064625154880] [send_module.hpp:handle:51] [info ] error packet 
+Thu May 10 20:56:25 2018 [140064625154880] [resend_module.hpp:handle:62] [info ] error packet 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:203] [info ] error packet, maybe the packet is lost 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 29603 to 30626 
+Thu May 10 20:56:25 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 29603 ack: 0 message: 1023 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():92] [info ] 96162 76791 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 30626 
+Thu May 10 20:56:25 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 29603 to 30626 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 30626 to 31649 
+Thu May 10 20:56:25 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 30626 ack: 0 message: 1023 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():92] [info ] 97185 76791 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 31649 
+Thu May 10 20:56:25 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 30626 to 31649 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 11255 to 12279 
+Thu May 10 20:56:25 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 12279 14279 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 12279 
+Thu May 10 20:56:25 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 12279 message: 0 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 31649 to 32672 
+Thu May 10 20:56:25 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 31649 ack: 0 message: 1023 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():92] [info ] 98208 77815 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 32672 
+Thu May 10 20:56:25 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 31649 to 32672 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 12279 to 13303 
+Thu May 10 20:56:25 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 13303 15303 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 13303 
+Thu May 10 20:56:25 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 13303 message: 0 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 32672 to 33695 
+Thu May 10 20:56:25 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 32672 ack: 0 message: 1023 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():92] [info ] 99231 78839 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 33695 
+Thu May 10 20:56:25 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 32672 to 33695 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 13303 to 14327 
+Thu May 10 20:56:25 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 14327 16327 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 14327 
+Thu May 10 20:56:25 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 14327 message: 0 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 33695 to 34718 
+Thu May 10 20:56:25 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 33695 ack: 0 message: 1023 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():92] [info ] 100254 79863 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 34718 
+Thu May 10 20:56:25 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 33695 to 34718 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 14327 to 15351 
+Thu May 10 20:56:25 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 15351 17351 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 15351 
+Thu May 10 20:56:25 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 15351 message: 0 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 34718 to 35741 
+Thu May 10 20:56:25 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 34718 ack: 0 message: 1023 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():92] [info ] 101277 80887 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 35741 
+Thu May 10 20:56:25 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 34718 to 35741 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 15351 to 16375 
+Thu May 10 20:56:25 2018 [140064625154880] [recv_module.hpp:handle:75] [info ] error packet 
+Thu May 10 20:56:25 2018 [140064625154880] [send_module.hpp:handle:51] [info ] error packet 
+Thu May 10 20:56:25 2018 [140064625154880] [resend_module.hpp:handle:62] [info ] error packet 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:203] [info ] error packet, maybe the packet is lost 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 35741 to 36764 
+Thu May 10 20:56:25 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 35741 ack: 0 message: 1023 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():92] [info ] 102300 80887 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 36764 
+Thu May 10 20:56:25 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 35741 to 36764 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 36764 to 37787 
+Thu May 10 20:56:25 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 36764 ack: 0 message: 1023 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():92] [info ] 103323 80887 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 37787 
+Thu May 10 20:56:25 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 36764 to 37787 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 15351 to 16375 
+Thu May 10 20:56:25 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 16375 18375 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 16375 
+Thu May 10 20:56:25 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 16375 message: 0 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 37787 to 38810 
+Thu May 10 20:56:25 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 37787 ack: 0 message: 1023 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():92] [info ] 104346 81911 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 38810 
+Thu May 10 20:56:25 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 37787 to 38810 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 16375 to 17399 
+Thu May 10 20:56:25 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 17399 19399 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 17399 
+Thu May 10 20:56:25 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 17399 message: 0 
+Thu May 10 20:56:25 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:25 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:25 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 38810 to 39833 
+Thu May 10 20:56:26 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 38810 ack: 0 message: 1023 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:26 2018 [140064625154880] [client.cc:operator():92] [info ] 105369 82935 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 39833 
+Thu May 10 20:56:26 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 38810 to 39833 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 17399 to 18423 
+Thu May 10 20:56:26 2018 [140064625154880] [recv_module.hpp:handle:75] [info ] error packet 
+Thu May 10 20:56:26 2018 [140064625154880] [send_module.hpp:handle:51] [info ] error packet 
+Thu May 10 20:56:26 2018 [140064625154880] [resend_module.hpp:handle:62] [info ] error packet 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_packet:203] [info ] error packet, maybe the packet is lost 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 39833 to 40856 
+Thu May 10 20:56:26 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 39833 ack: 0 message: 1023 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:26 2018 [140064625154880] [client.cc:operator():92] [info ] 106392 82935 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 40856 
+Thu May 10 20:56:26 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 39833 to 40856 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 40856 to 41879 
+Thu May 10 20:56:26 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 40856 ack: 0 message: 1023 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:26 2018 [140064625154880] [client.cc:operator():92] [info ] 107415 82935 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 41879 
+Thu May 10 20:56:26 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 40856 to 41879 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 17399 to 18423 
+Thu May 10 20:56:26 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 18423 20423 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 18423 
+Thu May 10 20:56:26 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 18423 message: 0 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:26 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:26 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:26 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_packet:210] [info ] send data: 41879 to 42902 
+Thu May 10 20:56:26 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 41879 ack: 0 message: 1023 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:26 2018 [140064625154880] [client.cc:operator():92] [info ] 108438 83959 
+Thu May 10 20:56:26 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 42902 43925 
+Thu May 10 20:56:26 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 41879 to 43879 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:26 2018 [140064625154880] [client.cc:operator():92] [info ] 108438 83959 
+Thu May 10 20:56:26 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 42902 43925 
+Thu May 10 20:56:26 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 41879 to 43879 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:26 2018 [140064625154880] [client.cc:operator():92] [info ] 108438 83959 
+Thu May 10 20:56:26 2018 [140064625154880] [resend_module.hpp:operator():113] [info ] resend packet: 41879 to 42902 
+Thu May 10 20:56:26 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 42902 43925 
+Thu May 10 20:56:26 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 41879 to 43879 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:26 2018 [140064625154880] [client.cc:operator():92] [info ] 108438 83959 
+Thu May 10 20:56:26 2018 [140064625154880] [send_module.hpp:check:38] [info ] not in valid range: 42902 43925 
+Thu May 10 20:56:26 2018 [140064625154880] [send_module.hpp:check:39] [info ] send window range: 41879 to 43879 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_packet:194] [info ] error, maybe the send window is full if your operation is to send packet 
+Thu May 10 20:56:26 2018 [140064625154880] [client.cc:operator():92] [info ] 108438 83959 
+Thu May 10 20:56:26 2018 [140064625154880] [resend_module.hpp:operator():113] [info ] resend packet: 41879 to 42902 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 134 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_read:173] [info ] recv ack: 42902 
+Thu May 10 20:56:26 2018 [140064625154880] [resend_module.hpp:cancel_timer:99] [info ] cancel timer: 41879 to 42902 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_read:166] [info ] 1158 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_read:176] [info ] recv data: 18423 to 19447 
+Thu May 10 20:56:26 2018 [140064625154880] [slide_window.hpp:set_flag_if_valid:69] [info ] window move to 19447 21447 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_packet:207] [info ] send ack: 19447 
+Thu May 10 20:56:26 2018 [140064625154880] [parser_module.hpp:print_packet:136] [info ] src port: 9999 des port: 10000 seq: 0 ack: 19447 message: 0 
+Thu May 10 20:56:26 2018 [140064625154880] [module.hpp:handle_packet:219] [info ] ...................................... 
+Thu May 10 20:56:26 2018 [140064625154880] [slide_window.hpp:recv_all:110] [info ] readable bytes: 1024 
+Thu May 10 20:56:26 2018 [140064625154880] [client.cc:operator():39] [info ] 1024 
+Thu May 10 20:56:26 2018 [140064625154880] [client.cc:operator():46] [info ] .................................................... 

@@ -5,6 +5,7 @@
 
 namespace cortono
 {
+
     template <std::uint64_t BufferSize, std::uint64_t WindowSize>
     class SendModule
     {
@@ -23,14 +24,19 @@ namespace cortono
 
             template <typename Parser>
             bool check(Parser& parser) {
-                if(parser.is_recv_data_packet()) {
+                if(parser.is_error_packet()) {
+
+                }
+                else if(parser.is_recv_data_packet()) {
 
                 }
                 else if(parser.is_recv_ack_packet()) {
 
                 }
                 else if(parser.is_send_data_packet()) {
-                    if(seq_ + parser.data_size() >= send_window_.right_bound()) {
+                    if(!send_window_.in_valid_range(seq_, seq_ + parser.data_size())) {
+                        log_info("not in valid range:", seq_, (seq_ + parser.data_size()) % BufferSize);
+                        log_info("send window range:", send_window_.left_bound(), "to", send_window_.right_bound());
                         return false;
                     }
                 }
@@ -41,7 +47,11 @@ namespace cortono
             }
             template <typename Parser>
             bool handle(Parser& parser) {
-                if(parser.is_recv_data_packet()) {
+                if(parser.is_error_packet()) {
+                    log_info("error packet");
+
+                }
+                else if(parser.is_recv_data_packet()) {
                     // recv data packet
                     // recv_module has modified ack
                     // swap src_port and des_port
@@ -59,7 +69,12 @@ namespace cortono
                 else if(parser.is_send_data_packet()) {
                     parser.set_src_port(port_);
                     parser.set_seq(seq_);
-                    seq_ += parser.data_size();
+                    if(BufferSize - seq_ > parser.data_size()) {
+                        seq_ += parser.data_size();
+                    }
+                    else {
+                        seq_ = parser.data_size() - (BufferSize - seq_);
+                    }
                 }
                 else {
 
@@ -67,14 +82,6 @@ namespace cortono
                 return true;
             }
 
-        private:
-            void modify_parser() {
-            }
-            template <typename Parser>
-            void send_packet(Parser& parser) {
-                parser.set_src_port = port_;
-                parser.set_seq(seq_);
-            }
         private:
             SlideWindow<BufferSize, WindowSize> send_window_;
 

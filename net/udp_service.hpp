@@ -35,8 +35,12 @@ namespace cortono::net
             }
         private:
             void handle_read() {
-                exitif(read_cb_ == nullptr, "read_cb is nullptr");
-                read_cb_(conn_ptr_);
+                if(conn_ptr_->handle_read()) {
+                    if(read_cb_) {
+                        read_cb_(conn_ptr_);
+                    }
+                }
+            }
 
             void handle_write() {
                 log_info("in handle_write");

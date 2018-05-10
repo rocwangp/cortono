@@ -13,6 +13,7 @@ namespace cortono
             }
             // [start_index, end_index)
             bool in_valid_range(std::uint64_t start_index, std::uint64_t end_index) {
+                end_index %= BufferSize;
                 // 0  [win_left_, win_right_) BufferSize
                 if(win_left_ < win_right_) {
                     // start_index  win_left_  win_right_
@@ -58,13 +59,14 @@ namespace cortono
                 for(std::uint64_t i = 0; i != len; ++i) {
                     window_.set((start_index + i) % BufferSize);
                     buffer_[(start_index + i) % BufferSize] = data[i];
-                    ++readable_bytes_;
                     if(win_left_ == ((start_index + i) % BufferSize)) {
                         window_.reset(win_left_);
                         win_left_ = (win_left_ + 1) % BufferSize;
                         win_right_ = (win_right_ + 1) % BufferSize;
+                        ++readable_bytes_;
                     }
                 }
+                log_info("window move to", win_left_, win_right_);
                 return true;
             }
             bool move_if_valid(std::uint64_t end_index) {
@@ -90,6 +92,34 @@ namespace cortono
             }
             std::uint64_t right_bound() const {
                 return win_right_;
+            }
+            std::uint64_t readable() const {
+                /* if(read_idx_ <= win_left_) { */
+                /*     return win_left_ - read_idx_; */
+                /* } */
+                /* else { */
+                /*     return BufferSize - read_idx_ + win_left_; */
+                /* } */
+                return readable_bytes_;
+            }
+            std::string recv_all() {
+                auto n = readable();
+                if(n == 0) {
+                    return "";
+                }
+                log_info("readable bytes:", n);
+                std::string info;
+                info.reserve(n);
+                if(read_idx_ <= win_left_) {
+                    info.append(&buffer_[read_idx_], n);
+                }
+                else {
+                    info.append(&buffer_[read_idx_], BufferSize - read_idx_);
+                    info.append(&buffer_[0], win_left_);
+                }
+                read_idx_ = win_left_;
+                readable_bytes_ -= n;
+                return info;
             }
 
 
