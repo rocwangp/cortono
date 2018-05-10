@@ -35,7 +35,7 @@ namespace cortono
                 }
                 else if(parser.is_send_data_packet()) {
                     if(!send_window_.in_valid_range(seq_, seq_ + parser.data_size())) {
-                        log_info("not in valid range:", seq_, (seq_ + parser.data_size()) % BufferSize);
+                        log_info("invalid range:", seq_, (seq_ + parser.data_size()) % BufferSize);
                         log_info("send window range:", send_window_.left_bound(), "to", send_window_.right_bound());
                         return false;
                     }

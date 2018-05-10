@@ -19,11 +19,11 @@ struct Power<N, 0>
 int main()
 {
     constexpr std::uint64_t BufferSize = Power<2, 16>::value;
-    constexpr std::uint64_t WindowSize = 2000;
+    constexpr std::uint64_t WindowSize = 10000;
     constexpr std::uint64_t Timeout = 200;
 
     using connection_t = cortono::Connection<
-                                    cortono::LostPacketModule<2, 5>,
+                                    cortono::LostPacketModule<3, 5>,
                                     cortono::RecvModule<BufferSize, WindowSize>,
                                     cortono::SendModule<BufferSize, WindowSize>,
                                     cortono::ResendModule<BufferSize, Timeout>>;

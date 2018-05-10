@@ -19,12 +19,13 @@ struct Power<N, 0>
 int main()
 {
     constexpr std::uint64_t BufferSize = Power<2, 16>::value;
-    constexpr std::uint64_t WindowSize = 2000;
+    constexpr std::uint64_t WindowSize = 10000;
     constexpr std::uint64_t Timeout = 200;
     constexpr std::uint64_t SendRate = 100;
+    constexpr std::int32_t MaxDataSize = 4096;
 
     using connection_t = cortono::Connection<
-                                    cortono::LostPacketModule<2, 5>,
+                                    cortono::LostPacketModule<3, 5>,
                                     cortono::RecvModule<BufferSize, WindowSize>,
                                     cortono::SendModule<BufferSize, WindowSize>,
                                     cortono::ResendModule<BufferSize, Timeout>>;
@@ -49,7 +50,7 @@ int main()
 
     std::ifstream fin{ "send_context", std::ios_base::in };
     auto conn_ptr = service.conn_ptr();
-    char buffer[1024] = "\0";
+    char buffer[MaxDataSize + 1] = "\0";
     cortono::net::Buffer send_buffer;
     std::string data;
     bool read_file = false;
@@ -62,19 +63,16 @@ int main()
             return;
         }
         if(!send_buffer.empty()) {
-            if(send_buffer.size() > 1024) {
-                data.assign(send_buffer.data(), 1024);
+            if(send_buffer.size() > MaxDataSize) {
+                data.assign(send_buffer.data(), MaxDataSize);
             }
             else {
                 data.assign(send_buffer.data(), send_buffer.size());
             }
             read_file = false;
         }
-        else {
-            fin.read(buffer, sizeof(buffer) - 1);
-            data.assign(buffer, fin.gcount());
-            read_file = true;
-        }
+        fin.read(buffer, MaxDataSize - data.size());
+        data.append(buffer, fin.gcount());
         conn_ptr->run([&]{
             auto parser = cortono::ParserModule<std::uint32_t>::make_data_parser(data, "127.0.0.1", 9999, "127.0.0.1", 10000);
             if(conn_ptr->handle_packet(parser) == false) {
@@ -89,6 +87,7 @@ int main()
                 }
             }
         });
+        data.clear();
         log_info(send_bytes, recv_bytes);
     });
     loop.loop();

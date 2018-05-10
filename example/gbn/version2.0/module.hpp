@@ -143,8 +143,7 @@ namespace cortono
                   port_(port),
                   middlewares_(middlewares_tuple_wrapper<Middlewares...>{}(loop_, ip, port))
             {
-                std::function<void(const std::string&, const std::string&, std::uint16_t)> sender =
-                    [this](const std::string& packet_str, const std::string& ip, std::uint16_t port) {
+                auto sender = [this](const std::string& packet_str, const std::string& ip, std::uint16_t port) {
                     this->parent_t::send(packet_str.data(), packet_str.size(), ip, port);
                 };
 
@@ -152,11 +151,13 @@ namespace cortono
                     if constexpr (has_bind_sender<decltype(module_obj), decltype(sender)>::value) {
                         module_obj.bind_sender(sender);
                     }
-                }, std::make_index_sequence<std::tuple_size_v<decltype(middlewares_)>>{});
+                }, std::make_index_sequence<sizeof...(Middlewares)>{});
+                /* }, std::make_index_sequence<std::tuple_size_v<decltype(middlewares_)>>{}); */
             }
 
             bool handle_read() {
-                char buffer[1024 * 128] = "\0";
+                /* char buffer[1024 * 128] = "\0"; */
+                char buffer[packet_t::MAX_SIZE] = "\0";
                 std::string ip;
                 std::uint16_t port;
                 int read_bytes = this->parent_t::recv(buffer, sizeof(buffer) - 1, ip, port);
@@ -222,7 +223,7 @@ namespace cortono
 
             template <typename Func>
             void run(Func&& f) {
-                f();
+                std::forward<Func>(f)();
             }
             template <typename Middleware>
             constexpr Middleware& get_middleware()  {

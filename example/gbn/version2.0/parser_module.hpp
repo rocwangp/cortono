@@ -114,19 +114,19 @@ namespace cortono
                 }
                 std::uint64_t n = 0;
                 std::uint64_t m = 0;
-                packet_.src_port = conv_to_ten_digits(2, buffer, (m = bits_traits_v<decltype(packet_.src_port)>, m));
+                packet_.src_port = conv_to_ten_digits(2, buffer, (m = bits_traits_v<decltype(packet_.src_port)>));
                 n += m;
-                packet_.des_port = conv_to_ten_digits(2, buffer + n, (m = bits_traits_v<decltype(packet_.des_port)>,  m));
+                packet_.des_port = conv_to_ten_digits(2, buffer + n, (m = bits_traits_v<decltype(packet_.des_port)>));
                 n += m;
-                packet_.seq_num = conv_to_ten_digits(2, buffer + n , (m = bits_traits_v<decltype(packet_.seq_num)>,  m));
+                packet_.seq_num = conv_to_ten_digits(2, buffer + n , (m = bits_traits_v<decltype(packet_.seq_num)>));
                 n += m;
-                packet_.ack_num = conv_to_ten_digits(2, buffer + n , (m = bits_traits_v<decltype(packet_.ack_num)>,  m));
+                packet_.ack_num = conv_to_ten_digits(2, buffer + n , (m = bits_traits_v<decltype(packet_.ack_num)>));
                 n += m;
-                std::memcpy(&packet_.control[0], buffer + n, (m = packet_.control.size(),  m));
+                std::memcpy(&packet_.control[0], buffer + n, (m = packet_.control.size()));
                 n += m;
-                packet_.notice_size = conv_to_ten_digits(2, buffer + n, (m = bits_traits_v<decltype(packet_.notice_size)>,  m));
+                packet_.notice_size = conv_to_ten_digits(2, buffer + n, (m = bits_traits_v<decltype(packet_.notice_size)>));
                 n += m;
-                packet_.check_code = conv_to_ten_digits(2, buffer + n, (m = bits_traits_v<decltype(packet_.check_code)>,  m));
+                packet_.check_code = conv_to_ten_digits(2, buffer + n, (m = bits_traits_v<decltype(packet_.check_code)>));
                 n += m;
                 n = MsgPacket<T>::MIN_SIZE;
                 packet_.message.assign(buffer + n, len - n);
