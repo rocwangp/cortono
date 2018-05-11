@@ -25,9 +25,10 @@ namespace cortono
             bool handle(Parser& parser) {
                 if(parser.is_recv_data_packet()) {
                     if(std::rand() % 60000 < 60000 * Num / Denom) {
-                        parser.set_src_port(port_);
-                        parser.set_des_port(port_);
-                        parser.set_control("000000");
+                        parser.set_error_packet();
+                        /* parser.set_src_port(port_); */
+                        /* parser.set_des_port(port_); */
+                        /* parser.set_control("000000"); */
                     }
                 }
                 return true;

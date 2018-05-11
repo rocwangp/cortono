@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../std.hpp"
+#include "sr_header.hpp"
 
 namespace cortono
 {
@@ -65,6 +65,12 @@ namespace cortono
                         win_right_ = (win_right_ + 1) % BufferSize;
                         ++readable_bytes_;
                     }
+                }
+                while(window_.test(win_left_)) {
+                    window_.reset(win_left_);
+                    win_left_ = (win_left_ + 1) % BufferSize;
+                    win_right_ = (win_right_ + 1) % BufferSize;
+                    ++readable_bytes_;
                 }
                 log_info("window move to", win_left_, win_right_);
                 return true;

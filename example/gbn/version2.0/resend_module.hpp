@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../cortono.hpp"
+#include "sr_header.hpp"
 
 namespace cortono
 {
@@ -37,18 +37,18 @@ namespace cortono
             {
             }
 
-            template <typename Parser>
-            bool check(Parser& parser) {
-                if(parser.is_error_packet()) {
+            template <typename Packet>
+            bool check(Packet& packet) {
+                if(packet.is_error_packet()) {
 
                 }
-                else if(parser.is_recv_data_packet()) {
+                else if(packet.is_recv_data_packet()) {
 
                 }
-                else if(parser.is_recv_ack_packet()) {
+                else if(packet.is_recv_ack_packet()) {
 
                 }
-                else if(parser.is_send_data_packet()) {
+                else if(packet.is_send_data_packet()) {
 
                 }
                 else {
@@ -56,23 +56,23 @@ namespace cortono
                 }
                 return true;
             }
-            template <typename Parser>
-            bool handle(Parser& parser) {
-                if(parser.is_error_packet()) {
+            template <typename Packet>
+            bool handle(Packet& packet) {
+                if(packet.is_error_packet()) {
                     log_info("error packet");
 
                 }
-                else if(parser.is_recv_data_packet()) {
+                else if(packet.is_recv_data_packet()) {
                     // recv data packet
                     // don't do anything
                 }
-                else if(parser.is_recv_ack_packet()) {
+                else if(packet.is_recv_ack_packet()) {
                     // recv ack packet
                     // cancel timer according to ack
-                    cancel_timer(parser);
+                    cancel_timer(packet);
                 }
-                else if(parser.is_send_data_packet()) {
-                    set_timer(parser);
+                else if(packet.is_send_data_packet()) {
+                    set_timer(packet);
                 }
                 else {
 
@@ -85,10 +85,10 @@ namespace cortono
             }
 
         private:
-            template <typename Parser>
-            void cancel_timer(Parser& parser) {
+            template <typename Packet>
+            void cancel_timer(Packet& packet) {
                 // 假定recv_module和send_module没有修改ack
-                auto ack = parser.ack();
+                auto ack = packet.ack();
                 while(!timers_.empty()) {
                     auto start_seq = std::get<0>(timers_.front());
                     auto end_seq = std::get<1>(timers_.front());
@@ -101,17 +101,18 @@ namespace cortono
                     timers_.pop_front();
                 }
             }
-            template <typename Parser>
-            void set_timer(Parser& parser) {
-                // 假定send_module已经将parser中的seq和data更改
-                std::uint64_t start_seq = parser.seq();
-                std::uint64_t end_seq = (start_seq + parser.data_size()) % BufferSize;
-                std::string packet_str = parser.to_string();
-                auto des_port = parser.des_port();
+            template <typename Packet>
+            void set_timer(Packet& packet) {
+                // 假定send_module已经将packet中的seq和data更改
+                std::uint64_t start_seq = packet.seq();
+                std::uint64_t end_seq = (start_seq + packet.data_size()) % BufferSize;
+                std::string packet_str = packet.to_string();
+                auto des_port = packet.des_port();
+                auto des_ip = packet.des_ip();
                 auto id = loop_->run_every(std::chrono::milliseconds(Time),
                     [=, packet_str = std::move(packet_str)]{
                     log_info("resend packet:", start_seq, "to", end_seq);
-                    sender_(packet_str, ip_, des_port);
+                    sender_(packet_str, des_ip, des_port);
                 });
                 timers_.emplace_back(start_seq, end_seq, id);
             }

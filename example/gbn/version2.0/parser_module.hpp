@@ -1,31 +1,11 @@
 #pragma once
 
-#include "../../../cortono.hpp"
-#include <array>
+#include "sr_header.hpp"
+#include "utility.hpp"
 
 namespace cortono
 {
-
-    template <typename T>
-    struct bits_traits {};
-
-#define INTERNAL_BITS_MAPPING(T, N) \
-    template <> \
-    struct bits_traits<T> \
-    {\
-        static const std::uint16_t value = N; \
-    };
-
-
-    INTERNAL_BITS_MAPPING(std::uint16_t, 16);
-    INTERNAL_BITS_MAPPING(std::uint32_t, 32);
-    INTERNAL_BITS_MAPPING(std::uint64_t, 64);
-
-    template <typename T>
-    static constexpr auto bits_traits_v = bits_traits<T>::value;
-
-
-    std::uint64_t conv_to_ten_digits(std::uint16_t s, const char* buffer, std::uint32_t len) {
+    inline std::uint64_t conv_to_ten_digits(std::uint16_t s, const char* buffer, std::uint32_t len) {
         std::uint64_t res = 0;
         std::uint64_t base = 1;
         for(int i = len - 1; i >= 0; --i) {
@@ -34,7 +14,7 @@ namespace cortono
         }
         return res;
     }
-    std::string conv_to_string(std::uint16_t d, std::uint64_t n, std::uint32_t len) {
+    inline std::string conv_to_string(std::uint16_t d, std::uint64_t n, std::uint32_t len) {
         std::string str;
         for(std::uint32_t i = 0; i != len; ++i) {
             str.append(1, '0' + n % d);
@@ -44,177 +24,186 @@ namespace cortono
         return str;
     }
 
-    template <typename T>
-    struct MsgPacket
+    template <typename T, std::uint64_t MaxDataSize>
+    class MsgPacket
     {
-        MsgPacket()  { message.clear(); }
-        std::uint16_t src_port{ 0 };
-        std::uint16_t des_port{ 0 };
-        T seq_num{ 0 };
-        T ack_num{ 0 };
-        std::array<char, 6> control = { {'0', '0', '0', '0', '0', '0' } };
-        std::uint16_t notice_size{ 0 };
-        std::uint16_t check_code{ 0 };
+        private:
+            T seq_{ 0 };
+            T ack_{ 0 };
+            std::array<char, 6> control_ = { {'0', '0', '0', '0', '0', '0' } };
+            std::uint16_t notice_size_{ 0 };
+            std::uint16_t check_code_{ 0 };
+            std::string message_;
 
-        std::string message;
+            std::string src_ip_{ "127.0.0.1" };
+            std::uint16_t src_port_{ 0 };
 
-        enum {
-            MIN_SIZE =
-                bits_traits_v<decltype(src_port)> +
-                bits_traits_v<decltype(des_port)> +
-                bits_traits_v<decltype(seq_num)> +
-                bits_traits_v<decltype(ack_num)> +
-                6 +
-                bits_traits_v<decltype(notice_size)> +
-                bits_traits_v<decltype(check_code)>,
+            std::string des_ip_{ "127.0.0.1" };
+            std::uint16_t des_port_{ 0 };
 
-            MAX_SIZE = MIN_SIZE + 4096
-        };
-
-        /* std::string to_string() const { */
-        /*     std::string str; */
-        /*     str.append(conv_to_string<2>(src_port, bits_traits_v<decltype(src_port)>)); */
-        /*     str.append(conv_to_string<2>(des_port, bits_traits_v<decltype(des_port)>)); */
-        /*     str.append(conv_to_string<2>(seq_num, bits_traits_v<decltype(seq_num)>)); */
-        /*     str.append(conv_to_string<2>(ack_num, bits_traits_v<decltype(ack_num)>)); */
-        /*     str.append(&control[0], control.size()); */
-        /*     str.append(conv_to_string<2>(notice_size, bits_traits_v<decltype(notice_size)>)); */
-        /*     str.append(conv_to_string<2>(check_code, bits_traits_v<decltype(check_code)>)); */
-        /*     str.append(message); */
-        /*     return str; */
-        /* } */
-    };
-
-    template <typename T>
-    class ParserModule
-    {
+            std::string local_ip_;
+            std::uint16_t local_port_;
         public:
-            using self_t = ParserModule<T>;
-            static self_t make_data_parser(const std::string& data,
-                                           const std::string& src_ip, std::uint16_t src_port,
-                                           const std::string& des_ip, std::uint16_t des_port) {
-                (void)(des_ip);
-                self_t parser(src_ip, src_port);
-                parser.packet_.src_port = src_port;
-                parser.packet_.des_port = des_port;
-                std::memcpy(&parser.packet_.control[0], "00100", parser.packet_.control.size());
-                parser.packet_.message = data;
-                return parser;
-            }
+            enum {
+                MIN_SIZE = //black_magic::bits_traits_v<decltype(src_port_)> +
+                           //black_magic::bits_traits_v<decltype(des_port_)> +
+                           black_magic::bits_traits_v<decltype(seq_)> +
+                           black_magic::bits_traits_v<decltype(ack_)> +
+                           std::tuple_size_v<decltype(control_)> +
+                           black_magic::bits_traits_v<decltype(notice_size_)> +
+                           black_magic::bits_traits_v<decltype(check_code_)>,
 
-            ParserModule(const std::string& ip, const std::uint16_t& port)
-                : ip_(ip),
-                  port_(port)
+                MAX_SIZE = MIN_SIZE + MaxDataSize
+            };
+
+
+            MsgPacket(const std::string& local_ip, std::uint16_t local_port,
+                      const std::string& src_ip, std::uint16_t src_port,
+                      const std::string& des_ip, std::uint16_t des_port)
+                : local_ip_(local_ip),
+                  local_port_(local_port),
+                  src_ip_(src_ip),
+                  src_port_(src_port),
+                  des_ip_(des_ip),
+                  des_port_(des_port)
             { }
 
+            static MsgPacket make_data_packet(const std::string& data,
+                                              const std::string& src_ip, std::uint16_t src_port,
+                                              const std::string& des_ip, std::uint16_t des_port) {
+                MsgPacket packet(src_ip, src_port, src_ip, src_port, des_ip, des_port);
+                packet.set_control("00100");
+                packet.set_data(data);
+                return packet;
+            }
+
             bool feed(const char* buffer, std::uint32_t len) {
-                if(len < MsgPacket<T>::MIN_SIZE) {
+                if(len < MIN_SIZE) {
                     log_error("msg packet is invalid");
                     return false;
                 }
                 std::uint64_t n = 0;
                 std::uint64_t m = 0;
-                packet_.src_port = conv_to_ten_digits(2, buffer, (m = bits_traits_v<decltype(packet_.src_port)>));
+                /* src_port_ = conv_to_ten_digits(2, buffer, (m = black_magic::bits_traits_v<decltype(src_port_)>)); */
+                /* n += m; */
+                /* des_port_ = conv_to_ten_digits(2, buffer + n, (m = black_magic::bits_traits_v<decltype(des_port_)>)); */
+                /* n += m; */
+                seq_ = conv_to_ten_digits(2, buffer + n , (m = black_magic::bits_traits_v<decltype(seq_)>));
                 n += m;
-                packet_.des_port = conv_to_ten_digits(2, buffer + n, (m = bits_traits_v<decltype(packet_.des_port)>));
+                ack_ = conv_to_ten_digits(2, buffer + n , (m = black_magic::bits_traits_v<decltype(ack_)>));
                 n += m;
-                packet_.seq_num = conv_to_ten_digits(2, buffer + n , (m = bits_traits_v<decltype(packet_.seq_num)>));
+                std::memcpy(&control_[0], buffer + n, (m = control_.size()));
                 n += m;
-                packet_.ack_num = conv_to_ten_digits(2, buffer + n , (m = bits_traits_v<decltype(packet_.ack_num)>));
+                notice_size_ = conv_to_ten_digits(2, buffer + n, (m = black_magic::bits_traits_v<decltype(notice_size_)>));
                 n += m;
-                std::memcpy(&packet_.control[0], buffer + n, (m = packet_.control.size()));
+                check_code_ = conv_to_ten_digits(2, buffer + n, (m = black_magic::bits_traits_v<decltype(check_code_)>));
                 n += m;
-                packet_.notice_size = conv_to_ten_digits(2, buffer + n, (m = bits_traits_v<decltype(packet_.notice_size)>));
-                n += m;
-                packet_.check_code = conv_to_ten_digits(2, buffer + n, (m = bits_traits_v<decltype(packet_.check_code)>));
-                n += m;
-                n = MsgPacket<T>::MIN_SIZE;
-                packet_.message.assign(buffer + n, len - n);
+                if(n != MIN_SIZE) {
+                    log_error("invalid packet");
+                    return false;
+                }
+                message_.assign(buffer + n, len - n);
                 return true;
             }
-            void print_packet() {
+
+            std::string to_string() const {
+                std::string str;
+                /* str.append(conv_to_string(2, src_port_, black_magic::bits_traits_v<decltype(src_port_)>)); */
+                /* str.append(conv_to_string(2, des_port_, black_magic::bits_traits_v<decltype(des_port_)>)); */
+                str.append(conv_to_string(2, seq_, black_magic::bits_traits_v<decltype(seq_)>));
+                str.append(conv_to_string(2, ack_, black_magic::bits_traits_v<decltype(ack_)>));
+                str.append(&control_[0], control_.size());
+                str.append(conv_to_string(2, notice_size_, black_magic::bits_traits_v<decltype(notice_size_)>));
+                str.append(conv_to_string(2, check_code_, black_magic::bits_traits_v<decltype(check_code_)>));
+                str.append(message_);
+                return str;
+            }
+            void print() {
                 log_info("src port:", src_port(),
                          "des port:", des_port(),
                          "seq:", seq(),
                          "ack:", ack(),
-                         "message:", packet_.message.size());
+                         "message size:", data_size());
             }
-            std::string to_string() const {
-                std::string str;
-                str.append(conv_to_string(2, packet_.src_port, bits_traits_v<decltype(packet_.src_port)>));
-                str.append(conv_to_string(2, packet_.des_port, bits_traits_v<decltype(packet_.des_port)>));
-                str.append(conv_to_string(2, packet_.seq_num, bits_traits_v<decltype(packet_.seq_num)>));
-                str.append(conv_to_string(2, packet_.ack_num, bits_traits_v<decltype(packet_.ack_num)>));
-                str.append(&packet_.control[0], packet_.control.size());
-                str.append(conv_to_string(2, packet_.notice_size, bits_traits_v<decltype(packet_.notice_size)>));
-                str.append(conv_to_string(2, packet_.check_code, bits_traits_v<decltype(packet_.check_code)>));
-                str.append(packet_.message);
-                return str;
-            }
-            MsgPacket<T> to_packet() {
-                return packet_;
-            }
+
             auto seq() const {
-                return packet_.seq_num;
+                return seq_;
             }
             auto ack() const {
-                return packet_.ack_num;
+                return ack_;
+            }
+            auto src_ip() const {
+                return src_ip_;
+            }
+            auto des_ip() const {
+                return des_ip_;
             }
             auto src_port() const {
-                return packet_.src_port;
+                return src_port_;
             }
             auto des_port() const {
-                return packet_.des_port;
+                return des_port_;
             }
             auto data_size() const {
-                return packet_.message.size();
+                return message_.size();
             }
             auto data() const {
-                return packet_.message.data();
+                return message_.data();
             }
             bool is_recv_ack_packet() const {
-                return !is_error_packet() && port_ == packet_.des_port && packet_.control[1] == '1';
+                return !is_error_packet() && local_ip_ == des_ip_ && local_port_ == des_port_ && control_[1] == '1';
             }
             bool is_recv_data_packet() const {
-                return !is_error_packet() && port_ == packet_.des_port && packet_.control[1] == '0';
+                return !is_error_packet() && local_ip_ == des_ip_ && local_port_ == des_port_ && control_[1] == '0';
             }
             bool is_send_ack_packet() const {
-                return !is_error_packet() && port_ != packet_.des_port && packet_.control[1] == '1';
+                return !is_error_packet() && local_ip_ == src_ip_ && local_port_ == src_port_ && control_[1] == '1';
             }
             bool is_send_data_packet() const {
-                return !is_error_packet() && port_ != packet_.des_port && packet_.control[1] == '0';
+                return !is_error_packet() && local_ip_ == src_ip_ && local_port_ == src_port_ && control_[1] == '0';
             }
             bool is_error_packet() const {
-                return packet_.src_port == packet_.des_port;
+                return src_ip_ == des_ip_ && src_port_ == des_port_;
             }
             void swap_port() {
-                std::swap(packet_.src_port, packet_.des_port);
+                std::swap(src_port_, des_port_);
             }
             void set_seq(std::uint64_t s) {
-                packet_.seq_num = s;
+                seq_ = s;
             }
             void set_ack(std::uint64_t ack) {
-                packet_.ack_num = ack;
+                ack_ = ack;
             }
             void set_src_port(std::uint32_t port) {
-                packet_.src_port = port;
+                src_port_ = port;
             }
             void set_des_port(std::uint32_t port) {
-                packet_.des_port = port;
+                des_port_ = port;
+            }
+            void set_src_ip(const std::string& ip) {
+                src_ip_ = ip;
+            }
+            void set_des_ip(const std::string& ip) {
+                des_ip_ = ip;
             }
             void set_ack_flag() {
-                packet_.control[1] = '1';
+                control_[1] = '1';
             }
             void set_control(const char* buffer) {
-                std::memcpy(&packet_.control[0], buffer, packet_.control.size());
+                std::memcpy(&control_[0], buffer, control_.size());
+            }
+            void set_data(const std::string& data) {
+                message_ = data;
+            }
+            void set_error_packet() {
+                src_ip_ = des_ip_ = local_ip_;
+                src_port_ = des_port_ = local_port_;
+                std::memcpy(&control_[0], "000000", control_.size());
             }
             void clear_data() {
-                packet_.message.clear();
+                message_.clear();
             }
-        private:
-            MsgPacket<T> packet_;
 
-            std::string ip_;
-            std::uint16_t port_;
+
     };
 }

@@ -18,12 +18,20 @@ struct Power<N, 0>
 
 int main()
 {
-    constexpr std::uint64_t BufferSize = Power<2, 16>::value;
+    constexpr std::uint16_t SeqBits = 16;
     constexpr std::uint64_t WindowSize = 10000;
-    constexpr std::uint64_t Timeout = 200;
+    constexpr std::uint64_t BufferSize = black_magic::Power<2, black_magic::RoundUp<SeqBits, 8>::value>::value;
 
+    static_assert(2 * WindowSize < BufferSize);
+
+    constexpr std::uint64_t Timeout = 100;
+    constexpr std::int32_t MaxDataSize = 4096;
+
+    using seq_t = black_magic::promote_t<black_magic::RoundUp<SeqBits, 8>::value>;
+    using packet_t = cortono::MsgPacket<seq_t, MaxDataSize>;
     using connection_t = cortono::Connection<
-                                    cortono::LostPacketModule<3, 5>,
+                                    packet_t,
+                                    cortono::LostPacketModule<1, 5>,
                                     cortono::RecvModule<BufferSize, WindowSize>,
                                     cortono::SendModule<BufferSize, WindowSize>,
                                     cortono::ResendModule<BufferSize, Timeout>>;
@@ -39,15 +47,16 @@ int main()
         if(send_buffer.empty()) {
             return;
         }
-        if(send_buffer.size() > 1024) {
-            str.assign(send_buffer.data(), 1024);
+        if(send_buffer.size() > MaxDataSize) {
+            str.assign(send_buffer.data(), MaxDataSize);
         }
         else {
             str.assign(send_buffer.data(), send_buffer.size());
         }
         log_info(str.size());
-        auto parser = cortono::ParserModule<std::uint32_t>::make_data_parser(str, "127.0.0.1", 10000, "127.0.0.1", 9999);
-        if(conn_ptr->handle_packet(parser)) {
+        auto [ip, port] = conn_ptr->get_middleware<cortono::RecvModule<BufferSize, WindowSize>>().peer_ip_port();
+        auto packet = packet_t::make_data_packet(str, "127.0.0.1", 10000, ip, port);
+        if(conn_ptr->handle_packet(packet)) {
             send_buffer.retrieve_read_bytes(str.size());
         }
         log_info(".............................................");

@@ -1,7 +1,7 @@
 #pragma once
 
+#include "sr_header.hpp"
 #include "slide_window.hpp"
-#include "parser_module.hpp"
 
 namespace cortono
 {
@@ -22,20 +22,20 @@ namespace cortono
                   port_(other.port_)
             {  }
 
-            template <typename Parser>
-            bool check(Parser& parser) {
-                if(parser.is_error_packet()) {
+            template <typename Packet>
+            bool check(Packet& packet) {
+                if(packet.is_error_packet()) {
 
                 }
-                else if(parser.is_recv_data_packet()) {
+                else if(packet.is_recv_data_packet()) {
 
                 }
-                else if(parser.is_recv_ack_packet()) {
+                else if(packet.is_recv_ack_packet()) {
 
                 }
-                else if(parser.is_send_data_packet()) {
-                    if(!send_window_.in_valid_range(seq_, seq_ + parser.data_size())) {
-                        log_info("invalid range:", seq_, (seq_ + parser.data_size()) % BufferSize);
+                else if(packet.is_send_data_packet()) {
+                    if(!send_window_.in_valid_range(seq_, seq_ + packet.data_size())) {
+                        log_info("invalid range:", seq_, (seq_ + packet.data_size()) % BufferSize);
                         log_info("send window range:", send_window_.left_bound(), "to", send_window_.right_bound());
                         return false;
                     }
@@ -45,35 +45,38 @@ namespace cortono
                 }
                 return true;
             }
-            template <typename Parser>
-            bool handle(Parser& parser) {
-                if(parser.is_error_packet()) {
+            template <typename Packet>
+            bool handle(Packet& packet) {
+                if(packet.is_error_packet()) {
                     log_info("error packet");
 
                 }
-                else if(parser.is_recv_data_packet()) {
+                else if(packet.is_recv_data_packet()) {
                     // recv data packet
                     // recv_module has modified ack
-                    // swap src_port and des_port
-                    parser.swap_port();
-                    parser.set_ack_flag();
-                    parser.clear_data();
+                    // swap src_port and des_port to send ack packet
+                    packet.set_des_ip(packet.src_ip());
+                    packet.set_des_port(packet.src_port());
+                    packet.set_src_ip(ip_);
+                    packet.set_src_port(port_);
+                    packet.set_ack_flag();
+                    packet.clear_data();
                 }
-                else if(parser.is_recv_ack_packet()) {
+                else if(packet.is_recv_ack_packet()) {
                     // recv ack packet
                     // don't modify anything
                     // because resend_module will use the ack to cancel timer
                     // move send window if the ack is in valid range
-                    send_window_.move_if_valid(parser.ack());
+                    send_window_.move_if_valid(packet.ack());
                 }
-                else if(parser.is_send_data_packet()) {
-                    parser.set_src_port(port_);
-                    parser.set_seq(seq_);
-                    if(BufferSize - seq_ > parser.data_size()) {
-                        seq_ += parser.data_size();
+                else if(packet.is_send_data_packet()) {
+                    /* packet.set_src_port(port_); */
+                    packet.set_seq(seq_);
+                    if(BufferSize - seq_ > packet.data_size()) {
+                        seq_ += packet.data_size();
                     }
                     else {
-                        seq_ = parser.data_size() - (BufferSize - seq_);
+                        seq_ = packet.data_size() - (BufferSize - seq_);
                     }
                 }
                 else {

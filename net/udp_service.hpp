@@ -18,6 +18,7 @@ namespace cortono::net
                   conn_ptr_(std::make_shared<Connection>(loop, sockfd_, ip, port)),
                   poller_cb_(std::make_shared<EventPoller::PollerCB>())
             {
+                EventPoller::set_level_trigger();
                 if(ip::udp::sockets::bind(sockfd_, ip, port) == false) {
                     log_fatal("bind error", std::strerror(errno));
                 }

@@ -17,13 +17,25 @@ namespace cortono::net
                 std::function<void()> read_cb, write_cb, close_cb;
             };
 
-            enum
-            {
-                NONE_EVENT = 0,
-                READ_EVENT = EPOLLIN ,//| EPOLLET,
-                WRITE_EVENT = EPOLLOUT,// | EPOLLET
-            };
+            /* enum */
+            /* { */
+            /*     NONE_EVENT = 0, */
+            /*     READ_EVENT = EPOLLIN ,//| EPOLLET, */
+            /*     WRITE_EVENT = EPOLLOUT,// | EPOLLET */
+            /* }; */
 
+            static std::uint32_t NONE_EVENT;
+            static std::uint32_t READ_EVENT;
+            static std::uint32_t WRITE_EVENT;
+
+            static void set_edge_trigger() {
+                READ_EVENT = EPOLLIN | EPOLLET;
+                WRITE_EVENT = EPOLLOUT | EPOLLET;
+            }
+            static void set_level_trigger() {
+                READ_EVENT = EPOLLIN;
+                WRITE_EVENT = EPOLLOUT;
+            }
         public:
             EventPoller()
                 : epollfd_(::epoll_create1(::EPOLL_CLOEXEC)),
@@ -92,4 +104,9 @@ namespace cortono::net
             std::vector<struct epoll_event> events_;
 
     };
+
+
+    std::uint32_t EventPoller::NONE_EVENT = 0;
+    std::uint32_t EventPoller::READ_EVENT = EPOLLIN | EPOLLET;
+    std::uint32_t EventPoller::WRITE_EVENT = EPOLLOUT | EPOLLET;
 }

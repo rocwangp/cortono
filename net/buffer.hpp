@@ -30,6 +30,9 @@ namespace cortono::net
                 return read_idx_ == write_idx_;
             }
             int size()  {
+                if(read_idx_ > write_idx_) {
+                    log_fatal("buffer error:", read_idx_, write_idx_);
+                }
                 return write_idx_ - read_idx_;
             }
             int readable() {
