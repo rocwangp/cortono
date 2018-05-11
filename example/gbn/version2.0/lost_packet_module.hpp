@@ -16,19 +16,21 @@ namespace cortono
                 std::srand((unsigned short)(time(nullptr)));
             }
 
+            // nothing to check for this module
             template <typename Parser>
             bool check(Parser& ) {
                 return true;
             }
 
+            // rand to simulate packet loss by make error on packet then
+            // other module will find out the error and don't carry out anything
             template <typename Parser>
             bool handle(Parser& parser) {
                 if(parser.is_recv_data_packet()) {
                     if(std::rand() % 60000 < 60000 * Num / Denom) {
+                        // if the src_ip equal to des_ip and the src_port equal to des_port
+                        // the packet will be seen as the error packet
                         parser.set_error_packet();
-                        /* parser.set_src_port(port_); */
-                        /* parser.set_des_port(port_); */
-                        /* parser.set_control("000000"); */
                     }
                 }
                 return true;

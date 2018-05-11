@@ -53,8 +53,8 @@ namespace cortono
             Connection(cortono::net::EventLoop* loop, int fd, const std::string& ip, std::uint16_t port)
                 : parent_t(fd),
                   loop_(loop),
-                  ip_(ip),
-                  port_(port),
+                  local_ip_(ip),
+                  local_port_(port),
                   middlewares_(detail::middlewares_tuple_wrapper<Middlewares...>{}(loop_, ip, port))
             {
                 auto sender = [this](const std::string& packet_str, const std::string& ip, std::uint16_t port) {
@@ -69,6 +69,9 @@ namespace cortono
                 /* }, std::make_index_sequence<std::tuple_size_v<decltype(middlewares_)>>{}); */
             }
 
+            packet_t make_data_packet(const std::string& data, const std::string& des_ip, std::uint16_t des_port) {
+                return packet_t::make_data_packet(data, local_ip_, local_port_, des_ip, des_port);
+            }
             bool handle_read() {
                 char buffer[packet_t::MAX_SIZE + 1] = "\0";
                 std::string src_ip;
@@ -78,7 +81,7 @@ namespace cortono
                     return false;
                 }
                 log_info(read_bytes);
-                packet_t packet(ip_, port_, src_ip, src_port, ip_, port_);
+                packet_t packet(local_ip_, local_port_, src_ip, src_port, local_ip_, local_port_);
                 if(!packet.feed(buffer, read_bytes)) {
                     log_info("invalid packet");
                     return false;
@@ -113,6 +116,7 @@ namespace cortono
                 }, std::make_index_sequence<sizeof...(Middlewares)>{});
                 /* }, std::make_index_sequence<std::tuple_size_v<decltype(middlewares_)>>{}); */
 
+                /* packet.print(); */
                 if(packet.is_error_packet()) {
                     log_info("error packet, maybe the packet is lost");
                     return false;
@@ -129,10 +133,11 @@ namespace cortono
                 }
                 packet.print();
                 std::string packet_str = packet.to_string();
-                this->parent_t::send(packet_str.data(), packet_str.size(), ip_, packet.des_port());
+                this->parent_t::send(packet_str.data(), packet_str.size(), packet.des_ip(), packet.des_port());
                 log_info("......................................");
                 return true;
             }
+
 
             template <typename Func>
             void run(Func&& f) {
@@ -147,8 +152,8 @@ namespace cortono
         private:
             cortono::net::EventLoop* loop_;
 
-            std::string ip_;
-            std::uint16_t port_;
+            std::string local_ip_;
+            std::uint16_t local_port_;
 
             /* parser_t parser_; */
             std::tuple<Middlewares...> middlewares_;

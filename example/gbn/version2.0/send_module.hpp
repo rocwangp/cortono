@@ -12,16 +12,11 @@ namespace cortono
         public:
             SendModule(cortono::net::EventLoop* loop, const std::string& ip, const std::uint16_t& port)
                 : loop_(loop),
-                  ip_(ip),
-                  port_(port)
+                  local_ip_(ip),
+                  local_port_(port)
             {  }
 
-            SendModule(const SendModule& other)
-                : loop_(other.loop_),
-                  ip_(other.ip_),
-                  port_(other.port_)
-            {  }
-
+            // return false if the send window is full(or can't hold the data size)
             template <typename Packet>
             bool check(Packet& packet) {
                 if(packet.is_error_packet()) {
@@ -53,14 +48,7 @@ namespace cortono
                 }
                 else if(packet.is_recv_data_packet()) {
                     // recv data packet
-                    // recv_module has modified ack
-                    // swap src_port and des_port to send ack packet
-                    packet.set_des_ip(packet.src_ip());
-                    packet.set_des_port(packet.src_port());
-                    packet.set_src_ip(ip_);
-                    packet.set_src_port(port_);
-                    packet.set_ack_flag();
-                    packet.clear_data();
+                    // note: recv_module has modified ack
                 }
                 else if(packet.is_recv_ack_packet()) {
                     // recv ack packet
@@ -89,8 +77,8 @@ namespace cortono
             SlideWindow<BufferSize, WindowSize> send_window_;
 
             cortono::net::EventLoop* loop_;
-            std::uint64_t seq_;
-            std::string ip_;
-            std::uint16_t port_;
+            std::uint64_t seq_{ 0 };
+            std::string local_ip_;
+            std::uint16_t local_port_;
     };
 }

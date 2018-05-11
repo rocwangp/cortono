@@ -56,7 +56,6 @@ namespace cortono
                 MAX_SIZE = MIN_SIZE + MaxDataSize
             };
 
-
             MsgPacket(const std::string& local_ip, std::uint16_t local_port,
                       const std::string& src_ip, std::uint16_t src_port,
                       const std::string& des_ip, std::uint16_t des_port)
@@ -119,10 +118,17 @@ namespace cortono
                 return str;
             }
             void print() {
-                log_info("src port:", src_port(),
+                char buffer[7] = "\0";
+                std::memcpy(buffer, &control_[0], control_.size());
+                log_info("local ip:", local_ip_,
+                         "local port:", local_port_,
+                         "src ip:", src_ip(),
+                         "src port:", src_port(),
+                         "des ip:", des_ip(),
                          "des port:", des_port(),
                          "seq:", seq(),
                          "ack:", ack(),
+                         "control:", buffer,
                          "message size:", data_size());
             }
 
@@ -157,10 +163,10 @@ namespace cortono
                 return !is_error_packet() && local_ip_ == des_ip_ && local_port_ == des_port_ && control_[1] == '0';
             }
             bool is_send_ack_packet() const {
-                return !is_error_packet() && local_ip_ == src_ip_ && local_port_ == src_port_ && control_[1] == '1';
+                return !is_error_packet() && (local_ip_ != des_ip_ || local_port_ != des_port_) && control_[1] == '1';
             }
             bool is_send_data_packet() const {
-                return !is_error_packet() && local_ip_ == src_ip_ && local_port_ == src_port_ && control_[1] == '0';
+                return !is_error_packet() && (local_ip_ != des_ip_ || local_port_ != des_port_) && control_[1] == '0';
             }
             bool is_error_packet() const {
                 return src_ip_ == des_ip_ && src_port_ == des_port_;

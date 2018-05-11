@@ -16,47 +16,13 @@ namespace cortono
                   port_(port)
             {  }
 
-            RecvModule(const RecvModule& other)
-                : recv_window_(other.recv_window_),
-                  loop_(other.loop_),
-                  ip_(other.ip_),
-                  port_(other.port_)
-            {  }
-
-            RecvModule& operator=(const RecvModule& other) {
-                if(this == &other) {
-                    return *this;
-                }
-                else {
-                    recv_window_ = other.recv_window_;
-                    loop_ = other.loop_;
-                    ip_ = other.ip_;
-                    port_ = other.port_;
-                    return *this;
-                }
-            }
-            RecvModule(RecvModule&& other)
-                : recv_window_(std::move(other.recv_window_)),
-                  loop_(std::move(other.loop_)),
-                  ip_(std::move(other.ip_)),
-                  port_(std::move(other.port_))
-            {  }
-
-            RecvModule&& operator=(RecvModule&& other) {
-                RecvModule tmp(std::move(other));
-                std::swap(tmp, *this);
-                return *this;
-            }
-
+            // return false if the data seq in invalid range(controlled by send_window)
             template <typename Packet>
             bool check(Packet& packet) {
                 if(packet.is_error_packet()) {
 
                 }
                 else if(packet.is_recv_data_packet()) {
-                    if(!recv_window_.in_valid_range(packet.seq(), packet.seq() + packet.data_size()) || recv_window_.full()) {
-                        return false;
-                    }
                 }
                 else if(packet.is_recv_ack_packet()) {
 
@@ -76,9 +42,11 @@ namespace cortono
                 }
                 else if(packet.is_recv_data_packet()) {
                     // recv data packet
-                    // move recv window if the seq is in valid range([win_left_, win_right_))
+                    // move recv window and store data
                     // modify ack
-                    // because main module need to send ack packet for this data packet
+                    // because the main module need to send ack packet for this data packet
+                    // store src ip and src port, provide to app if needed
+
                     peer_ip_ = packet.src_ip();
                     peer_port_ = packet.src_port();
 

@@ -3,18 +3,8 @@
 #include "send_module.hpp"
 #include "resend_module.hpp"
 #include "lost_packet_module.hpp"
+#include "modify_module.hpp"
 
-template <std::uint64_t N, std::uint64_t M>
-struct Power
-{
-    static const std::uint64_t value = N * Power<N, M - 1>::value;
-};
-
-template <std::uint64_t N>
-struct Power<N, 0>
-{
-    static const std::uint64_t value = 1;
-};
 
 int main()
 {
@@ -31,10 +21,11 @@ int main()
     using packet_t = cortono::MsgPacket<seq_t, MaxDataSize>;
     using connection_t = cortono::Connection<
                                     packet_t,
-                                    cortono::LostPacketModule<1, 5>,
+                                    cortono::LostPacketModule<1, 10>,
                                     cortono::RecvModule<BufferSize, WindowSize>,
                                     cortono::SendModule<BufferSize, WindowSize>,
-                                    cortono::ResendModule<BufferSize, Timeout>>;
+                                    cortono::ResendModule<BufferSize, Timeout>,
+                                    cortono::ModifyModule>;
 
     cortono::net::EventLoop loop;
     cortono::net::UdpService<connection_t> service(&loop, "127.0.0.1", 10000);
@@ -55,7 +46,7 @@ int main()
         }
         log_info(str.size());
         auto [ip, port] = conn_ptr->get_middleware<cortono::RecvModule<BufferSize, WindowSize>>().peer_ip_port();
-        auto packet = packet_t::make_data_packet(str, "127.0.0.1", 10000, ip, port);
+        auto packet = conn_ptr->make_data_packet(str, ip, port);
         if(conn_ptr->handle_packet(packet)) {
             send_buffer.retrieve_read_bytes(str.size());
         }

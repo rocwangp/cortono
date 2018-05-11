@@ -17,25 +17,6 @@ namespace cortono
                   port_(port)
             {
             }
-            ~ResendModule() {
-            }
-
-            ResendModule(ResendModule&& other)
-                : sender_(std::move(other.sender_)),
-                  loop_(std::move(other.loop_)),
-                  ip_(std::move(other.ip_)),
-                  port_(std::move(other.port_)),
-                  timers_(std::move(other.timers_))
-            {  }
-
-            ResendModule(const ResendModule& other)
-                : sender_(other.sender_),
-                  loop_(other.loop_),
-                  ip_(other.ip_),
-                  port_(other.port_),
-                  timers_(other.timers_)
-            {
-            }
 
             template <typename Packet>
             bool check(Packet& packet) {

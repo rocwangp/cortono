@@ -3,7 +3,7 @@
 #include "send_module.hpp"
 #include "resend_module.hpp"
 #include "lost_packet_module.hpp"
-
+#include "modify_module.hpp"
 
 int main()
 {
@@ -21,10 +21,11 @@ int main()
     using packet_t = cortono::MsgPacket<seq_t, MaxDataSize>;
     using connection_t = cortono::Connection<
                                     packet_t,
-                                    cortono::LostPacketModule<1, 5>,
+                                    cortono::LostPacketModule<1, 10>,
                                     cortono::RecvModule<BufferSize, WindowSize>,
                                     cortono::SendModule<BufferSize, WindowSize>,
-                                    cortono::ResendModule<BufferSize, Timeout>>;
+                                    cortono::ResendModule<BufferSize, Timeout>,
+                                    cortono::ModifyModule>;
 
     cortono::net::EventLoop loop;
     cortono::net::UdpService<connection_t> service(&loop, "127.0.0.1", 9999);
@@ -72,8 +73,10 @@ int main()
             data.assign(buffer, fin.gcount());
             read_file = true;
         }
+        log_info(data.size());
         conn_ptr->run([&]{
-            auto packet = packet_t::make_data_packet(data, "127.0.0.1", 9999, "127.0.0.1", 10000);
+            auto packet = conn_ptr->make_data_packet(data, "127.0.0.1", 10000);
+            /* packet.print(); */
             if(conn_ptr->handle_packet(packet) == false) {
                 if(read_file) {
                     send_buffer.append(data);
