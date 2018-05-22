@@ -186,6 +186,13 @@ namespace cortono::http
                 : rule_(std::move(rule))
             {  }
 
+            using self_t = DynamicRule;
+
+            self_t& methods(HttpMethod method) {
+                methods_.emplace_back(method);
+                return *this;
+            }
+
             template <typename Func>
             void operator()(Func f) {
                 if(methods_.empty()) {
@@ -292,10 +299,8 @@ namespace cortono::http
                 routing_params match_params;
 
                 auto update_found([&](auto& ret) {
-                    if(ret.first && (!rule_index || ret.first < rule_index)) {
-                        rule_index = ret.first;
-                        match_params = std::move(ret.second);
-                    }
+                    rule_index = ret.first;
+                    match_params = std::move(ret.second);
                 });
                 if(node->param_children[(int)(ParamType::INT)]) {
                     char c = req_url[pos];
@@ -348,7 +353,7 @@ namespace cortono::http
                         params->string_params.emplace_back(req_url.substr(pos, epos - pos));
                         auto ret = find(req_url, epos, &nodes_[node->param_children[(int)(ParamType::STRING)]], params);
                         update_found(ret);
-                        params->double_params.pop_back();
+                        params->string_params.pop_back();
                     }
                 }
                 if(node->param_children[(int)(ParamType::PATH)]) {
@@ -388,8 +393,10 @@ namespace cortono::http
                 }
             }
             void handle(const Request& req, Response& res) {
-                auto [rule_index, params] = method_rules_[(int)req.method].trie.find(req.url);
-                method_rules_[(int)req.method].rules[rule_index]->handle(req, res, params);
+                /* auto [rule_index, params] = method_rules_[(int)req.method].trie.find(req.url); */
+                /* method_rules_[(int)req.method].rules[rule_index]->handle(req, res, params); */
+                auto rules_params = method_rules_[(int)req.method].trie.find(req.url);
+                method_rules_[(int)req.method].rules[rules_params.first]->handle(req, res, rules_params.second);
             }
         private:
             void internal_add_rule_object(const std::string& rule, DynamicRule* rule_obj) {

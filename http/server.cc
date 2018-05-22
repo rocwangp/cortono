@@ -4,6 +4,9 @@ int main()
 {
     using namespace cortono::http;
     SimpleApp app;
+    app.register_rule("/register")([](const Request& , Response& res) {
+        res.send_file("social_network_www/register.html");
+    });
     app.register_rule("/")([](const Request& req) {
         std::stringstream oss;
         oss << req.method_to_string() << " "

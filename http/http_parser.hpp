@@ -26,7 +26,7 @@ namespace cortono::http
                 do {
                     switch(state_) {
                         case ParseState::PARSE_LINE:
-                            ret = try_parse_line(buffer + feed_len, len);
+                            ret = try_parse_line(buffer, len);
                             break;
                         case ParseState::PARSE_HEADER:
                             ret = try_parse_header(buffer, len);
@@ -70,8 +70,8 @@ namespace cortono::http
                 const char* end{ nullptr };
                 int feed_len{ 0 };
                 while((end = std::find(buffer, buffer + len, '\n')) != buffer + len) {
-                    if(len == 2 && buffer[0] == '\r' && buffer[1] == '\n') {
-                        feed_len += len;
+                    if((end - buffer + 1) == 2 && buffer[0] == '\r' && buffer[1] == '\n') {
+                        feed_len += 2;
                         state_ = ParseState::PARSE_BODY;
                         break;
                     }
@@ -99,6 +99,7 @@ namespace cortono::http
                 return len;
             }
             void parse_method(std::string&& method) {
+                log_info(method);
                 if(utils::iequal(method.data(), method.length(), "GET")) {
                     method_ = HttpMethod::GET;
                 }
@@ -152,13 +153,13 @@ namespace cortono::http
                 return version_.first == head && version_.second == tail;
             }
             void clear() {
-                /* state_ = ParseState::PARSE_LINE; */
-                /* method_ = HttpMethod::GET; */
-                /* raw_url_.clear(); */
-                /* req_url_.clear(); */
-                /* body_.clear(); */
-                /* query_kv_pairs_.clear(); */
-                /* header_kv_pairs_.clear(); */
+                state_ = ParseState::PARSE_LINE;
+                method_ = HttpMethod::GET;
+                raw_url_.clear();
+                req_url_.clear();
+                body_.clear();
+                query_kv_pairs_.clear();
+                header_kv_pairs_.clear();
             }
         private:
             ParseState state_ { ParseState::PARSE_LINE };

@@ -100,6 +100,8 @@ namespace cortono
             }
             bool handle_packet(packet_t& packet) {
                 bool error = false;
+
+                // TODO: has_check
                 black_magic::foreach(middlewares_, [&error, &packet](auto& module_obj) {
                     if(!module_obj.check(packet)) {
                         error = true;
@@ -111,6 +113,8 @@ namespace cortono
                     log_info("error, maybe the send window is full if your operation is to send packet");
                     return false;
                 }
+
+                // TODO: has_handle
                 black_magic::foreach(middlewares_, [&packet](auto& module_obj) {
                     module_obj.handle(packet);
                 }, std::make_index_sequence<sizeof...(Middlewares)>{});

@@ -34,9 +34,9 @@ int main()
         return oss.str();
     });
 #ifdef CORTONO_USE_SSL
-    app.register_rule("/web/<path>")([](const cortono::http::Request&, cortono::http::Response& res, std::string filename) {
+    app.register_rule("/www/<path>")([](const cortono::http::Request&, cortono::http::Response& res, std::string filename) {
         using namespace std::experimental;
-        filename = cortono::http::html_codec::decode("web/" + filename);
+        filename = cortono::http::html_codec::decode("www/" + filename);
         log_debug(filename);
         if(filesystem::exists(filename)) {
         /* 如果filename表示一个目录，那么filesystem::file_size(filename)会阻塞
@@ -53,12 +53,53 @@ int main()
         }
     });
 #else
-    app.register_rule("/web/<path>")([](const cortono::http::Request&, cortono::http::Response& res, std::string s) {
+    app.register_rule("/www/<path>")([](const cortono::http::Request&, cortono::http::Response& res, std::string s) {
+        log_info(s);
         res = cortono::http::Response(200);
-        res.send_file("web/" + s);
+        res.send_file("www/" + s);
     });
 #endif
 
-    app.multithread().https().port(10000).run();
+    app.register_rule("/www/<string>").methods(cortono::http::HttpMethod::POST)
+        ([](const cortono::http::Request& req, std::string s) {
+        if(s == "register_user_form") {
+            std::unordered_map<std::string, std::string> query_kv;
+            std::string query_params(std::move(req.body));
+            std::size_t front = 0;
+            std::size_t back = 0;
+            std::string key, value;
+            while(back != query_params.length()) {
+                if(query_params[back] == '&') {
+                    value = query_params.substr(front, back - front);
+                    query_kv.emplace(std::move(key), std::move(value));
+                    front = back + 1;
+                    key.clear();
+                    value.clear();
+                }
+                else if(key.empty() && query_params[back] == '=') {
+                    key = query_params.substr(front, back - front);
+                    front = back + 1;
+                }
+                ++back;
+            }
+            for(auto& [key, value] : query_kv) {
+                log_info(key, value);
+            }
+        }
+        return "ok";
+     });
+    /* app.register_rule("/www/<string>")([](const cortono::http::Request& req) { */
+    /*     return "ok"; */
+    /* }); */
+    /* app.register_rule("/www/<path>")([](const cortono::http::Request&, cortono::http::Response& res, std::string  filename) { */
+    /*     using namespace std::experimental; */
+    /*     filename = cortono::http::html_codec::decode("www/" + filename); */
+    /*     log_debug(filename); */
+    /*     if(filesystem::exists(filename)) { */
+
+    /*     } */
+    /* }); */
+
+    app.multithread().port(10000).run();
     return 0;
 }

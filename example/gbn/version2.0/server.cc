@@ -21,10 +21,11 @@ int main()
     using packet_t = cortono::MsgPacket<seq_t, MaxDataSize>;
     using connection_t = cortono::Connection<
                                     packet_t,
-                                    cortono::LostPacketModule<1, 10>,
+                                    cortono::LostPacketModule<3, 5>,
                                     cortono::RecvModule<BufferSize, WindowSize>,
                                     cortono::SendModule<BufferSize, WindowSize>,
                                     cortono::ResendModule<BufferSize, Timeout>,
+                                    cortono::LostPacketModule<3, 5>,
                                     cortono::ModifyModule>;
 
     cortono::net::EventLoop loop;

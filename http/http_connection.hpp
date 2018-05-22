@@ -19,7 +19,7 @@ namespace cortono::http
             // 对于TCP和SSL，handle_read的处理完全相同
             // 不同之处完全隐藏在TcpConnection和SslConnection的同名接口下
             void handle_read(typename Connection::Pointer& conn_ptr) {
-                /* log_debug(conn_ptr->recv_buffer()->to_string()); */
+                log_debug(conn_ptr->recv_buffer()->to_string());
                 int len = parser_.feed(conn_ptr->recv_buffer()->data(), conn_ptr->recv_buffer()->size());
                 conn_ptr->recv_buffer()->retrieve_read_bytes(len);
                 if(parser_.done()) {
