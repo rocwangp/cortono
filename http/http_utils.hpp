@@ -134,4 +134,26 @@ namespace cortono::http::utils
             ch = std::tolower(ch);
         }
     }
+
+    inline std::string get_gmt_time_str(std::time_t t) {
+        struct tm* gmt = ::gmtime(&t);
+        char buffer[512] = "\0";
+        ::strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M%S %Z", gmt);
+        return buffer;
+    }
+
+    inline std::vector<std::string_view> split(std::string_view s, std::string_view delimiter) {
+        std::vector<std::string_view> results;
+        std::size_t front = 0;
+        std::size_t back = s.find_first_of(delimiter);
+        while(back <= std::string_view::npos) {
+            results.emplace_back(s.substr(front, back - front));
+            if(back == std::string_view::npos) {
+                break;
+            }
+            front = back + 1;
+            back = s.find_first_of(delimiter, front);
+        }
+        return results;
+    }
 }

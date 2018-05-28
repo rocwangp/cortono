@@ -46,6 +46,14 @@ namespace cortono::http
                             res_ = Response(400);
                             log_info("no host, return Response(400)");
                         }
+                        else {
+                            auto domain = req_.get_header_value("host");
+                            auto pos = domain.find_first_of(':');
+                            if(pos != decltype(domain)::npos) {
+                                domain = domain.substr(0, pos);
+                            }
+                            res_.set_domain(std::move(domain));
+                        }
                     }
                     if(!is_invalid_request) {
                         log_info("handle request");

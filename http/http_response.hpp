@@ -3,6 +3,7 @@
 #include "../std.hpp"
 #include "../cortono.hpp"
 #include "http_codec.hpp"
+#include "http_session_manager.hpp"
 
 namespace cortono::http
 {
@@ -29,6 +30,9 @@ namespace cortono::http
         Response& operator=(Response&& res) {
             if(this != &res) {
                 code = std::move(res.code);
+                sendfile = std::move(res.sendfile);
+                filesize = std::move(res.filesize);
+                filename = std::move(res.filename);
                 body = std::move(res.body);
                 headers = std::move(res.headers);
             }
@@ -38,6 +42,9 @@ namespace cortono::http
         void set_header(std::string&& key, std::string&& value) {
             headers.emplace(std::forward<std::string>(key),
                             std::forward<std::string>(value));
+        }
+        void set_domain(std::string&& domain) {
+            domain_ = std::move(domain);
         }
         void send_file(const std::string& file) {
             using namespace std::experimental;
@@ -76,5 +83,23 @@ namespace cortono::http
         const std::string& get_header_value(std::string&& key)  {
             return headers[key];
         }
+        std::shared_ptr<Session> start_session(const std::string& domain) {
+            static const std::string CORTONO_SESSIONID = "SESSIONID";
+            session_ = session_manager::create_session(domain_, domain);
+            set_header("Set-Cookie", session_->get_cookie().to_string());
+            return session_;
+        }
+        std::shared_ptr<Session> start_session() {
+            static const std::string CORTONO_SESSIONID = "SESSIONID";
+            session_ = session_manager::create_session(domain_, CORTONO_SESSIONID);
+            set_header("Set-Cookie", session_->get_cookie().to_string());
+            return session_;
+        }
+        bool has_cookie() {
+            return false;
+        }
+    private:
+        std::string domain_;
+        std::shared_ptr<Session> session_;
     };
 }

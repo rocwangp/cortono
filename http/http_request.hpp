@@ -1,6 +1,7 @@
 #pragma once
 #include "../std.hpp"
 #include "ci_map.hpp"
+#include "http_session_manager.hpp"
 
 namespace cortono::http
 {
@@ -23,6 +24,33 @@ namespace cortono::http
 
         const std::string& get_header_value(std::string&& key) {
             return header_kv_pairs[key];
+        }
+        auto get_cookie_map(const std::string& cookie_str) const {
+            std::unordered_map<std::string_view, std::string_view> cookie_map;
+            auto cookie_vec = utils::split(cookie_str, "; ");
+            for(auto cookie : cookie_vec) {
+                auto v = utils::split(cookie, "=");
+                if(v.size() == 2) {
+                    cookie_map[v[0]] = v[1];
+                }
+            }
+            return cookie_map;
+        }
+        std::weak_ptr<Session> get_session(const std::string& name) const {
+            auto cookie_it = header_kv_pairs.find("cookie");
+            if(cookie_it != header_kv_pairs.end()) {
+                auto cookie_str = cookie_it->second;
+                auto cookie_map = get_cookie_map(cookie_str);
+                auto it = cookie_map.find(name);
+                if(it != cookie_map.end()) {
+                    return session_manager::get_session(std::string(it->second.data(), it->second.length()));
+                }
+            }
+            return {};
+        }
+        std::weak_ptr<Session> get_session() const {
+            static const std::string CORTONO_SESSIONID = "SESSIONID";
+            return get_session(CORTONO_SESSIONID);
         }
         bool has_header(std::string&& key) const {
             return header_kv_pairs.count(key);

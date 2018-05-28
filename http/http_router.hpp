@@ -284,7 +284,7 @@ namespace cortono::http
                 }
                 nodes_[idx].rule_index = rule_index;
             }
-            std::pair<std::size_t, routing_params> find(const std::string& req_url, std::size_t pos = 0, TrieNode* node = nullptr, routing_params* params = nullptr) {
+            std::pair<std::int32_t, routing_params> find(const std::string& req_url, std::size_t pos = 0, TrieNode* node = nullptr, routing_params* params = nullptr) {
                 routing_params empty;
                 if(params == nullptr) {
                     params = &empty;
@@ -295,7 +295,7 @@ namespace cortono::http
                 if(node == nullptr) {
                     node = &nodes_.front();
                 }
-                std::size_t rule_index{ 0 };
+                std::int32_t rule_index{ -1 };
                 routing_params match_params;
 
                 auto update_found([&](auto& ret) {
@@ -396,6 +396,10 @@ namespace cortono::http
                 /* auto [rule_index, params] = method_rules_[(int)req.method].trie.find(req.url); */
                 /* method_rules_[(int)req.method].rules[rule_index]->handle(req, res, params); */
                 auto rules_params = method_rules_[(int)req.method].trie.find(req.url);
+                if(rules_params.first == -1) {
+                    log_info("can't found handler for url:", req.url);
+                    return;
+                }
                 method_rules_[(int)req.method].rules[rules_params.first]->handle(req, res, rules_params.second);
             }
         private:
