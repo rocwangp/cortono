@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="Redis," />
+
+
+<meta name="description" content="Redis是支持时间事件的，所谓时间事件，是为某个键值对设置过期时间，时间一到，Redis会自动删除该键值对。例如使用SET命令添加字符串类型的键值对 123456127.0.0.1:6379&amp;gt; SET blog redis ex 10	//添加键值对&amp;lt;blog, redis&amp;gt;，10秒后删除OK127.0.0.1:6379&amp;gt; GET blog	//添加后马上查找，可以获取r">
+<meta name="keywords" content="Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis源码剖析（四）过期键的删除策略">
+<meta property="og:url" content="http://yoursite.com/2018/01/04/Redis源码剖析（四）过期键的删除策略/index.html">
+<meta property="og:site_name" content="「.Roc.」">
+<meta property="og:description" content="Redis是支持时间事件的，所谓时间事件，是为某个键值对设置过期时间，时间一到，Redis会自动删除该键值对。例如使用SET命令添加字符串类型的键值对 123456127.0.0.1:6379&amp;gt; SET blog redis ex 10	//添加键值对&amp;lt;blog, redis&amp;gt;，10秒后删除OK127.0.0.1:6379&amp;gt; GET blog	//添加后马上查找，可以获取r">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-02-19T07:02:23.481Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis源码剖析（四）过期键的删除策略">
+<meta name="twitter:description" content="Redis是支持时间事件的，所谓时间事件，是为某个键值对设置过期时间，时间一到，Redis会自动删除该键值对。例如使用SET命令添加字符串类型的键值对 123456127.0.0.1:6379&amp;gt; SET blog redis ex 10	//添加键值对&amp;lt;blog, redis&amp;gt;，10秒后删除OK127.0.0.1:6379&amp;gt; GET blog	//添加后马上查找，可以获取r">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/01/04/Redis源码剖析（四）过期键的删除策略/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Redis源码剖析（四）过期键的删除策略 | 「.Roc.」</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">「.Roc.」</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/04/Redis源码剖析（四）过期键的删除策略/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="「.Roc.」">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Redis源码剖析（四）过期键的删除策略</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-04T22:00:00+08:00">2018-01-04</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Redis是支持时间事件的，所谓时间事件，是为某个键值对设置过期时间，时间一到，Redis会自动删除该键值对。例如使用SET命令添加字符串类型的键值对</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">6379</span>&gt; SET blog redis ex <span class="number">10</span>	<span class="comment">//添加键值对&lt;blog, redis&gt;，10秒后删除</span></span><br><span class="line">OK</span><br><span class="line"><span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">6379</span>&gt; GET blog	<span class="comment">//添加后马上查找，可以获取redis</span></span><br><span class="line"><span class="string">"redis"</span></span><br><span class="line"><span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">6379</span>&gt; GET blog	<span class="comment">//上趟厕所回来，发现找不到了</span></span><br><span class="line">(nil)</span><br></pre></td></tr></table></figure>
+<p>Redis是如何实现定时删除的呢，在数据库结构redisDb中，可以发现除了上篇提到的用于保存键值对的dict字典外，另有一个字典变量expires，实际上正是它保存着键和其过期时间(绝对时间)。当执行完SET命令后，两个字典的数据分布为</p>
+<a id="more"></a>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//server.h</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">redisDb</span> &#123;</span></span><br><span class="line">    dict *dict;            <span class="comment">/* 保存键值对的字典 */</span>     </span><br><span class="line">    dict *expires;         <span class="comment">/* 保存键和过期时间 */</span>    </span><br><span class="line">    <span class="keyword">int</span> id;        <span class="comment">/* 数据库唯一id */</span>           </span><br><span class="line"> 	...</span><br><span class="line">&#125; redisDb;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dict字典</span><br><span class="line">blog --&gt; redis</span><br><span class="line">expires字典</span><br><span class="line">blog --&gt; blog的过期时间</span><br></pre></td></tr></table></figure>
+<h1 id="设置，获取，删除过期时间"><a href="#设置，获取，删除过期时间" class="headerlink" title="设置，获取，删除过期时间"></a>设置，获取，删除过期时间</h1><blockquote>
+<p>以下键节点指字典中的哈希节点，保存键和值</p>
+</blockquote>
+<h2 id="设置键的过期时间"><a href="#设置键的过期时间" class="headerlink" title="设置键的过期时间"></a>设置键的过期时间</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//db.c</span></span><br><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * 设置键的过期时间</span></span><br><span class="line"><span class="comment"> * db   : 数据库</span></span><br><span class="line"><span class="comment"> * key  : 键</span></span><br><span class="line"><span class="comment"> * when : 过期时间(绝对时间)</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setExpire</span><span class="params">(redisDb *db, robj *key, <span class="keyword">long</span> <span class="keyword">long</span> when)</span> </span>&#123;</span><br><span class="line">    dictEntry *kde, *de;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Reuse the sds from the main dict in the expire dict */</span></span><br><span class="line">    <span class="comment">/* 从数据字典中寻找键节点 */</span></span><br><span class="line">    kde = dictFind(db-&gt;dict,key-&gt;ptr);</span><br><span class="line">    serverAssertWithInfo(<span class="literal">NULL</span>,key,kde != <span class="literal">NULL</span>);</span><br><span class="line">    <span class="comment">/* 从时间字典中寻找键节点，如果不存在则创建一个 */</span></span><br><span class="line">    de = dictReplaceRaw(db-&gt;expires,dictGetKey(kde));</span><br><span class="line">    <span class="comment">/* 设置键节点的值，值为过期时间(绝对时间) */</span></span><br><span class="line">    dictSetSignedIntegerVal(de,when);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>dictSetSignedIntegerVal是宏定义，设置键节点de的值为when。因为哈希节点中的值结构是联合，可以存储不同大小的数字，也可以通过void*指针存储其它类型，这里过期时间是long long类型，所以可以存在int64_t类型上</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//dict.h</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> dictSetSignedIntegerVal(entry, _val_) \</span></span><br><span class="line">    <span class="keyword">do</span> &#123; entry-&gt;v.s64 = _val_; &#125; <span class="keyword">while</span>(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="获取键的过期时间"><a href="#获取键的过期时间" class="headerlink" title="获取键的过期时间"></a>获取键的过期时间</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//db.c</span></span><br><span class="line"><span class="comment">/* 返回键的过期时间 */</span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="keyword">long</span> <span class="title">getExpire</span><span class="params">(redisDb *db, robj *key)</span> </span>&#123;</span><br><span class="line">    dictEntry *de;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 从时间字典中查找匹配的键节点 */</span></span><br><span class="line">    <span class="keyword">if</span> (dictSize(db-&gt;expires) == <span class="number">0</span> ||</span><br><span class="line">       (de = dictFind(db-&gt;expires,key-&gt;ptr)) == <span class="literal">NULL</span>) <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">       </span><br><span class="line">    serverAssertWithInfo(<span class="literal">NULL</span>,key,dictFind(db-&gt;dict,key-&gt;ptr) != <span class="literal">NULL</span>);</span><br><span class="line">    <span class="comment">/* 返回键节点对应的值 */</span></span><br><span class="line">    <span class="keyword">return</span> dictGetSignedIntegerVal(de);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="删除键的过期时间"><a href="#删除键的过期时间" class="headerlink" title="删除键的过期时间"></a>删除键的过期时间</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//db.c</span></span><br><span class="line"><span class="comment">/* 移除键的过期时间 */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">removeExpire</span><span class="params">(redisDb *db, robj *key)</span> </span>&#123;</span><br><span class="line">    serverAssertWithInfo(<span class="literal">NULL</span>,key,dictFind(db-&gt;dict,key-&gt;ptr) != <span class="literal">NULL</span>);</span><br><span class="line">    <span class="comment">/* 从时间字典中将键删除 */</span></span><br><span class="line">    <span class="keyword">return</span> dictDelete(db-&gt;expires,key-&gt;ptr) == DICT_OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面三个函数都是调用字典dict的接口，比较好理解</p>
+<h1 id="过期键删除策略"><a href="#过期键删除策略" class="headerlink" title="过期键删除策略"></a>过期键删除策略</h1><p>对于过期键值对的删除有三种策略，分别是</p>
+<ul>
+<li>定时删除，设置一个定时器和回调函数，时间一到就调用回调函数删除键值对。优点是及时删除，缺点是需要为每个键值对都设置定时器，比较麻烦(其实可以用timer_fd的，参考muduo定时任务的实现)</li>
+<li>惰性删除，只有当再次访问该键时才判断是否过期，如果过期将其删除。优点是不需要为每个键值对进行时间监听，缺点是如果这个键值对一直不被访问，那么即使过期也会一直残留在数据库中，占用不必要的内存</li>
+<li>周期删除，每隔一段时间执行一次删除过期键值对的操作。优点是既不需要监听每个键值对导致占用CPU，也不会一直不删除导致占用内存，缺点是不容易确定删除操作的执行时长和频率</li>
+</ul>
+<p>Redis采用惰性删除和周期删除两种策略，通过配合使用，服务器可以很好的合理使用CPU时间和避免内不能空间的浪费</p>
+<h2 id="惰性删除"><a href="#惰性删除" class="headerlink" title="惰性删除"></a>惰性删除</h2><p>惰性删除是指在对每一个键进行读写操作时，先判断一下这个键是否已经过期，如果过期则将其删除。该操作由expireIfNeeded函数完成</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//db.c</span></span><br><span class="line"><span class="comment">/* 判断键key是否已过期，如果过期将其从数据库中删除 */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">expireIfNeeded</span><span class="params">(redisDb *db, robj *key)</span> </span>&#123;</span><br><span class="line">    <span class="comment">/* 获取键的过期时间*/</span></span><br><span class="line">    <span class="keyword">mstime_t</span> when = getExpire(db,key);</span><br><span class="line">    <span class="keyword">mstime_t</span> now;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 该键没有设置过期时间 */</span></span><br><span class="line">    <span class="keyword">if</span> (when &lt; <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>; <span class="comment">/* No expire for this key */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Don't expire anything while loading. It will be done later. */</span></span><br><span class="line">    <span class="keyword">if</span> (server.loading) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 获取当前时间，lua脚本相关 */</span></span><br><span class="line">    now = server.lua_caller ? server.lua_time_start : mstime();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (server.masterhost != <span class="literal">NULL</span>) <span class="keyword">return</span> now &gt; when;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 当前时间小于过期时间，该键没有过期，不需要删除 */</span></span><br><span class="line">    <span class="keyword">if</span> (now &lt;= when) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/* 执行到这里，说明这个键已过期，需要删除 */</span></span><br><span class="line">    <span class="comment">/* 过期键数量加一 */</span></span><br><span class="line">    server.stat_expiredkeys++;</span><br><span class="line">    propagateExpire(db,key);</span><br><span class="line">    notifyKeyspaceEvent(NOTIFY_EXPIRED,</span><br><span class="line">        <span class="string">"expired"</span>,key,db-&gt;id);</span><br><span class="line">    <span class="comment">/* 从数据字典和时间字典中删除(即从数据库中删除，因为该键在两个字典中，所以需要删除两个) */</span></span><br><span class="line">    <span class="keyword">return</span> dbDelete(db,key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>expireIfNeeded函数只是判断是否需要删除键节点，实际删除操作由dbDelete函数完成</p>
+<p>该函数调用字典的删除接口完成删除操作，该接口在上一篇有提到过</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//db.c</span></span><br><span class="line"><span class="comment">/* 将键key从数据库中删除 */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">dbDelete</span><span class="params">(redisDb *db, robj *key)</span> </span>&#123;</span><br><span class="line">    <span class="comment">/* Deleting an entry from the expires dict will not free the sds of</span></span><br><span class="line"><span class="comment">     * the key, because it is shared with the main dictionary. */</span></span><br><span class="line">    <span class="comment">/* 从时间字典中删除 */</span></span><br><span class="line">    <span class="keyword">if</span> (dictSize(db-&gt;expires) &gt; <span class="number">0</span>) dictDelete(db-&gt;expires,key-&gt;ptr);</span><br><span class="line">    <span class="comment">/* 从数据字典中删除 */</span></span><br><span class="line">    <span class="keyword">if</span> (dictDelete(db-&gt;dict,key-&gt;ptr) == DICT_OK) &#123;</span><br><span class="line">        <span class="comment">/* 集群相关 */</span></span><br><span class="line">        <span class="keyword">if</span> (server.cluster_enabled) slotToKeyDel(key);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="周期删除"><a href="#周期删除" class="headerlink" title="周期删除"></a>周期删除</h2><p>Redis服务器会周期性地执行server.c/serverCron函数，在这个函数中执行的databasesCron函数会调用activeExpireCycle函数，这个函数在时间字典(expires)中随机选择若干键节点，判断其是否过期，如果过期则将其删除</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//server.c</span></span><br><span class="line"><span class="comment">/* 随机选择若干键节点判断其是否过期，如果过期将其删除 */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">activeExpireCycle</span><span class="params">(<span class="keyword">int</span> type)</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">    <span class="keyword">while</span> (num--) &#123;</span><br><span class="line">    	dictEntry *de;</span><br><span class="line">        <span class="keyword">long</span> <span class="keyword">long</span> ttl;</span><br><span class="line"></span><br><span class="line">     	<span class="comment">/* 在时间字典中随机选择一个键节点 */</span></span><br><span class="line">      	<span class="keyword">if</span> ((de = dictGetRandomKey(db-&gt;expires)) == <span class="literal">NULL</span>) <span class="keyword">break</span>;</span><br><span class="line">      	<span class="comment">/* 获取键节点的值，即过期时间 */</span></span><br><span class="line">      	ttl = dictGetSignedIntegerVal(de)-now;</span><br><span class="line">      	<span class="comment">/* 判断是否过期，如果过期，删除 */</span></span><br><span class="line">      	<span class="keyword">if</span> (activeExpireCycleTryExpire(db,de,now)) expired++;</span><br><span class="line">      	<span class="keyword">if</span> (ttl &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      	<span class="comment">/* We want the average TTL of keys yet not expired. */</span></span><br><span class="line">      		ttl_sum += ttl;</span><br><span class="line">      		ttl_samples++;</span><br><span class="line">      	&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>随机选择键节点后，调用activeExpireCycleTryExpire判断其是否过期</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//server.c</span></span><br><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * 判断键节点是否过期，如果过期将其从数据库中删除 </span></span><br><span class="line"><span class="comment"> * db  : 数据库</span></span><br><span class="line"><span class="comment"> * de  : 键节点</span></span><br><span class="line"><span class="comment"> * now : 当前时间</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">activeExpireCycleTryExpire</span><span class="params">(redisDb *db, dictEntry *de, <span class="keyword">long</span> <span class="keyword">long</span> now)</span> </span>&#123;</span><br><span class="line">    <span class="comment">/* 获取键的过期时间 */</span></span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">long</span> t = dictGetSignedIntegerVal(de);</span><br><span class="line">    <span class="comment">/* 判断是否过期 */</span></span><br><span class="line">    <span class="keyword">if</span> (now &gt; t) &#123;</span><br><span class="line">        <span class="comment">/* 从键节点中取出键 */</span></span><br><span class="line">        sds key = dictGetKey(de);</span><br><span class="line">        <span class="comment">/* 因为Redis中键默认都是sds存储的，所以这里需要将其转化为robj*格式以满足函数传参 */</span></span><br><span class="line">        robj *keyobj = createStringObject(key,sdslen(key));</span><br><span class="line"></span><br><span class="line">        propagateExpire(db,keyobj);</span><br><span class="line">        <span class="comment">/* 将键和其对应的值从数据库中删除 */</span></span><br><span class="line">        dbDelete(db,keyobj);</span><br><span class="line">        notifyKeyspaceEvent(NOTIFY_EXPIRED,</span><br><span class="line">            <span class="string">"expired"</span>,keyobj,db-&gt;id);</span><br><span class="line">        <span class="comment">/* 键的引用计数减一，因为是刚创建的，所以引用计数就是1，这里会将keyobj对象删除 */</span></span><br><span class="line">        decrRefCount(keyobj);</span><br><span class="line">        <span class="comment">/* 过期键个数加一 */</span></span><br><span class="line">        server.stat_expiredkeys++;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="随机选择键节点"><a href="#随机选择键节点" class="headerlink" title="随机选择键节点"></a>随机选择键节点</h2><p>随机选择键节点是字典的接口，该函数利用随机函数选择一个下标，确保当前下标下存在键节点后进行第二次随机，选择该下标下的某个键节点返回，函数定义如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 随机返回一个键节点 */</span></span><br><span class="line"><span class="function">dictEntry *<span class="title">dictGetRandomKey</span><span class="params">(dict *d)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    dictEntry *he, *orighe;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> h;</span><br><span class="line">    <span class="keyword">int</span> listlen, listele;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 字典中没有键节点，返回 */</span></span><br><span class="line">    <span class="keyword">if</span> (dictSize(d) == <span class="number">0</span>) <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    <span class="comment">/* 处于rehash状态，执行一步rehash */</span></span><br><span class="line">    <span class="keyword">if</span> (dictIsRehashing(d)) _dictRehashStep(d);</span><br><span class="line">    <span class="comment">/* 如果处于rehash状态，那么随机操作在ht[0]和ht[1]两个字典中进行 */</span></span><br><span class="line">    <span class="comment">/* 随机选择一个下标，该下标下存在键节点 */</span></span><br><span class="line">    <span class="keyword">if</span> (dictIsRehashing(d)) &#123;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            h = d-&gt;rehashidx + (random() % (d-&gt;ht[<span class="number">0</span>].size +</span><br><span class="line">                                            d-&gt;ht[<span class="number">1</span>].size -</span><br><span class="line">                                            d-&gt;rehashidx));</span><br><span class="line">            he = (h &gt;= d-&gt;ht[<span class="number">0</span>].size) ? d-&gt;ht[<span class="number">1</span>].table[h - d-&gt;ht[<span class="number">0</span>].size] :</span><br><span class="line">                                      d-&gt;ht[<span class="number">0</span>].table[h];</span><br><span class="line">        &#125; <span class="keyword">while</span>(he == <span class="literal">NULL</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            h = random() &amp; d-&gt;ht[<span class="number">0</span>].sizemask;</span><br><span class="line">            he = d-&gt;ht[<span class="number">0</span>].table[h];</span><br><span class="line">        &#125; <span class="keyword">while</span>(he == <span class="literal">NULL</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    listlen = <span class="number">0</span>;</span><br><span class="line">    orighe = he;</span><br><span class="line">    <span class="comment">/* 计算随机的下标下的键节点个数 */</span></span><br><span class="line">    <span class="keyword">while</span>(he) &#123;</span><br><span class="line">        he = he-&gt;next;</span><br><span class="line">        listlen++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/* 随机选择一个键节点返回 */</span></span><br><span class="line">    listele = random() % listlen;</span><br><span class="line">    he = orighe;</span><br><span class="line">    <span class="keyword">while</span>(listele--) he = he-&gt;next;</span><br><span class="line">    <span class="keyword">return</span> he;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>Redis允许为每个键值对设置过期时间，时间一到会将其从数据库中删除。Redis内部采用惰性删除和周期删除两种策略结合的方法删除过期键，其中惰性删除是指当访问键时才判断该键是否过期，周期删除是每隔一定时间进行一次集中删除，一次集中删除随机判断一定数量的键是否过期并将过期键删除</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/04/Redis源码剖析（三）数据库设计与实现/" rel="next" title="Redis源码剖析（三）字典结构的设计与实现">
+                <i class="fa fa-chevron-left"></i> Redis源码剖析（三）字典结构的设计与实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/05/Redis源码剖析（五）订阅与发布/" rel="prev" title="Redis源码剖析（五）订阅与发布">
+                Redis源码剖析（五）订阅与发布 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#设置，获取，删除过期时间"><span class="nav-number">1.</span> <span class="nav-text">设置，获取，删除过期时间</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#设置键的过期时间"><span class="nav-number">1.1.</span> <span class="nav-text">设置键的过期时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取键的过期时间"><span class="nav-number">1.2.</span> <span class="nav-text">获取键的过期时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除键的过期时间"><span class="nav-number">1.3.</span> <span class="nav-text">删除键的过期时间</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#过期键删除策略"><span class="nav-number">2.</span> <span class="nav-text">过期键删除策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#惰性删除"><span class="nav-number">2.1.</span> <span class="nav-text">惰性删除</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#周期删除"><span class="nav-number">2.2.</span> <span class="nav-text">周期删除</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#随机选择键节点"><span class="nav-number">2.3.</span> <span class="nav-text">随机选择键节点</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">3.</span> <span class="nav-text">小结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.0.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

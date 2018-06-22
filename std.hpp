@@ -55,9 +55,9 @@
 
 #include <experimental/filesystem>
 
-#ifndef CORTONO_USE_SSL
-#define CORTONO_USE_SSL
-#endif
+/* #ifndef CORTONO_USE_SSL */
+/* #define CORTONO_USE_SSL */
+/* #endif */
 
 #ifdef CORTONO_USE_SSL
 #include <openssl/ssl.h>

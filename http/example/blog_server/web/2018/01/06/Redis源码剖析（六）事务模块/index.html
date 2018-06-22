@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="Redis," />
+
+
+<meta name="description" content="Redis允许客户端开启事务模式，在事务模式中，客户端输入的命令不会立即执行而是被保存在事务队列中，只有当客户端输入事务运行命令时，Redis才会将事务队列中的所有命令按照FIFO的顺序一个个执行 一个事务从开始到结束通常会经历三个阶段  事务开始 命令入队 事务执行">
+<meta name="keywords" content="Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis源码剖析（六）事务模块">
+<meta property="og:url" content="http://yoursite.com/2018/01/06/Redis源码剖析（六）事务模块/index.html">
+<meta property="og:site_name" content="「.Roc.」">
+<meta property="og:description" content="Redis允许客户端开启事务模式，在事务模式中，客户端输入的命令不会立即执行而是被保存在事务队列中，只有当客户端输入事务运行命令时，Redis才会将事务队列中的所有命令按照FIFO的顺序一个个执行 一个事务从开始到结束通常会经历三个阶段  事务开始 命令入队 事务执行">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-02-19T07:02:23.481Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis源码剖析（六）事务模块">
+<meta name="twitter:description" content="Redis允许客户端开启事务模式，在事务模式中，客户端输入的命令不会立即执行而是被保存在事务队列中，只有当客户端输入事务运行命令时，Redis才会将事务队列中的所有命令按照FIFO的顺序一个个执行 一个事务从开始到结束通常会经历三个阶段  事务开始 命令入队 事务执行">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/01/06/Redis源码剖析（六）事务模块/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Redis源码剖析（六）事务模块 | 「.Roc.」</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">「.Roc.」</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/06/Redis源码剖析（六）事务模块/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="「.Roc.」">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Redis源码剖析（六）事务模块</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-06T22:23:00+08:00">2018-01-06</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Redis允许客户端开启事务模式，在事务模式中，客户端输入的命令不会立即执行而是被保存在事务队列中，只有当客户端输入事务运行命令时，Redis才会将事务队列中的所有命令按照FIFO的顺序一个个执行</p>
+<p>一个事务从开始到结束通常会经历三个阶段</p>
+<ul>
+<li>事务开始</li>
+<li>命令入队</li>
+<li>事务执行</li>
+</ul>
+<a id="more"></a>
+<h1 id="事务命令"><a href="#事务命令" class="headerlink" title="事务命令"></a>事务命令</h1><p>客户端可以使用MULTI命令开启事务，随后服务器会根据这个客户端输入的不同命令执行不同的操作</p>
+<ul>
+<li>如果客户端发送的命令为EXEC，DISCARD，WATCH，MULTI四个命令中的一个，那么服务器立刻执行这个命令，同时是否关闭事务取决于每个命令的功能</li>
+<li>如果客户端发送的命令为上述四个命令之外的其他命令，那么服务器不会立刻执行输入的命令，而是将命令存放在事务队列中</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">6379</span>&gt; MULTI	<span class="comment">//开启事务</span></span><br><span class="line">OK</span><br><span class="line"><span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">6379</span>&gt; <span class="built_in">set</span> db redis</span><br><span class="line">QUEUED	<span class="comment">//表示命令被添加到事务队列中</span></span><br><span class="line"><span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">6379</span>&gt; get db</span><br><span class="line">QUEUED</span><br><span class="line"><span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">6379</span>&gt; <span class="built_in">set</span> name roc</span><br><span class="line">QUEUED</span><br><span class="line"><span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">6379</span>&gt; get name</span><br><span class="line">QUEUED</span><br><span class="line"><span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">6379</span>&gt; EXEC	<span class="comment">//执行事务队列中的命令</span></span><br><span class="line"><span class="number">1</span>) OK			<span class="comment">//set db redis的执行结果</span></span><br><span class="line"><span class="number">2</span>) <span class="string">"redis"</span>		<span class="comment">//get db的执行结果</span></span><br><span class="line"><span class="number">3</span>) OK			<span class="comment">//set name roc的执行结果</span></span><br><span class="line"><span class="number">4</span>) <span class="string">"roc"</span>		<span class="comment">//get name的执行结果</span></span><br><span class="line"><span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">6379</span>&gt;</span><br></pre></td></tr></table></figure>
+<h1 id="存储结构"><a href="#存储结构" class="headerlink" title="存储结构"></a>存储结构</h1><p>要想当输入EXEC时一次性执行之前输入的所有命令，就需要将之前的命令保存起来，Redis采用数组保存所有命令信息，在client的定义中可以找到</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//server.h</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">client</span> &#123;</span></span><br><span class="line">    ...</span><br><span class="line">    multiState mstate;   <span class="comment">/* 事务属性，保存事务队列以及事务状态 */</span></span><br><span class="line">    ...</span><br><span class="line">&#125; client;</span><br></pre></td></tr></table></figure>
+<p>multiState是事务属性结构，它保存着事务队列以及事务队列中命令个数，定义如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//server.h</span></span><br><span class="line"><span class="comment">/* 事务属性 */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">multiState</span> &#123;</span></span><br><span class="line">    multiCmd *commands;  <span class="comment">/* 事务队列，保存多条命令 */</span>   </span><br><span class="line">    <span class="keyword">int</span> count;          <span class="comment">/* 事务队列中命令个数 */</span> </span><br><span class="line">    ...</span><br><span class="line">&#125; multiState;</span><br></pre></td></tr></table></figure>
+<p>commands是一个事务队列，实际上是一个multiCmd类型的数组，multiCmd结构保存一条命令的信息</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//server.h</span></span><br><span class="line"><span class="comment">/* 保存一条命令的信息 */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">multiCmd</span> &#123;</span></span><br><span class="line">    robj **argv; <span class="comment">/* 命令关键字和参数 */</span></span><br><span class="line">    <span class="keyword">int</span> argc; <span class="comment">/* 命令参数个数 */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">redisCommand</span> *<span class="title">cmd</span>;</span> <span class="comment">/* 命令结构，主要包含命令处理函数 */</span></span><br><span class="line">&#125; multiCmd;</span><br></pre></td></tr></table></figure>
+<p>可以看到，multiCmd中保存的实际上就是执行一条命令需要的三个信息，分别是</p>
+<ul>
+<li>命令关键字和参数</li>
+<li>参数个数</li>
+<li>命令处理函数</li>
+</ul>
+<p>在客户端client的定义中也可以找到这三个变量的定义</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//server.h</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">client</span> &#123;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">int</span> argc;               </span><br><span class="line">    robj **argv;           </span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">redisCommand</span> *<span class="title">cmd</span>;</span>  </span><br><span class="line">    ...</span><br><span class="line">&#125; client;</span><br></pre></td></tr></table></figure>
+<p>所以大体可以猜测，当要执行事务队列中的命令时，只需要遍历事务队列，依次将这三个变量赋值给client中的对应变量，然后调用对应命令处理函数即可。后面会看到，事实也正是如此</p>
+<h1 id="事务实现"><a href="#事务实现" class="headerlink" title="事务实现"></a>事务实现</h1><h2 id="开启事务"><a href="#开启事务" class="headerlink" title="开启事务"></a>开启事务</h2><p>在Redis内部，事务的开启十分简单，仅仅是将客户端的事务标志位打开，表示进行事务状态，随后的大多数操作都会先判断该标志位以确定是将命令添加到事务队列中，还是执行命令</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//multi.c</span></span><br><span class="line"><span class="comment">/* 开启事务 */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">multiCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    <span class="comment">/* 若已经开启，则报错 */</span></span><br><span class="line">    <span class="keyword">if</span> (c-&gt;flags &amp; CLIENT_MULTI) &#123;</span><br><span class="line">        addReplyError(c,<span class="string">"MULTI calls can not be nested"</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/* 设置CLIENT_MULTI标志代表客户端已经开启事务 */</span></span><br><span class="line">    c-&gt;flags |= CLIENT_MULTI;</span><br><span class="line">    addReply(c,shared.ok);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="添加命令到事务队列"><a href="#添加命令到事务队列" class="headerlink" title="添加命令到事务队列"></a>添加命令到事务队列</h2><p>在第一篇<a href="https://rocwangp.github.io/2018/01/04/Redis%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%BA%A4%E4%BA%92%E6%B5%81%E7%A8%8B/#more" target="_blank" rel="noopener">服务器与客户端交互流程</a>中得知，当客户端输入命令后，会存在一个解析命令的操作，将命令参数，参数个数以及命令处理函数找到，然后执行call函数，在这个函数中调用命令处理函数执行命令。但是一旦开启事务功能，Redis就不能再执行命令了，如上所述，应该将命令添加到事务队列中。</p>
+<p>在processCommand函数中，可以看到对于这两种情况的判断</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 处理客户端输入的命令 */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">processCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/*　从命令字典中查找该命令名字，返回redisCommand结构，其中包含命令处理函数 */</span></span><br><span class="line">    c-&gt;cmd = c-&gt;lastcmd = lookupCommand(c-&gt;argv[<span class="number">0</span>]-&gt;ptr);</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/* 如果客户端开启事务，则不执行命令而是将命令添加到事务队列中 */</span></span><br><span class="line">    <span class="keyword">if</span> (c-&gt;flags &amp; CLIENT_MULTI &amp;&amp;</span><br><span class="line">        c-&gt;cmd-&gt;proc != execCommand &amp;&amp; c-&gt;cmd-&gt;proc != discardCommand &amp;&amp;</span><br><span class="line">        c-&gt;cmd-&gt;proc != multiCommand &amp;&amp; c-&gt;cmd-&gt;proc != watchCommand)</span><br><span class="line">    &#123;</span><br><span class="line">        queueMultiCommand(c);</span><br><span class="line">        <span class="comment">/* 回复客户端当前命令已经添加到事务队列中 */</span></span><br><span class="line">        addReply(c,shared.queued);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    	<span class="comment">/* 没有开启事务，执行执行命令 */</span></span><br><span class="line">        call(c,CMD_CALL_FULL);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> C_OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>将命令添加到事务队列中由queueMultiCommand函数完成，函数首先创建一个multiCmd对象，这个结构在上面提到过，保存着执行一条命令需要的三个元素，分别是命令参数，参数个数以及命令处理函数。而multiState结构是保存事务队列的结构(实际是数组)，在这里需要将新的命令添加到这个数组中</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 将当前命令添加到客户端的事务队列中 */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">queueMultiCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    multiCmd *mc;</span><br><span class="line">    <span class="keyword">int</span> j;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* mstate是multiState类型，保存事务中所有命令的信息</span></span><br><span class="line"><span class="comment">     * 每增加一条命令到事务队列中，都需要为原事务队列重新申请n+1大小的空间</span></span><br><span class="line"><span class="comment">     * 多的那一个用来存储当前命令*/</span></span><br><span class="line">    c-&gt;mstate.commands = zrealloc(c-&gt;mstate.commands,</span><br><span class="line">            <span class="keyword">sizeof</span>(multiCmd)*(c-&gt;mstate.count+<span class="number">1</span>));</span><br><span class="line">    mc = c-&gt;mstate.commands+c-&gt;mstate.count;</span><br><span class="line">    <span class="comment">/* 保存执行一条命令所需的三个元素 */</span></span><br><span class="line">    mc-&gt;cmd = c-&gt;cmd;</span><br><span class="line">    mc-&gt;argc = c-&gt;argc;</span><br><span class="line">    mc-&gt;argv = zmalloc(<span class="keyword">sizeof</span>(robj*)*c-&gt;argc);</span><br><span class="line">    <span class="comment">/* 将参数复制到multiCmd结构中 */</span></span><br><span class="line">    <span class="built_in">memcpy</span>(mc-&gt;argv,c-&gt;argv,<span class="keyword">sizeof</span>(robj*)*c-&gt;argc);</span><br><span class="line">    <span class="comment">/* 因为参数是robj*类型，所以引用计数加一 */</span></span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; c-&gt;argc; j++)</span><br><span class="line">        incrRefCount(mc-&gt;argv[j]);</span><br><span class="line">    <span class="comment">/* 事务队列中命令个数加一 */</span></span><br><span class="line">    c-&gt;mstate.count++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="执行命令"><a href="#执行命令" class="headerlink" title="执行命令"></a>执行命令</h2><p>当客户端输入EXEC命令后，Redis会从客户端的事务队列中取出命令，按照保存的先后顺序一个个执行，由于事务队列中有命令的所有信息，所以可以执行调用处理函数。这部分操作由execCommand函数执行，因为执行一条命令是从客户端对象client中取出命令参数，参数个数以及命令处理函数，所以这里就直接将队列中的命令信息复制给客户端对象的对应变量，然后和执行正常命令一样调用call函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 启动事务命令 */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">execCommand</span><span class="params">(client *c)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> j;</span><br><span class="line">    robj **orig_argv;</span><br><span class="line">    <span class="keyword">int</span> orig_argc;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">redisCommand</span> *<span class="title">orig_cmd</span>;</span></span><br><span class="line">    <span class="keyword">int</span> must_propagate = <span class="number">0</span>; <span class="comment">/* Need to propagate MULTI/EXEC to AOF / slaves? */</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* CLIENT_MULTI标识代表当前客户端是否开启事务，如果没有开启，执行EXEC指令是没有意义的 */</span></span><br><span class="line">    <span class="keyword">if</span> (!(c-&gt;flags &amp; CLIENT_MULTI)) &#123;</span><br><span class="line">        addReplyError(c,<span class="string">"EXEC without MULTI"</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* CLIENT_DIRTY_CAS标识代表客户端监视的键是否被修改过</span></span><br><span class="line"><span class="comment">     * 如果被修改过，那么执行事务就不再安全，直接返回 */</span></span><br><span class="line">    <span class="keyword">if</span> (c-&gt;flags &amp; (CLIENT_DIRTY_CAS|CLIENT_DIRTY_EXEC)) &#123;</span><br><span class="line">        addReply(c, c-&gt;flags &amp; CLIENT_DIRTY_EXEC ? shared.execaborterr :</span><br><span class="line">                                                  shared.nullmultibulk);</span><br><span class="line">        discardTransaction(c);</span><br><span class="line">        <span class="keyword">goto</span> handle_monitor;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Exec all the queued commands */</span></span><br><span class="line">    <span class="comment">/* 开始执行事务，监视任务就可以结束了，将该客户端的监视字典清空 */</span></span><br><span class="line">    unwatchAllKeys(c); <span class="comment">/* Unwatch ASAP otherwise we'll waste CPU cycles */</span></span><br><span class="line">    <span class="comment">/* 临时保存客户端当前参数信息 */</span></span><br><span class="line">    orig_argv = c-&gt;argv;</span><br><span class="line">    orig_argc = c-&gt;argc;</span><br><span class="line">    orig_cmd = c-&gt;cmd;</span><br><span class="line">    addReplyMultiBulkLen(c,c-&gt;mstate.count);</span><br><span class="line">    <span class="comment">/* 开始执行客户端数据队列(数组)中的命令 */</span></span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; c-&gt;mstate.count; j++) &#123;</span><br><span class="line">        <span class="comment">/* 将每个命令作为客户端当前的参数信息(这就是为什么需要临时保存以前参数的原因) */</span></span><br><span class="line">        c-&gt;argc = c-&gt;mstate.commands[j].argc;</span><br><span class="line">        c-&gt;argv = c-&gt;mstate.commands[j].argv;</span><br><span class="line">        c-&gt;cmd = c-&gt;mstate.commands[j].cmd;</span><br><span class="line"></span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* 开始执行命令 */</span></span><br><span class="line">        call(c,CMD_CALL_FULL);</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* Commands may alter argc/argv, restore mstate. */</span></span><br><span class="line">        <span class="comment">/* call执行的命令可能会改变事务队列中的当前命令，这里是确保其不被改变 */</span></span><br><span class="line">        c-&gt;mstate.commands[j].argc = c-&gt;argc;</span><br><span class="line">        c-&gt;mstate.commands[j].argv = c-&gt;argv;</span><br><span class="line">        c-&gt;mstate.commands[j].cmd = c-&gt;cmd;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/* 还原客户端以前的参数信息 */</span></span><br><span class="line">    c-&gt;argv = orig_argv;</span><br><span class="line">    c-&gt;argc = orig_argc;</span><br><span class="line">    c-&gt;cmd = orig_cmd;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>函数有点长，不过还算好理解，先判断客户端是否开启事务(利用CLIENT_MULTI标记)，然后清空客户端的监视链表(后面会提到)，最后遍历事务队列，依次执行每个命令</p>
+<p>需要注意的是，Redis在执行事务队列中的命令时保证即使某条命令是错误的，也不会影响到其他命令的执行，即如果中间某条命令执行出错，那么后面的命令仍然会继续执行。另外，Redis不支持事务回滚功能，即不支持将已执行的命令撤销</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>Redis的事务功能还是比较简单的，另外需要提的是，由于Redis是运行在单线程下的，而且对于客户端的监听是基于io多路复用函数的，所以对于客户端的响应是串行的，不会出现当执行某个客户端事务队列中的命令时切换到另一个客户端的情况。这保证了事务执行具有原子性，另外Redis设计与实现书中还讲到Redis的事务具有一致性，隔离性和耐久性，有兴趣的话可以翻阅书籍查看</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/05/Redis源码剖析（五）订阅与发布/" rel="next" title="Redis源码剖析（五）订阅与发布">
+                <i class="fa fa-chevron-left"></i> Redis源码剖析（五）订阅与发布
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/09/Redis源码剖析（七）监视功能/" rel="prev" title="Redis源码剖析（七）监视功能">
+                Redis源码剖析（七）监视功能 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#事务命令"><span class="nav-number">1.</span> <span class="nav-text">事务命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#存储结构"><span class="nav-number">2.</span> <span class="nav-text">存储结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#事务实现"><span class="nav-number">3.</span> <span class="nav-text">事务实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#开启事务"><span class="nav-number">3.1.</span> <span class="nav-text">开启事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加命令到事务队列"><span class="nav-number">3.2.</span> <span class="nav-text">添加命令到事务队列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行命令"><span class="nav-number">3.3.</span> <span class="nav-text">执行命令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">4.</span> <span class="nav-text">小结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.0.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

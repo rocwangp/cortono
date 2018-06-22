@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="Redis," />
+
+
+<meta name="description" content="有序集合是Redis对象系统中的一部分，其底层采用跳表和压缩列表两种形式存储，在上一篇介绍了跳表实现，就趁热打铁看一下有序集合的跳表实现 本篇主要涉及的是有序集合添加数据的命令，后面会看到，在命令的底层实现中，实际上还是调用跳表的接口">
+<meta name="keywords" content="Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis源码剖析（十二）有序集合跳表实现">
+<meta property="og:url" content="http://yoursite.com/2018/01/20/Redis源码剖析（十二）有序集合跳表实现/index.html">
+<meta property="og:site_name" content="「.Roc.」">
+<meta property="og:description" content="有序集合是Redis对象系统中的一部分，其底层采用跳表和压缩列表两种形式存储，在上一篇介绍了跳表实现，就趁热打铁看一下有序集合的跳表实现 本篇主要涉及的是有序集合添加数据的命令，后面会看到，在命令的底层实现中，实际上还是调用跳表的接口">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-02-19T07:02:23.481Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis源码剖析（十二）有序集合跳表实现">
+<meta name="twitter:description" content="有序集合是Redis对象系统中的一部分，其底层采用跳表和压缩列表两种形式存储，在上一篇介绍了跳表实现，就趁热打铁看一下有序集合的跳表实现 本篇主要涉及的是有序集合添加数据的命令，后面会看到，在命令的底层实现中，实际上还是调用跳表的接口">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/01/20/Redis源码剖析（十二）有序集合跳表实现/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>Redis源码剖析（十二）有序集合跳表实现 | 「.Roc.」</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">「.Roc.」</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/20/Redis源码剖析（十二）有序集合跳表实现/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="「.Roc.」">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Redis源码剖析（十二）有序集合跳表实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-20T11:16:00+08:00">2018-01-20</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>有序集合是Redis对象系统中的一部分，其底层采用跳表和压缩列表两种形式存储，在上一篇介绍了跳表实现，就趁热打铁看一下有序集合的跳表实现</p>
+<p>本篇主要涉及的是有序集合添加数据的命令，后面会看到，在命令的底层实现中，实际上还是调用跳表的接口</p>
+<a id="more"></a>
+<h1 id="存储结构"><a href="#存储结构" class="headerlink" title="存储结构"></a>存储结构</h1><p>有序集合的定义在server.h文件中，不过除了跳表以外，有序集合又保存了一个字典，这个字典的作用是用来查找某个数据对应的分值。根据跳表的实现可知，跳表内部是采用分值排序的，通过分值查找数据还行，但是如果要通过数据查找分值，就显得力不从心了，所以Redis又维护了一个字典，用来完成通过数据查找分值的任务</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//server.h</span></span><br><span class="line"><span class="comment">/* 有序集合 */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">zset</span> &#123;</span></span><br><span class="line">    dict *dict; <span class="comment">/* 存储&lt;数据，分值&gt;键值对，用来通过数据查找分值 */</span></span><br><span class="line">    zskiplist *zsl; <span class="comment">/* 跳表，保存&lt;分值，数据&gt;，内部通过分值排序 */</span></span><br><span class="line">&#125; zset;</span><br></pre></td></tr></table></figure>
+<h1 id="有序集合操作"><a href="#有序集合操作" class="headerlink" title="有序集合操作"></a>有序集合操作</h1><h2 id="添加数据"><a href="#添加数据" class="headerlink" title="添加数据"></a>添加数据</h2><p>通过命令ZADD，可以实现向数据库中添加有序集合，该命令是由zaddGenericCommand函数实现的。函数中会先解析命令选项，命令参数，然后根据底层是由跳表实现还是由压缩列表实现执行不同的操作，都是调用二者的接口</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 向有序集合中添加数据 */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">zaddGenericCommand</span><span class="params">(client *c, <span class="keyword">int</span> flags)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">char</span> *nanerr = <span class="string">"resulting score is not a number (NaN)"</span>;</span><br><span class="line">    <span class="comment">/* 获取键 */</span></span><br><span class="line">    robj *key = c-&gt;argv[<span class="number">1</span>];</span><br><span class="line">    robj *ele;</span><br><span class="line">    robj *zobj;</span><br><span class="line">    robj *curobj;</span><br><span class="line">    <span class="keyword">double</span> score = <span class="number">0</span>, *scores = <span class="literal">NULL</span>, curscore = <span class="number">0.0</span>;</span><br><span class="line">    <span class="keyword">int</span> j, elements;</span><br><span class="line">    <span class="keyword">int</span> scoreidx = <span class="number">0</span>;</span><br><span class="line">	...</span><br><span class="line">    scoreidx = <span class="number">2</span>;</span><br><span class="line">    <span class="comment">/* 获取参数选项，参数选项紧接在键的后面 */</span></span><br><span class="line">	...</span><br><span class="line">    <span class="comment">/* 将参数选项转换为数值变量 */</span></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* argc中保存所有参数个数，scoreidx保存第一个数据的分值位置</span></span><br><span class="line"><span class="comment">     * argc - scoreidx计算所有的分值，数据个数 */</span></span><br><span class="line">    elements = c-&gt;argc-scoreidx;</span><br><span class="line">    <span class="comment">/* 由于分值和数据是成对出现的，这里判断输入的个数是否合法 */</span></span><br><span class="line">    <span class="keyword">if</span> (elements % <span class="number">2</span>) &#123;</span><br><span class="line">        addReply(c,shared.syntaxerr);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/* 除以2计算不同&lt;分数，数据&gt;对的个数 */</span></span><br><span class="line">    elements /= <span class="number">2</span>; </span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 核查几个选项 */</span></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 为分值分配内存 */</span></span><br><span class="line">    scores = zmalloc(<span class="keyword">sizeof</span>(<span class="keyword">double</span>)*elements);</span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; elements; j++) &#123;</span><br><span class="line">        <span class="comment">/* 将字符串类型转成double */</span></span><br><span class="line">        <span class="keyword">if</span> (getDoubleFromObjectOrReply(c,c-&gt;argv[scoreidx+j*<span class="number">2</span>],&amp;scores[j],<span class="literal">NULL</span>)</span><br><span class="line">            != C_OK) <span class="keyword">goto</span> cleanup;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/* 在数据库中查找是否存在键key，返回键对应的值 */</span></span><br><span class="line">    zobj = lookupKeyWrite(c-&gt;db,key);</span><br><span class="line">    <span class="keyword">if</span> (zobj == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="comment">/* 如果不存在，创建值 */</span></span><br><span class="line">        <span class="keyword">if</span> (xx) <span class="keyword">goto</span> reply_to_client; <span class="comment">/* No key + XX option: nothing to do. */</span></span><br><span class="line">        <span class="comment">/* 根据参数配置选择底层采用压缩字典还是跳表 */</span></span><br><span class="line">        <span class="comment">/* 如果数据长度大于规定值，则采用跳表，否则选择压缩列表 */</span></span><br><span class="line">        <span class="keyword">if</span> (server.zset_max_ziplist_entries == <span class="number">0</span> ||</span><br><span class="line">            server.zset_max_ziplist_value &lt; sdslen(c-&gt;argv[scoreidx+<span class="number">1</span>]-&gt;ptr))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">/* 创建跳表编码的有序集合 */</span></span><br><span class="line">            zobj = createZsetObject();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">/* 创建压缩列表编码的有序集合 */</span></span><br><span class="line">            zobj = createZsetZiplistObject();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/* 将键值对添加到数据库中，这里值是空的 */</span></span><br><span class="line">        dbAdd(c-&gt;db,key,zobj);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">/* 存在键key，判断原先的值是否是用有序集合存储的 */</span></span><br><span class="line">        <span class="keyword">if</span> (zobj-&gt;type != OBJ_ZSET) &#123;</span><br><span class="line">            addReply(c,shared.wrongtypeerr);</span><br><span class="line">            <span class="keyword">goto</span> cleanup;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 对于每个&lt;分数，数据&gt;对，将其添加到zobj中 */</span></span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; elements; j++) &#123;</span><br><span class="line">        <span class="comment">/* 第j个分值 */</span></span><br><span class="line">        score = scores[j];</span><br><span class="line">        <span class="comment">/* 采用压缩列表的api执行添加操作 */</span></span><br><span class="line">        <span class="keyword">if</span> (zobj-&gt;encoding == OBJ_ENCODING_ZIPLIST) &#123;</span><br><span class="line">            ...</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (zobj-&gt;encoding == OBJ_ENCODING_SKIPLIST) &#123;</span><br><span class="line">            <span class="comment">/* 采用跳表的api添加数据 */</span></span><br><span class="line">            zset *zs = zobj-&gt;ptr;</span><br><span class="line">            zskiplistNode *znode;</span><br><span class="line">            dictEntry *de;</span><br><span class="line"></span><br><span class="line">            <span class="comment">/* 尝试将数据转换成合适的编码以节省内存 */</span></span><br><span class="line">            ele = c-&gt;argv[scoreidx+<span class="number">1</span>+j*<span class="number">2</span>] =</span><br><span class="line">                tryObjectEncoding(c-&gt;argv[scoreidx+<span class="number">1</span>+j*<span class="number">2</span>]);</span><br><span class="line">            <span class="comment">/* 采用跳表实现的有序集合中保存了一个字典，键是数据，值是分值 */</span></span><br><span class="line">            de = dictFind(zs-&gt;dict,ele);</span><br><span class="line">            <span class="comment">/* 有序集合中存在要添加的数据 */</span></span><br><span class="line">            <span class="keyword">if</span> (de != <span class="literal">NULL</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (nx) <span class="keyword">continue</span>;</span><br><span class="line">                <span class="comment">/* 获取键节点的数据和分值 */</span></span><br><span class="line">                curobj = dictGetKey(de);</span><br><span class="line">                curscore = *(<span class="keyword">double</span>*)dictGetVal(de);</span><br><span class="line"></span><br><span class="line">                <span class="comment">/* incr选项是如果存在该数据，则和它对应的分值相加 */</span></span><br><span class="line">                <span class="keyword">if</span> (incr) &#123;</span><br><span class="line">                    score += curscore;</span><br><span class="line">                    ...</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">/* 更新数据，分值 */</span></span><br><span class="line">                <span class="keyword">if</span> (score != curscore) &#123;</span><br><span class="line">                    <span class="comment">/* 先删除，再添加 */</span></span><br><span class="line">                    serverAssertWithInfo(c,curobj,zslDelete(zs-&gt;zsl,curscore,curobj));</span><br><span class="line">                    <span class="comment">/* 跳表插入操作 */</span></span><br><span class="line">                    znode = zslInsert(zs-&gt;zsl,score,curobj);</span><br><span class="line">                    <span class="comment">/* 增加数据的引用计数 */</span></span><br><span class="line">                    incrRefCount(curobj); </span><br><span class="line">                    <span class="comment">/* 更新字典中的分值 */</span></span><br><span class="line">                    dictGetVal(de) = &amp;znode-&gt;score; </span><br><span class="line">                    server.dirty++;</span><br><span class="line">                    updated++;</span><br><span class="line">                &#125;</span><br><span class="line">                processed++;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!xx) &#123;</span><br><span class="line">                <span class="comment">/* 不存在要添加的数据，直接插入 */</span></span><br><span class="line">                znode = zslInsert(zs-&gt;zsl,score,ele);</span><br><span class="line">                incrRefCount(ele); <span class="comment">/* Inserted in skiplist. */</span></span><br><span class="line">                serverAssertWithInfo(c,<span class="literal">NULL</span>,dictAdd(zs-&gt;dict,ele,&amp;znode-&gt;score) == DICT_OK);</span><br><span class="line">                incrRefCount(ele); <span class="comment">/* Added to dictionary. */</span></span><br><span class="line">                server.dirty++;</span><br><span class="line">                added++;</span><br><span class="line">                processed++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            serverPanic(<span class="string">"Unknown sorted set encoding"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为了不让函数太长，这里删除了一些关于命令选项的判断和执行，不过还是很长…</p>
+<h2 id="获取排名"><a href="#获取排名" class="headerlink" title="获取排名"></a>获取排名</h2><p>在跳表中，看到跳表可以快速计算&lt;分值，数据&gt;的排名。排名是由ZRANK命令完成的，底层由zrankGnericCommand函数实现</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//t_zset.c</span></span><br><span class="line"><span class="comment">/* 返回某个键下的指定数据的排名 */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">zrankGenericCommand</span><span class="params">(client *c, <span class="keyword">int</span> reverse)</span> </span>&#123;</span><br><span class="line">    <span class="comment">/* 第一个参数是键 */</span></span><br><span class="line">    robj *key = c-&gt;argv[<span class="number">1</span>];</span><br><span class="line">    <span class="comment">/* 第二个参数是值 */</span></span><br><span class="line">    robj *ele = c-&gt;argv[<span class="number">2</span>];</span><br><span class="line">    robj *zobj;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> llen;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> rank;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 在数据库中查找键key是否存在，如果存在，再判断值是否是由有序集合存储的 */</span></span><br><span class="line">    <span class="keyword">if</span> ((zobj = lookupKeyReadOrReply(c,key,shared.nullbulk)) == <span class="literal">NULL</span> ||</span><br><span class="line">        checkType(c,zobj,OBJ_ZSET)) <span class="keyword">return</span>;</span><br><span class="line">    <span class="comment">/* 获取有序集合中数据个数 */</span></span><br><span class="line">    llen = zsetLength(zobj);</span><br><span class="line"></span><br><span class="line">    serverAssertWithInfo(c,ele,sdsEncodedObject(ele));</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* 根据底层实现不同选择不同的接口 */</span></span><br><span class="line">    <span class="keyword">if</span> (zobj-&gt;encoding == OBJ_ENCODING_ZIPLIST) &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (zobj-&gt;encoding == OBJ_ENCODING_SKIPLIST) &#123;</span><br><span class="line">        <span class="comment">/* 如果底层采用跳表实现，则调用跳表接口 */</span></span><br><span class="line">        <span class="comment">/* 获取键key对应的有序集合 */</span></span><br><span class="line">        zset *zs = zobj-&gt;ptr;</span><br><span class="line">        zskiplist *zsl = zs-&gt;zsl;</span><br><span class="line">        dictEntry *de;</span><br><span class="line">        <span class="keyword">double</span> score;</span><br><span class="line"></span><br><span class="line">        ele = c-&gt;argv[<span class="number">2</span>];</span><br><span class="line">        <span class="comment">/* 由于跳表通过数据查找分值比较慢</span></span><br><span class="line"><span class="comment">         * 所以Redis采用字典保存&lt;数据，分值&gt;对，可通过数据快速找到对应分值 */</span></span><br><span class="line">        de = dictFind(zs-&gt;dict,ele);</span><br><span class="line">        <span class="keyword">if</span> (de != <span class="literal">NULL</span>) &#123;</span><br><span class="line">            <span class="comment">/* 如果有序集合中存在要查找的数据，则获取数据的分值 */</span></span><br><span class="line">            score = *(<span class="keyword">double</span>*)dictGetVal(de);</span><br><span class="line">            <span class="comment">/* 调用跳表接口计算分值score的排名 */</span></span><br><span class="line">            rank = zslGetRank(zsl,score,ele);</span><br><span class="line">            serverAssertWithInfo(c,ele,rank); </span><br><span class="line">            <span class="comment">/* 根据选项不同计算是正向排名还是逆向排名 */</span></span><br><span class="line">            <span class="keyword">if</span> (reverse)</span><br><span class="line">                addReplyLongLong(c,llen-rank);</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                addReplyLongLong(c,rank<span class="number">-1</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            addReply(c,shared.nullbulk);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        serverPanic(<span class="string">"Unknown sorted set encoding"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="计算数据个数"><a href="#计算数据个数" class="headerlink" title="计算数据个数"></a>计算数据个数</h2><p>zsetLength函数用于计算有序集合中数据个数，同样是调用跳表或者压缩列表的接口</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//t_zset.c</span></span><br><span class="line"><span class="comment">/* 计算有序集合中数据个数 */</span></span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">zsetLength</span><span class="params">(robj *zobj)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> length = <span class="number">-1</span>;</span><br><span class="line">    <span class="comment">/* 根据底层实现不同调用不同接口 */</span></span><br><span class="line">    <span class="keyword">if</span> (zobj-&gt;encoding == OBJ_ENCODING_ZIPLIST) &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (zobj-&gt;encoding == OBJ_ENCODING_SKIPLIST) &#123;</span><br><span class="line">        <span class="comment">/* 跳表中直接保存了数据个数 */</span></span><br><span class="line">        length = ((zset*)zobj-&gt;ptr)-&gt;zsl-&gt;length;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        serverPanic(<span class="string">"Unknown sorted set encoding"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> length;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>有序集合中保存的数据都是有序的，在对象系统中底层可以由跳表和有序列表实现，而且跳表实现还是比较简单的，而压缩列表实现会相对难理解一些</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/10/Redis源码剖析（十一）跳表/" rel="next" title="Redis源码剖析（十一）跳表">
+                <i class="fa fa-chevron-left"></i> Redis源码剖析（十一）跳表
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/20/Redis源码剖析（十三）整数集合/" rel="prev" title="Redis源码剖析（十三）整数集合">
+                Redis源码剖析（十三）整数集合 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#存储结构"><span class="nav-number">1.</span> <span class="nav-text">存储结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#有序集合操作"><span class="nav-number">2.</span> <span class="nav-text">有序集合操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#添加数据"><span class="nav-number">2.1.</span> <span class="nav-text">添加数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取排名"><span class="nav-number">2.2.</span> <span class="nav-text">获取排名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#计算数据个数"><span class="nav-number">2.3.</span> <span class="nav-text">计算数据个数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#小结"><span class="nav-number">3.</span> <span class="nav-text">小结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.0.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

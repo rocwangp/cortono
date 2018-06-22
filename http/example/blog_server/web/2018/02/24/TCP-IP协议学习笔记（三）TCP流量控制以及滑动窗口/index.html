@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/web/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/web/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/web/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/web/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/web/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/web/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/web/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="TCP/IP," />
+
+
+<meta name="description" content="众所周知，TCP是有缓冲区的，比如接收缓冲区用于存放已经到达但是还没有被应用程序及时处理的数据。但是任何缓冲区都是有一定大小的，如果发送方发送数据过快，而接收方处理数据过慢，就会导致接收方的接收缓冲区数据量不断累积最终塞满缓冲区。随后如果再有数据到达就只有一个结果，数据被丢掉 为了解决这一问题，TCP引入了流量控制功能，所谓流量控制，就是让发送方发送速率不要太快，要让接收方来得及处理。通过滑动窗口">
+<meta name="keywords" content="TCP&#x2F;IP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP&#x2F;IP学习笔记（三）TCP流量控制以及滑动窗口">
+<meta property="og:url" content="http://yoursite.com/2018/02/24/TCP-IP协议学习笔记（三）TCP流量控制以及滑动窗口/index.html">
+<meta property="og:site_name" content="「.Roc.」">
+<meta property="og:description" content="众所周知，TCP是有缓冲区的，比如接收缓冲区用于存放已经到达但是还没有被应用程序及时处理的数据。但是任何缓冲区都是有一定大小的，如果发送方发送数据过快，而接收方处理数据过慢，就会导致接收方的接收缓冲区数据量不断累积最终塞满缓冲区。随后如果再有数据到达就只有一个结果，数据被丢掉 为了解决这一问题，TCP引入了流量控制功能，所谓流量控制，就是让发送方发送速率不要太快，要让接收方来得及处理。通过滑动窗口">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://s1.ax1x.com/2018/02/24/9dVVgO.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/02/25/9dywwD.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/02/24/9dkpDA.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/02/24/9dkiUP.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/02/24/9dkG2F.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/02/24/9dV9b9.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/02/24/9dkdV1.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/02/24/9dkbrj.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/02/24/9dVPER.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/02/24/9dkxiV.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/02/24/9dVXdA.png">
+<meta property="og:updated_time" content="2018-02-27T09:31:17.624Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TCP&#x2F;IP学习笔记（三）TCP流量控制以及滑动窗口">
+<meta name="twitter:description" content="众所周知，TCP是有缓冲区的，比如接收缓冲区用于存放已经到达但是还没有被应用程序及时处理的数据。但是任何缓冲区都是有一定大小的，如果发送方发送数据过快，而接收方处理数据过慢，就会导致接收方的接收缓冲区数据量不断累积最终塞满缓冲区。随后如果再有数据到达就只有一个结果，数据被丢掉 为了解决这一问题，TCP引入了流量控制功能，所谓流量控制，就是让发送方发送速率不要太快，要让接收方来得及处理。通过滑动窗口">
+<meta name="twitter:image" content="https://s1.ax1x.com/2018/02/24/9dVVgO.png">
+
+
+
+
+
+
+  <link rel="canonical" href="/webhttp://yoursite.com/2018/02/24/TCP-IP协议学习笔记（三）TCP流量控制以及滑动窗口/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>TCP/IP学习笔记（三）TCP流量控制以及滑动窗口 | 「.Roc.」</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/web/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">「.Roc.」</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/web/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/web/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/web/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/web/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/web/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="/webhttp://yoursite.com/2018/02/24/TCP-IP协议学习笔记（三）TCP流量控制以及滑动窗口/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="「.Roc.」">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">TCP/IP学习笔记（三）TCP流量控制以及滑动窗口</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-24T00:00:00+08:00">2018-02-24</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/web/categories/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP/IP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>众所周知，TCP是有缓冲区的，比如接收缓冲区用于存放已经到达但是还没有被应用程序及时处理的数据。但是任何缓冲区都是有一定大小的，如果发送方发送数据过快，而接收方处理数据过慢，就会导致接收方的接收缓冲区数据量不断累积最终塞满缓冲区。随后如果再有数据到达就只有一个结果，数据被丢掉</p>
+<p>为了解决这一问题，TCP引入了流量控制功能，所谓流量控制，就是让发送方发送速率不要太快，要让接收方来得及处理。通过滑动窗口机制，可以很容易实现流量控制</p>
+<a id="more"></a>
+<h1 id="序列号"><a href="/web#序列号" class="headerlink" title="序列号"></a>序列号</h1><p>在介绍流量控制之前，首先需要明确一个概念，就是数据序列号。它的作用是标识数据，数据的每一个字节都有与之对应的序列号，并且在双方通信的过程中序列号是连续的。通信双方就是通过序列号来控制数据的发送和接收</p>
+<p>以客户端A和服务器B通信为例，客户端A发送一个包含100字节数据的报文段，其中数据的第一个字节的序列号为200，那么可以得知这段数据的序列号范围是[200 : 299]，服务器接收到这段数据后回应客户端一个应答报文段，该报文段中包含了服务器希望下次接受的数据第一个字节的序列号，即300.</p>
+<p>通过这样的一来一往，服务器接收到序列号为[200:299]的这段数据，并且告知客户端自己接下来需要接收序列号从300开始的数据。而客户端知道服务器已经接收到[200:299]这段数据，并且准备发送序列号从300开始的数据。</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dVVgO.png" alt=""></p>
+<p>如前所述，TCP内部设有发送缓冲区和接收缓冲区，为了将事情简化，下面仅考虑客户端的发送缓冲区以及服务器的接收缓冲区。同时，与发送缓冲区对应的是发送窗口，与接收缓冲区对应的是接收窗口。这两个滑动窗口在三次握手建立连接后被创建，起点是对方的起始序列号（由SYN同步位被标记为1的报文段确定）。</p>
+<p>此外，除了起始序列号，三次握手的过程中还各自通知了窗口大小。如服务器告诉客户端窗口大小为100，则客户端初始的滑动窗口大小就为100</p>
+<blockquote>
+<p>100是服务器目前可以接收的序列号个数，也即字节个数</p>
+</blockquote>
+<p>在平时的网络编程中，应用程序使用send/write等api将数据发送给对端，实际上仅仅是将数据复制到自己的TCP发送缓冲区就返回了，剩下的事情TCP协议栈会自己完成，在合适的时间将数据发送出去。这里合适的时间就是根据发送窗口判断的。</p>
+<h1 id="数据发送时滑动窗口的变化"><a href="/web#数据发送时滑动窗口的变化" class="headerlink" title="数据发送时滑动窗口的变化"></a>数据发送时滑动窗口的变化</h1><p>从发送缓冲区的视角观察，滑动窗口位于发送缓冲区上，覆盖的区域表示能被立即发送的数据区域或者已经发送但是没有收到接收方应答的数据</p>
+<p>接收方发送的报文段中包含了发送方应该设置的窗口大小，即接收方提供的窗口。图片中此时滑动窗口覆盖了[4:9]字节的区域，表明接收方已经确认了包括第3个字节以内的所有数据，且通告窗口大小为6。该窗口大小表明发送方有多少数据可以立即发送</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/25/9dywwD.png" alt=""></p>
+<p>当接收方确认数据后，发送方的滑动窗口不时地向右移动。窗口的左右沿移动情况有以下三种</p>
+<ul>
+<li>窗口左沿向右边沿靠近，称为窗口合拢。这种现象发生在数据被发送并且被接收方正确接收</li>
+<li>窗口右沿向右移动，称为窗口张开。这种现象发生在接收方应用程序读取了接收缓冲区的数据以允许接收更多的数据，此时发送方可以发送更多的数据</li>
+<li>窗口右沿向左移动，称为窗口收缩。但是这种方式不被使用，原因是之前可能已经将数据发送</li>
+</ul>
+<p>举例来说，下图为客户端A某一时刻的一个简化的发送窗口，从图中可以得知以下信息</p>
+<ul>
+<li>窗口大小为20，表示服务器还能接收20个字节（序列号），即允许客户端发送的序列号数量为20</li>
+<li>序列号31为下一个正要准备发送的数据序列号，能够发送的序列号范围是[31:50]</li>
+<li>序列号小于31的数据已经发送给了服务器并且也已经得到服务器的应答</li>
+</ul>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dkpDA.png" alt=""></p>
+<p>现在假设客户端A将序列号为[31:41]的这段数据发送出去，在没有接收到服务器的应答之前，客户端A的发送窗口不会改变</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dkiUP.png" alt=""></p>
+<p>其中，P1，P2，P3三个指针的含义为</p>
+<ul>
+<li>小于P1的部分是已经发送给服务器并且得到服务器回应的数据</li>
+<li>大于P3的部分是超过服务器接收能力的数据部分，目前不允许发送</li>
+<li>[P1:P3)表示当前的发送窗口（滑动窗口）</li>
+<li>[P1:P3)表示客户端已经发送给服务器但是仍然没有得到服务器回应的数据部分</li>
+<li>[P2:P3)表示客户端可以发送但是还没有发送的数据部分</li>
+</ul>
+<p>接下来假设服务器接收到了客户端发来的序列号为[31:33]的数据段，并返回给客户端应答报文段（ACK位被置1），每一个应答报文段都包含了以下几个重要信息</p>
+<ul>
+<li>接收到的数据最后一个序列号，此时为33</li>
+<li>希望接收的下一个序列号，此时为34</li>
+<li>允许的窗口大小，即服务器还可以接收的数据字节数。假设服务器的承载能力没有变，那么窗口大小仍为20</li>
+</ul>
+<blockquote>
+<p>客户端会根据应答报文段中的服务器已接收的数据的最后一个序列号来判断有多少数据已经被服务器接收，如果为33，表明[31:33]这段数据已经被接收，相应的发送窗口就需要右移</p>
+</blockquote>
+<p>此时客户端的发送窗口会右移3个序列号（因为已经确定31,32,33这三个序列号的数据被服务器接收），其中</p>
+<ul>
+<li>[P1:P3)仍然表示发送窗口，窗口大小仍为20</li>
+<li>[P1:P2)表示已发送但是没有收到回应的数据部分，较之前相比少了左边三个</li>
+<li>[P1:P3)表示可以发送但是尚未发送的数据部分，较之前相比多了右边三个</li>
+</ul>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dkG2F.png" alt=""></p>
+<h1 id="超时重传"><a href="/web#超时重传" class="headerlink" title="超时重传"></a>超时重传</h1><p>TCP协议栈就是按照上述的滑动窗口来控制发送和接收的平衡。不过很多时候网络并不是都那么流畅，可能就会出现某些数据丢失的情况（如客户端发送的数据丢失或者服务器发送的应答报文段丢失等），为了解决这个问题，TCP引入超时重传的机制，即每发送一段序列号的数据，就会为这段数据启动一个定时器，如果在规定的时间内没有收到服务器对于这段数据的回应，那么客户端就会认为数据丢失，便会重新发送，同时重置定时器，如此往复直到接收到服务器的回应（这也正是需要保留已发送但未收到确认的那段数据的原因，因为可能需要重传）</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dV9b9.png" alt=""></p>
+<p>为了模拟这种情况，现假设服务器接收到的数据并不是按照序列号顺序到来的，比如此时服务器接收到37,38,40三个序列号的数据，而其它数据可能在传输过程中丢失。那么服务器的接收窗口（注意这里是服务器的接受窗口而非客户端的发送窗口）为</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dkdV1.png" alt=""></p>
+<p>从服务器的接收窗口可以看到如下信息</p>
+<ul>
+<li>接受窗口大小为20，正在等待接收序列号为[34:53]的数据</li>
+<li>已经接收到序列号为37,38,40的数据</li>
+</ul>
+<p>按照惯例，服务器在接收到报文段后应该回复给客户端一个应答报文段，报文段中应该包含目前接收到的最后一个序列号，并指明希望下次接收的数据序列号，然后事实上，服务器发送给客户端的应答请求中会带有如下信息</p>
+<ul>
+<li>目前接收到的最后一个数据序列号为33，而不是40</li>
+<li>希望下次接收到的数据序列号为34</li>
+<li>窗口大小为20</li>
+</ul>
+<p>没错，即使已经接收到了37,38,40三个数据，但是[34:36]这段数据却没有收到，这表明接收数据出现乱序或者数据丢失。而服务器不能回应客户端此时接收到的最后一个序列号为40，因为如果这样就表明序列号在40之前的数据已经全部接收到，客户端可以将发送窗口右移到41了，显然这会导致数据的丢失。</p>
+<p>当然，客户端确实已经发送了序列号[34:41]的这段数据，然而却迟迟没有收到服务器对于这段数据的应答。一段时间后，定时器超时，客户端会重新发送[34:41]这段数据，然后重置定时器，如此往复直到收到服务器对于这段数据的回应</p>
+<blockquote>
+<p>由于定时器是按序列号段设置的，所以重传也是重传一整个数据段，即使37,38,40这三个数据已经被服务器接收到</p>
+</blockquote>
+<p>不过在这段期间，由于客户端A的发送窗口仍然有数据可以发送，那么就不能闲着，客户端也会将剩余的数据发送给服务器，也为这段数据启动一个定时器，两不耽误</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dkbrj.png" alt=""></p>
+<p>除了数据在发送给服务器的过程中丢失外，服务器回复给客户端的应答报文段也可能丢失，当然处理方法是一样的，当定时器超时，客户端都会重发，因为客户端根本不会知道数据出现了什么状况，只管超时重发就好了</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dVPER.png" alt=""></p>
+<h1 id="重复数据的处理"><a href="/web#重复数据的处理" class="headerlink" title="重复数据的处理"></a>重复数据的处理</h1><p>在上面讨论超时重传机制时，客户端发送[34:41]这段数据，而只有37,38,40这三个数据成功到达服务器，其他数据都已丢失。所以当定时器超时时，客户端会重新发送数据，但是发送的仍然是[34:41]这个数据段，因为客户端无法确定哪几个数据丢失，哪几个数据成功到达服务器（服务器返回给客户端的应答请求表示服务器仍然希望接收到序列号为34的数据），所以客户端索性就全部重发。</p>
+<p>但是这会造成一个问题，当客户端重发[34:41]这段数据并顺利到达服务器时，由于服务器已经接收到37,38,40这三个数据，所以这一段数据存在重复部分。对于重复数据，TCP协议栈的解决办法就是丢掉。</p>
+<blockquote>
+<p>另外，如果某一个时刻服务器接收的数据序列号不在滑动窗口的范围内，超出的部分也会被丢掉</p>
+</blockquote>
+<h1 id="流量控制"><a href="/web#流量控制" class="headerlink" title="流量控制"></a>流量控制</h1><p>之前都是从滑动窗的视角观察数据的发送和接收，没有考虑窗口的动态变化。事实上，发送窗口的大小是动态变化的，这和接收方的承载能力有关，服务器发送给客户端的应答报文段实际上就包含了窗口大小的字段</p>
+<p>现在假设客户端A和服务器B在三次握手建立连接后，服务器在SYN同步报文段中告知客户端窗口大小为400，此时客户端的发送窗口大小便初始化为400</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dkxiV.png" alt=""></p>
+<p>如图，客户端先后发送了[1:100]和[101:200]这两段数据，当发送序列号为[201:300]的数据段时丢失。可以得知服务器只能接收到200个数据，所以会回应给客户端</p>
+<ul>
+<li>接收到的最后一个序列号为200，</li>
+<li>希望接收的下一个序列号为201</li>
+<li>当前窗口大小应该为300，表示只能再接收300字节的数据</li>
+</ul>
+<blockquote>
+<p>实际上，并不是服务器接收到一次数据就立刻发送应答报文段，而通常是等待一小段时间一起发送，这么做是为了将多个应答请求合并，或者是让即将发往对端的数据捎带上自己，避免了多个小报文段的开销。上步就是将对[1:100]和[101:200]这两段回应一起发送</p>
+</blockquote>
+<p>接下来客户端接收到了[1:200]的应答报文段，将滑动窗口右移，此时发送窗口覆盖的序列号范围应该是[201:500]，不过由于之前客户端已经发送了[201:300]的这段数据，只是定时器没有超时，目前还不知道是否丢失。所以客户端可以继续发送[301:400]，[401:500]这两个数据段。</p>
+<p>一段时间后[201:300]这段数据的定时器超时，客户端重发这段数据。服务器接收到[201:500]这段数据，回应给客户端</p>
+<ul>
+<li>接收到的最后一个序列号为500</li>
+<li>希望接收的下一个序列号为501</li>
+<li>当前窗口大小应该为100，只允许客户端再发送100字节的数据</li>
+</ul>
+<p>得知服务器的承载能力后，客户端发送[501:600]这100个字节的数据段，随后服务器回应客户端，同时表明窗口大小为0，表示不再允许客户端发送数据（告诉客户端，我已经装不下啦，别再发了！）</p>
+<h1 id="零窗口探测"><a href="/web#零窗口探测" class="headerlink" title="零窗口探测"></a>零窗口探测</h1><p>实际上不是只有接收到数据时服务器才会回应数据给客户端，当服务器的接受窗口发生变化时，服务器也会发送给客户端一个应答报文，报文中的内容包含</p>
+<ul>
+<li>已接收到的数据的最后一个序列号</li>
+<li>希望接收的下一个序列号</li>
+<li>窗口大小</li>
+</ul>
+<p>窗口大小用于告诉客户端或者告诉不要继续发送数据，或者可以继续发送数据。</p>
+<p>然而考虑如下问题，经过一段时间的数据交互，服务器在应答报文段中告知客户端窗口大小为0，表示不再允许客户端发送数据。随后一小段时间内，服务器处理了部分或全部接收缓冲区的数据，此时接收缓冲区有空闲位置，接收窗口发生变化，服务器发送窗口更新应答报文段告知客户端可以继续发送数据。但是由于网络原因这个应答报文段丢失（由于这不是数据报文段，不需要应答），这就导致死锁，无法再进行数据交换，即</p>
+<ul>
+<li>服务器等待客户端发送数据</li>
+<li>客户端认为服务器仍然无法接收数据</li>
+</ul>
+<p>为了解决这一问题，TCP协议栈在发送窗口引入零窗口探测报文，同时增加了零窗口定时器，该定时器会在对端的接受窗口变为0时被启动，一旦定时器超时，发送方就会发送一个零窗口探测报文，而接收方接收到这种类型报文时会返回带有窗口大小的应答报文。这样发送方就可以根据窗口大小判断是继续等待还是已经可以发送数据了。如果继续等待，则重置零窗口定时器，重新计时。</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/02/24/9dVXdA.png" alt=""></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/web/tags/TCP-IP/" rel="tag"># TCP/IP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/web/2018/02/23/TCP-IP协议学习笔记（二）TCP三次握手/" rel="next" title="TCP/IP学习笔记（二）TCP三次握手">
+                <i class="fa fa-chevron-left"></i> TCP/IP学习笔记（二）TCP三次握手
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/web/2018/02/25/TCP-IP协议学习笔记（四）TCP超时重传及拥塞控制/" rel="prev" title="TCP/IP学习笔记（四）TCP超时重传及拥塞控制">
+                TCP/IP学习笔记（四）TCP超时重传及拥塞控制 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/web/archives/">
+                
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/web/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/web/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="/webhttps://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="/webhttp://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="/web#序列号"><span class="nav-number">1.</span> <span class="nav-text">序列号</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#数据发送时滑动窗口的变化"><span class="nav-number">2.</span> <span class="nav-text">数据发送时滑动窗口的变化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#超时重传"><span class="nav-number">3.</span> <span class="nav-text">超时重传</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#重复数据的处理"><span class="nav-number">4.</span> <span class="nav-text">重复数据的处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#流量控制"><span class="nav-number">5.</span> <span class="nav-text">流量控制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#零窗口探测"><span class="nav-number">6.</span> <span class="nav-text">零窗口探测</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="/webhttps://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="/webhttps://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/web/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/web/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/web/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/web/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/web/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/web/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/web/js/src/affix.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/web/js/src/schemes/pisces.js?v=6.0.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/web/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/web/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/web/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

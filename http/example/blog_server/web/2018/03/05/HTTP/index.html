@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/web/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/web/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/web/css/main.css?v=6.0.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/web/images/apple-touch-icon-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/web/images/favicon-32x32-next.png?v=6.0.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/web/images/favicon-16x16-next.png?v=6.0.4">
+
+
+  <link rel="mask-icon" href="/web/images/logo.svg?v=6.0.4" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.0.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  
+  <meta name="keywords" content="HTTP," />
+
+
+<meta name="description" content="HTTP协议是位于TCP协议之上的应用层协议，是应用进程之间通讯的一种协议。之所以称之为应用层协议，是应为它无需关心数据是通过什么方式到达对端的，在到达对方的应用程序之前都经历了什么，而只需要协商好使用的数据格式，保证一方可以解析出另一方的意图即可  这也这是TCP/IP协议的真正目的，上层无需过度关心底层的实现细节">
+<meta name="keywords" content="HTTP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP协议学习笔记（一）HTTP请求方法名及状态码">
+<meta property="og:url" content="http://yoursite.com/2018/03/05/HTTP协议学习笔记（一）HTTP请求方法名及状态码/index.html">
+<meta property="og:site_name" content="「.Roc.」">
+<meta property="og:description" content="HTTP协议是位于TCP协议之上的应用层协议，是应用进程之间通讯的一种协议。之所以称之为应用层协议，是应为它无需关心数据是通过什么方式到达对端的，在到达对方的应用程序之前都经历了什么，而只需要协商好使用的数据格式，保证一方可以解析出另一方的意图即可  这也这是TCP/IP协议的真正目的，上层无需过度关心底层的实现细节">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/05/9cmq8U.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/05/9cn2Ix.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/05/9cuamd.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/05/9cud0A.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/05/9cuwTI.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/05/9cuBkt.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/05/9cuc6g.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/05/9cugXQ.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/05/9cu5t0.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/05/9cKY40.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/05/9cKdvF.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/05/9cK0u4.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/05/9cKBDJ.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/05/9cKRgO.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/05/9cKWvD.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/05/9cKhKe.png">
+<meta property="og:image" content="https://s1.ax1x.com/2018/03/05/9cK4DH.png">
+<meta property="og:updated_time" content="2018-03-05T15:17:21.006Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTTP协议学习笔记（一）HTTP请求方法名及状态码">
+<meta name="twitter:description" content="HTTP协议是位于TCP协议之上的应用层协议，是应用进程之间通讯的一种协议。之所以称之为应用层协议，是应为它无需关心数据是通过什么方式到达对端的，在到达对方的应用程序之前都经历了什么，而只需要协商好使用的数据格式，保证一方可以解析出另一方的意图即可  这也这是TCP/IP协议的真正目的，上层无需过度关心底层的实现细节">
+<meta name="twitter:image" content="https://s1.ax1x.com/2018/03/05/9cmq8U.png">
+
+
+
+
+
+
+  <link rel="canonical" href="/webhttp://yoursite.com/2018/03/05/HTTP协议学习笔记（一）HTTP请求方法名及状态码/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+  <title>HTTP协议学习笔记（一）HTTP请求方法名及状态码 | 「.Roc.」</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/web/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">「.Roc.」</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/web/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/web/about/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/web/tags/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/web/categories/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/web/archives/" rel="section">
+            <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+  
+
+
+
+ </div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="/webhttp://yoursite.com/2018/03/05/HTTP协议学习笔记（一）HTTP请求方法名及状态码/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="「.Roc.」">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTTP协议学习笔记（一）HTTP请求方法名及状态码</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-05T00:00:00+08:00">2018-03-05</time>
+            
+
+            
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/web/categories/HTTP/" itemprop="url" rel="index"><span itemprop="name">HTTP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>HTTP协议是位于TCP协议之上的应用层协议，是应用进程之间通讯的一种协议。之所以称之为应用层协议，是应为它无需关心数据是通过什么方式到达对端的，在到达对方的应用程序之前都经历了什么，而只需要协商好使用的数据格式，保证一方可以解析出另一方的意图即可</p>
+<blockquote>
+<p>这也这是TCP/IP协议的真正目的，上层无需过度关心底层的实现细节</p>
+</blockquote>
+<a id="more"></a>
+<p>当用户在浏览器上输入一段网址后，主要经历了以下几个阶段</p>
+<ul>
+<li>dns解析，通过主机名找到主机ip地址</li>
+<li>向对应ip地址和端口(默认是80)发送连接请求，服务器接收请求（三次握手）</li>
+<li>浏览器发送HTTP请求给服务器，标识想要的资源信息</li>
+<li>服务器解析HTTP请求，从本地找到资源构造HTTP响应头发送回浏览器</li>
+<li>浏览器解析HTTP响应，将资源信息显示在屏幕上</li>
+<li>保持连接或者断开连接，取决于是否开启keep-alive</li>
+</ul>
+<p>可以参考这篇博客，讲得比较详细<a href="/webhttps://www.cnblogs.com/engeng/articles/5943382.html" target="_blank" rel="noopener">从输入URL到页面加载发生了什么</a></p>
+<h1 id="URL格式"><a href="/web#URL格式" class="headerlink" title="URL格式"></a>URL格式</h1><p>不管是否学过HTTP协议，总听过URL这个东西吧，平时在浏览器上输入网址，自然就是URL本尊了。但是URI又是什么呢</p>
+<p>URI学名叫统一资源标识符，它有两种形式，分别是URL和URN</p>
+<p>URL，统一资源定位符是URI最常见的形式，它描述了资源在一台特定服务器上的特定位置。比如输入下面的网址时</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">http://www.balabala.com/index.html</span></span><br></pre></td></tr></table></figure>
+<p>实际上要访问的资源就是目标主机服务器当前目录下的index.html文件，而</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">http://www.balabala.com/image/hello.jpg</span></span><br></pre></td></tr></table></figure>
+<p>要访问的济源就是目标主机服务器当前目录下的image子目录下的hello.jpg文件</p>
+<blockquote>
+<p>可以看到，通过URL可以准确定位一个资源的具体位置。但是如果服务器主机的内部目录有所改变，那么网站就要改变了</p>
+</blockquote>
+<p>URL的完整格式如下</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/05/9cmq8U.png" alt=""></p>
+<p>但是基本上没有哪个URL包含的这么完整，由于http默认端口号是80，经常省略，所以通常使用协议，地址，路径三部分就足以定位到某个主机的某个资源了，比如下面这段URL</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">http://www.balabala.com/index.html</span></span><br></pre></td></tr></table></figure>
+<p>其中http就是采用的协议，www.balabala.com代表目标服务器的主机ip或者主机名，/index.html表示目标主机的资源路径</p>
+<p>除了上述三部分只有，出现次数比较多的还有查询字符串，它由?标识起点，通常是将后面出现的变量值作为参数传递给访问的资源（动态资源）</p>
+<p>比如下面的URL</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://www.balabala.com/cgi-bin/adder?a=1&amp;b=2</span><br></pre></td></tr></table></figure>
+<p>首先从中截取出资源位置/cgi-bin/adder（这里假设adder是一个可执行文件，接收两个数，返回和）</p>
+<p>那么服务器就会去调用/cgi-bin/adder这个程序，同时将1和2作为参数传递给这个程序</p>
+<blockquote>
+<p>URN称为统一资源名，是通过文件名定位资源的一种形式，目前正在研究中。。。</p>
+</blockquote>
+<h1 id="HTTP请求报文段"><a href="/web#HTTP请求报文段" class="headerlink" title="HTTP请求报文段"></a>HTTP请求报文段</h1><p>客户端与服务器的通信是基于HTTP协议的，通信双方发送的数据格式必须符合HTTP协议规定的报文段格式，这样接收方才能证明解析出发送方的意图。</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/05/9cn2Ix.png" alt=""></p>
+<blockquote>
+<p>HTTP规定必须是客户端先发送请求，然后服务器处理后发送响应。服务器不能在没有收到客户端请求的情况下主动发送数据给客户端。</p>
+<p>websocket正是为了解决这一问题而诞生的</p>
+</blockquote>
+<p>请求报文段分为请求行，请求头，请求体（数据实体）三部分</p>
+<p>请求行由方法名，资源路径，版本号三部分组成，如</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/index.html</span> HTTP/1.1</span><br></pre></td></tr></table></figure>
+<h2 id="方法名"><a href="/web#方法名" class="headerlink" title="方法名"></a>方法名</h2><p>方法名指出客户端执行的动作，常用的几个方法名有GET, POST, HEAD, PUT, OPTIONS, TRACE等</p>
+<h3 id="GET"><a href="/web#GET" class="headerlink" title="GET"></a>GET</h3><p>GET是最常用的方法，当客户端想要从服务器上获取某个资源的内容时使用。服务器将资源内容作为响应报文段的数据实体部分返回</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/05/9cuamd.png" alt=""></p>
+<h3 id="HEAD"><a href="/web#HEAD" class="headerlink" title="HEAD"></a>HEAD</h3><p>HEAD方法与GET类似，但是服务器只通过HTTP响应头返回资源的信息（如文件大小，类型等），响应报文段的数据实体部分中并不包含资源的具体内容</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/05/9cud0A.png" alt=""></p>
+<h3 id="PUT"><a href="/web#PUT" class="headerlink" title="PUT"></a>PUT</h3><p>PUT方法表示客户端想要在服务器上生成一个文件，文件名由请求行的资源路径指出，文件内容由HTTP请求报文段的请求体指出。如果服务器上存在同名文件，则覆盖</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/05/9cuwTI.png" alt=""></p>
+<h3 id="POST"><a href="/web#POST" class="headerlink" title="POST"></a>POST</h3><p>POST方法表示客户端打算向服务器提交某些数据，比如图书管理员想要向服务器的数据库中增加新图书，就可以通过POST方法提交一个表单，包含图书的各种信息</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/05/9cuBkt.png" alt=""></p>
+<h3 id="TRACE"><a href="/web#TRACE" class="headerlink" title="TRACE"></a>TRACE</h3><p>TRACE方法表示客户端想要看看自己发送的请求报文段是什么样子，也就是服务器回复的HTTP响应头的数据实体部分是它收到的请求报文段。由于在HTTP请求报文段被送往服务器的过程中可能会途径代理服务器，而代理服务器可能会更改请求报文段，为了一探究竟，客户端可以使用TRACE方法观察</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/05/9cuc6g.png" alt=""></p>
+<h3 id="OPTIONS"><a href="/web#OPTIONS" class="headerlink" title="OPTIONS"></a>OPTIONS</h3><p>OPTIONS方法用于获取服务器支持的所有方法名，以防止客户端使用了服务器不支持的方法</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/05/9cugXQ.png" alt=""></p>
+<h3 id="DELETE"><a href="/web#DELETE" class="headerlink" title="DELETE"></a>DELETE</h3><p>DELETE方法用于将服务器上的某个资源删掉，是否删除取决于服务器</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/05/9cu5t0.png" alt=""></p>
+<h1 id="HTTP响应报文段"><a href="/web#HTTP响应报文段" class="headerlink" title="HTTP响应报文段"></a>HTTP响应报文段</h1><p>HTTP响应报文段由响应行，响应头，响应体（数据实体）三部分组成。当服务器处理完客户端的请求后会发送响应报文段给客户端告知服务器的处理请求</p>
+<p>比如客户端想要获取目标资源index.html的内容，那么如果服务器正确找到index.html文件，就会将它的内容作为数据实体被返回给客户端。但是如果服务器没有找到index.html文件或者无法识别HTTP请求信息，就会返回一个代表出错的响应报文段</p>
+<p>响应行包含了HTTP协议版本号，状态码和状态信息</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 <span class="number">200</span> OK</span><br></pre></td></tr></table></figure>
+<h2 id="状态码"><a href="/web#状态码" class="headerlink" title="状态码"></a>状态码</h2><p>状态码用于说明服务器对于客户端请求的处理情况，分成五大类，范围从100到599总共600个</p>
+<h3 id="100-199代表信息性状态码"><a href="/web#100-199代表信息性状态码" class="headerlink" title="100~199代表信息性状态码"></a>100~199代表信息性状态码</h3><p>使用不多</p>
+<h3 id="200-299代表成功状态码"><a href="/web#200-299代表成功状态码" class="headerlink" title="200~299代表成功状态码"></a>200~299代表成功状态码</h3><p>这些状态码表示客户端的请求服务器已经成功处理。常见的状态码及解释如下</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/05/9cKY40.png" alt=""></p>
+<h3 id="300-399代表重定向状态码"><a href="/web#300-399代表重定向状态码" class="headerlink" title="300~399代表重定向状态码"></a>300~399代表重定向状态码</h3><p>这些状态码告知客户端要么使用替代的位置访问想要的资源，要么告诉服务器可以返回什么来替代资源内容</p>
+<p>比如客户端请求服务器上的一个资源信息，但是这个资源已经移动到其它地方了，此时服务器会将资源的新位置返回给客户端，随后客户端重新请求资源信息</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/05/9cKdvF.png" alt=""></p>
+<p>常见的状态码有</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/05/9cK0u4.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/05/9cKBDJ.png" alt=""></p>
+<h3 id="400-499代表客户端错误状态码"><a href="/web#400-499代表客户端错误状态码" class="headerlink" title="400~499代表客户端错误状态码"></a>400~499代表客户端错误状态码</h3><p>比如最讨厌的404，它表示服务器对客户端请求的资源一无所知</p>
+<p>常见的状态码如下</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/05/9cKRgO.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/05/9cKWvD.png" alt=""></p>
+<h3 id="500-599代表服务器错误状态"><a href="/web#500-599代表服务器错误状态" class="headerlink" title="500~599代表服务器错误状态"></a>500~599代表服务器错误状态</h3><p>表示服务器出现错误，常见的状态码如下</p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/05/9cKhKe.png" alt=""></p>
+<p><img src="/webhttps://s1.ax1x.com/2018/03/05/9cK4DH.png" alt=""></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/web/tags/HTTP/" rel="tag"># HTTP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/web/2018/03/02/TCP-IP学习笔记（九）TCP报文段首部格式/" rel="next" title="TCP/IP学习笔记（九）TCP报文段首部格式">
+                <i class="fa fa-chevron-left"></i> TCP/IP学习笔记（九）TCP报文段首部格式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/web/archives/">
+                
+                    <span class="site-state-item-count">27</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/web/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/web/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="/webhttps://github.com/rocwangp" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="/webhttp://blog.csdn.net/sinat_35261315" target="_blank" title="CSDN"><i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="/web#URL格式"><span class="nav-number">1.</span> <span class="nav-text">URL格式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#HTTP请求报文段"><span class="nav-number">2.</span> <span class="nav-text">HTTP请求报文段</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="/web#方法名"><span class="nav-number">2.1.</span> <span class="nav-text">方法名</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="/web#GET"><span class="nav-number">2.1.1.</span> <span class="nav-text">GET</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="/web#HEAD"><span class="nav-number">2.1.2.</span> <span class="nav-text">HEAD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="/web#PUT"><span class="nav-number">2.1.3.</span> <span class="nav-text">PUT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="/web#POST"><span class="nav-number">2.1.4.</span> <span class="nav-text">POST</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="/web#TRACE"><span class="nav-number">2.1.5.</span> <span class="nav-text">TRACE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="/web#OPTIONS"><span class="nav-number">2.1.6.</span> <span class="nav-text">OPTIONS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="/web#DELETE"><span class="nav-number">2.1.7.</span> <span class="nav-text">DELETE</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="/web#HTTP响应报文段"><span class="nav-number">3.</span> <span class="nav-text">HTTP响应报文段</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="/web#状态码"><span class="nav-number">3.1.</span> <span class="nav-text">状态码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="/web#100-199代表信息性状态码"><span class="nav-number">3.1.1.</span> <span class="nav-text">100~199代表信息性状态码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="/web#200-299代表成功状态码"><span class="nav-number">3.1.2.</span> <span class="nav-text">200~299代表成功状态码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="/web#300-399代表重定向状态码"><span class="nav-number">3.1.3.</span> <span class="nav-text">300~399代表重定向状态码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="/web#400-499代表客户端错误状态码"><span class="nav-number">3.1.4.</span> <span class="nav-text">400~499代表客户端错误状态码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="/web#500-599代表服务器错误状态"><span class="nav-number">3.1.5.</span> <span class="nav-text">500~599代表服务器错误状态</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="/webhttps://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="/webhttps://github.com/theme-next/hexo-theme-next">NexT.Gemini</a> v6.0.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/web/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/web/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/web/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/web/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/web/js/src/utils.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/web/js/src/motion.js?v=6.0.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/web/js/src/affix.js?v=6.0.4"></script>
+
+  <script type="text/javascript" src="/web/js/src/schemes/pisces.js?v=6.0.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/web/js/src/scrollspy.js?v=6.0.4"></script>
+<script type="text/javascript" src="/web/js/src/post-details.js?v=6.0.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/web/js/src/bootstrap.js?v=6.0.4"></script>
+
+
+
+  
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

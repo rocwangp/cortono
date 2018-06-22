@@ -40,8 +40,7 @@ namespace cortono::http
         }
 
         void set_header(std::string&& key, std::string&& value) {
-            headers.emplace(std::forward<std::string>(key),
-                            std::forward<std::string>(value));
+            headers[std::forward<std::string>(key)] = std::forward<std::string>(value);
         }
         void set_domain(std::string&& domain) {
             domain_ = std::move(domain);
