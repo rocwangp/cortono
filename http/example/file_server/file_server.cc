@@ -24,10 +24,13 @@ std::string render_view(const std::string& filepath, const std::unordered_map<st
 
 std::string parse_file_name(const std::string& filepath) {
     auto pos = filepath.find_last_of('/');
+    std::string filename;
     if(pos != std::string::npos)
-        return filepath.substr(pos + 1);
+        filename = filepath.substr(pos + 1);
     else 
-        return filepath;
+        filename = filepath;
+    log_info(filename);
+    return filename;
 }
 cortono::http::Response handle_directory(const std::string& directory, const std::string& host, unsigned short port) {
     log_info(host, port);
@@ -68,22 +71,22 @@ int main()
         ;
     po::variables_map vm;
     try {
-        std::ifstream fin{ "server.conf "};
+        std::ifstream fin{ "server.conf" };
         po::store(po::parse_config_file(fin, parser), vm);
         po::notify(vm);
         fin.close();
 
-        std::string directory{ "/download" };
-        std::string ip{ "127.0.0.1" };
-        unsigned short port{ 9999 };
-        if(vm.count("host"))
-            ip = vm["host"].as<std::string>();
-        if(vm.count("port"))
-            port = vm["port"].as<unsigned short>();
-        if(vm.count("directory"))
-            directory = vm["directory"].as<std::string>();
+        if(!vm.count("host"))
+            log_fatal("config error: no host");
+        if(!vm.count("port"))
+            log_fatal("config error: no port");
+        if(!vm.count("directory"))
+            log_fatal("config error: no directory");
+        std::string ip = vm["host"].as<std::string>();
+        unsigned short port = vm["port"].as<unsigned short>();
+        std::string directory = vm["directory"].as<std::string>();
 
-        log_info(ip, port);
+        log_info(ip, port, directory);
         std::string pre_dir = directory;
         if(pre_dir.front() == '/')
             pre_dir = directory.substr(1);
@@ -102,7 +105,8 @@ int main()
             if(fs::is_directory(pre_dir + filename)) {
                 res = handle_directory(pre_dir + filename, ip, port);
             }
-            else if(fs::is_regular_file(pre_dir + filename)) {
+            // else if(fs::is_regular_file(pre_dir + filename)) {
+            else {
                 res.send_file(pre_dir + filename);
                 auto pos = filename.find_last_of('/');
                 if(pos != std::string::npos)
@@ -113,8 +117,7 @@ int main()
         app.register_rule("/img/<path>")([&](const http::Request& , http::Response& res, std::string filename) {
             log_info(filename);
             res.send_file("img/" + filename);
-            return;
-        });
+            return; });
         app.register_rule("/upload").methods(http::HttpMethod::POST)([&](const http::Request& req) {
             auto it = req.upload_kv_pairs.find("Content-Disposition");
             if(it == req.upload_kv_pairs.end())
@@ -129,7 +132,12 @@ int main()
                 filename.pop_back();
             log_info(filename);
 
-            std::ofstream fout{ "download/upload/" + filename, std::ios_base::out };
+            log_info(pre_dir + "/upload");
+            if(!fs::exists(pre_dir + "/upload")) {
+                fs::create_directory(pre_dir + "/upload");
+            }
+            log_info("start write file");
+            std::ofstream fout{ pre_dir + "/upload/" + filename, std::ios_base::out };
             fout.write(req.body.data(), req.body.size());
             fout.close();
             return "ok";
