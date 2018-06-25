@@ -147,11 +147,14 @@ namespace cortono::http::utils
         std::size_t front = 0;
         std::size_t back = s.find_first_of(delimiter);
         while(back <= std::string_view::npos) {
-            results.emplace_back(s.substr(front, back - front));
             if(back == std::string_view::npos) {
+                results.emplace_back(s.substr(front));
                 break;
             }
-            front = back + 1;
+            else {
+                results.emplace_back(s.substr(front, back - front));
+            }
+            front = back + delimiter.length();
             back = s.find_first_of(delimiter, front);
         }
         return results;

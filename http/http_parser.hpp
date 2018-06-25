@@ -95,8 +95,42 @@ namespace cortono::http
                 if(!header_kv_pairs_.count("content-length") ||
                    (body_.length() == std::strtoul(header_kv_pairs_["content-length"].data(), nullptr, 10))) {
                     state_ = ParseState::PARSE_DONE;
+                    parse_upload_file();
                 }
                 return len;
+            }
+            void parse_upload_file() {
+                if(header_kv_pairs_.count("content-type")) {
+                    auto content_types = utils::split(header_kv_pairs_["content-type"], "; ");
+                    if(content_types.size() > 1 && utils::iequal(content_types.front().data(), content_types.front().size(), "multipart/form-data")) {
+                        auto boundary = utils::split(content_types[1], "=")[1];
+                        auto start_idx = body_.find(boundary.data(), 0, boundary.length());
+                        log_info(start_idx);
+                        if(start_idx == std::string::npos) 
+                            return;
+                        start_idx += boundary.length() + 2;
+                        auto end_idx = body_.find(boundary.data(), start_idx, boundary.length());
+                        if(end_idx == std::string::npos)
+                            return;
+                        end_idx -= 4;
+
+                        std::regex e("^([^:]+): (.*)\r\n$");
+                        std::match_results<std::string::const_iterator> match;
+                        while(true) {
+                            auto pos = body_.find_first_of("\r\n", start_idx);
+                            if(start_idx == pos) {
+                                start_idx += 2;
+                                break;
+                            }
+                            std::string line(body_.data() + start_idx, body_.data() + pos + 2);
+                            if(std::regex_match(line.cbegin(), line.cend(), match, e)) {
+                                upload_kv_pairs_[std::move(match[1])] = std::move(match[2]);
+                                start_idx = pos + 2;
+                            }
+                        }
+                        body_ = body_.substr(start_idx, end_idx - start_idx);
+                    }
+                }
             }
             void parse_method(std::string&& method) {
                 log_info(method);
@@ -144,7 +178,7 @@ namespace cortono::http
                 version_.second = std::atoi(tail.data());
             }
             Request to_request() const {
-                return Request { method_, raw_url_, req_url_, body_, version_, query_kv_pairs_, header_kv_pairs_ };
+                return Request { method_, raw_url_, req_url_, body_, version_, query_kv_pairs_, header_kv_pairs_, upload_kv_pairs_ };
             }
             bool done() const {
                 return state_ == ParseState::PARSE_DONE;
@@ -168,5 +202,6 @@ namespace cortono::http
             std::pair<int, int> version_;
             std::unordered_map<std::string, std::string> query_kv_pairs_;
             ci_map header_kv_pairs_;
+            ci_map upload_kv_pairs_;
     };
 };

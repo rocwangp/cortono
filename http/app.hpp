@@ -3,6 +3,7 @@
 #include "http_server.hpp"
 #include "http_router.hpp"
 #include "http_proxy_server.hpp"
+#include "http_router.hpp"
 
 namespace cortono::http
 {
@@ -18,8 +19,8 @@ namespace cortono::http
             using http_server_t = HttpServer<CortHttp>;
             using http_proxy_server_t = HttpProxyServer<CortHttp>;
 
-            DynamicRule& register_rule(std::string&& rule) {
-                return router_.new_dynamic_rule(std::forward<std::string>(rule));
+            DynamicRule& register_rule(const std::string& rule) {
+                return router_.new_dynamic_rule(rule);
             }
             self_t& port(unsigned short port) {
                 port_ = port;

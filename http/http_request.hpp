@@ -21,6 +21,7 @@ namespace cortono::http
         std::pair<int, int> version;
         std::unordered_map<std::string, std::string> query_kv_pairs;
         ci_map header_kv_pairs;
+        ci_map upload_kv_pairs;
 
         const std::string& get_header_value(std::string&& key) {
             return header_kv_pairs[key];

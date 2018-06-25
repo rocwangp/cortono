@@ -182,8 +182,8 @@ namespace cortono::http
     class DynamicRule
     {
         public:
-            DynamicRule(std::string&& rule)
-                : rule_(std::move(rule))
+            DynamicRule(const std::string& rule)
+                : rule_(rule)
             {  }
 
             using self_t = DynamicRule;
@@ -235,6 +235,7 @@ namespace cortono::http
 
             struct TrieNode
             {
+                bool done{ false };
                 std::size_t rule_index{ 0 };
                 std::array<unsigned, (int)ParamType::PARAM_NUMS> param_children;
                 std::unordered_map<std::string, unsigned> children;
@@ -283,6 +284,7 @@ namespace cortono::http
                     throw std::runtime_error("handler already exists for " + rule);
                 }
                 nodes_[idx].rule_index = rule_index;
+                nodes_[idx].done = true;
             }
             std::pair<std::int32_t, routing_params> find(const std::string& req_url, std::size_t pos = 0, TrieNode* node = nullptr, routing_params* params = nullptr) {
                 routing_params empty;
@@ -290,7 +292,10 @@ namespace cortono::http
                     params = &empty;
                 }
                 if(pos == req_url.size()) {
-                    return { node->rule_index, *params };
+                    if(node->done) 
+                        return { node->rule_index, *params };
+                    else
+                        return { -1, *params };
                 }
                 if(node == nullptr) {
                     node = &nodes_.front();
@@ -382,7 +387,7 @@ namespace cortono::http
     class Router
     {
         public:
-            DynamicRule& new_dynamic_rule(std::string&& rule) {
+            DynamicRule& new_dynamic_rule(const std::string& rule) {
                 auto dynamic_rule = new DynamicRule(std::move(rule));
                 all_rules_.emplace_back(dynamic_rule);
                 return *dynamic_rule;

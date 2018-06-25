@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    </head>
+    <body>
+        <form action="upload" method="post" enctype="multipart/form-data" >
+        　　　<input type="file" id="upload" name="upload"> 
+        　　　<input type="submit" value="Upload">
+        </form>
+
+        {% for file in files %}
+            <ul>
+                <li><img src="http://{{file.host}}:{{file.port}}/{{file.icon}}" width=24px height=24px><a href={{file.path}}>{{file.name}}</a></li>
+            </ul>
+        {% enfor %}
+
+
+    </body>
+</html>
