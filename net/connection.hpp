@@ -79,6 +79,7 @@ namespace cortono::net
                 void close() {
                     // 防止二次关闭
                     if(conn_state_ != ConnState::Closed) {
+                        // 如果仍有数据没有发送，等待发送完成后再关闭
                         if(send_buffer_->empty() || sendfile_ == true) {
                             conn_state_ = ConnState::WaitClosed;
                         }
@@ -261,6 +262,7 @@ namespace cortono::net
                                 if(write_cb_) {
                                     write_cb_(this->shared_from_this());
                                 }
+                                // 数据发送完成，如果之前已经尝试关闭连接但由于有数据未发送完而没有关闭，则进行关闭
                                 if(conn_state_ == ConnState::WaitClosed) {
                                     handle_close();
                                 }
@@ -304,6 +306,7 @@ namespace cortono::net
                         sendfile_ = false;
                         filesize_ = 0;
                         fileoffet_ = 0;
+                        // 如果之前尝试关闭连接但是由于有文件没有发送完而没有关闭，则关闭连接
                         if(conn_state_ == ConnState::WaitClosed) {
                             handle_close();
                         }
