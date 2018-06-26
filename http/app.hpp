@@ -26,8 +26,8 @@ namespace cortono::http
                 port_ = port;
                 return *this;
             }
-            self_t& bindaddr(std::string&& bindaddr) {
-                bindaddr_ = std::move(bindaddr);
+            self_t& bindaddr(const std::string& bindaddr) {
+                bindaddr_ = bindaddr;
                 return *this;
             }
             self_t& concurrency(std::size_t c) {

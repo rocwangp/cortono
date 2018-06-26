@@ -87,62 +87,46 @@ int main()
         std::string directory = vm["directory"].as<std::string>();
 
         log_info(ip, port, directory);
-        std::string pre_dir = directory;
-        if(pre_dir.front() == '/')
-            pre_dir = directory.substr(1);
-        if(pre_dir.back() != '/')
-            pre_dir.append(1, '/');
-
-
         using namespace cortono;
         http::SimpleApp app;
-        app.register_rule(directory)([&, ip, port](const http::Request& , http::Response& res) {
-            res = handle_directory(pre_dir, ip, port);
-            return;
+        app.register_rule("/" + directory)([&](const http::Request& , http::Response& res) {
+            res = handle_directory(directory, ip, port);
         });
-        app.register_rule(directory + "/<path>")([&, ip, port](const http::Request&, http::Response& res, std::string filename) {
+        app.register_rule("/" + directory + "<path>")([&](const http::Request&, http::Response& res, std::string filename) {
             log_info(filename);
-            if(fs::is_directory(pre_dir + filename)) {
-                res = handle_directory(pre_dir + filename, ip, port);
+            std::string filepath = directory + filename;
+            if(fs::is_directory(filepath)) {
+                res = handle_directory(filepath, ip, port);
             }
-            // else if(fs::is_regular_file(pre_dir + filename)) {
             else {
-                res.send_file(pre_dir + filename);
-                auto pos = filename.find_last_of('/');
+                res.send_file(filepath);
+                auto pos = filepath.find_last_of('/');
                 if(pos != std::string::npos)
-                    filename = filename.substr(pos + 1);
+                    filename = filepath.substr(pos + 1);
                 res.set_header("Content-Disposition", "attachment;filename="+filename);
             }
         });
         app.register_rule("/img/<path>")([&](const http::Request& , http::Response& res, std::string filename) {
             log_info(filename);
             res.send_file("img/" + filename);
-            return; });
-        app.register_rule("/upload").methods(http::HttpMethod::POST)([&](const http::Request& req) {
-            auto it = req.upload_kv_pairs.find("Content-Disposition");
-            if(it == req.upload_kv_pairs.end())
+            return; 
+        });
+        app.register_rule("/" + directory + "upload").methods(http::HttpMethod::POST)([&](const http::Request& req) {
+            if(req.upload_files.empty()) 
                 return "error";
-            auto dispositions = http::utils::split(it->second, "; ");
-            auto filename_sv = http::utils::split(dispositions[2], "=")[1];
-            std::string filename(filename_sv.data(), filename_sv.length());
+            std::string upload_path = directory + "upload/";
+            if(!fs::exists(upload_path)) 
+                fs::create_directory(upload_path);
 
-            if(filename.front() == '\"')
-                filename = filename.substr(1);
-            if(filename.back() == '\"')
-                filename.pop_back();
-            log_info(filename);
-
-            log_info(pre_dir + "/upload");
-            if(!fs::exists(pre_dir + "/upload")) {
-                fs::create_directory(pre_dir + "/upload");
+            for(auto& upload_file : req.upload_files) {
+                log_info("start write file:", upload_path, upload_file.filename);
+                std::ofstream fout{ upload_path + upload_file.filename, std::ios_base::out };
+                fout.write(upload_file.content.data(), upload_file.content.length());
+                fout.close();
             }
-            log_info("start write file");
-            std::ofstream fout{ pre_dir + "/upload/" + filename, std::ios_base::out };
-            fout.write(req.body.data(), req.body.size());
-            fout.close();
             return "ok";
         });
-        app.bindaddr(std::move(ip)).port(port).multithread().run();
+        app.bindaddr(ip).port(port).multithread().run();
     }
     catch(...) {
         std::cout << "error" << std::endl;

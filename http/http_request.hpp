@@ -14,6 +14,13 @@ namespace cortono::http
         METHOD_NUMS
     };
 
+    struct UploadFile
+    {
+        std::string filename;
+        std::string filetype;
+        std::string content;
+    };
+
     struct Request
     {
         HttpMethod method;
@@ -21,7 +28,8 @@ namespace cortono::http
         std::pair<int, int> version;
         std::unordered_map<std::string, std::string> query_kv_pairs;
         ci_map header_kv_pairs;
-        ci_map upload_kv_pairs;
+        // ci_map upload_kv_pairs;
+        std::vector<UploadFile> upload_files;
 
         const std::string& get_header_value(std::string&& key) {
             return header_kv_pairs[key];
