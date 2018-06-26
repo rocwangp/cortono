@@ -179,6 +179,7 @@ namespace cortono::ip
                     int in_fd = util::io::open(filename);
                     if(in_fd == -1) {
                         log_error(strerror(errno));
+                        return 0;
                     }
                     int n = ::sendfile(fd, in_fd, &offet, count);
                     if(n == -1) {
@@ -186,13 +187,15 @@ namespace cortono::ip
                     }
                     util::io::close(in_fd);
                     return n;
-                    if((std::size_t)n < count) {
-                        log_info("send file return", n, "bytes is less than filesize:", count, "call senfile again");
-                        return n + sendfile(fd, filename, offet + n, count - n);
-                    }
-                    else {
-                        return n;
-                    }
+                    // sendfile的返回值可能小于指定的发送值，但是如果直接再次调用有可能因为缓冲区已满导致sendfile失败返回-1
+                    // 所以改为connection控制，等到可写的时候再次调用sendfile
+                    // if((std::size_t)n < count) {
+                        // log_info("send file return", n, "bytes is less than filesize:", count, "call senfile again");
+                        // return n + sendfile(fd, filename, offet + n, count - n);
+                    // }
+                    // else {
+                        // return n;
+                    // }
                 }
         };
 
