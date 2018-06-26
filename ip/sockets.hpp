@@ -186,6 +186,13 @@ namespace cortono::ip
                     }
                     util::io::close(in_fd);
                     return n;
+                    if((std::size_t)n < count) {
+                        log_info("send file return", n, "bytes is less than filesize:", count, "call senfile again");
+                        return n + sendfile(fd, filename, offet + n, count - n);
+                    }
+                    else {
+                        return n;
+                    }
                 }
         };
 

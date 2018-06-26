@@ -35,7 +35,8 @@ namespace cortono::net
                 {
                     HandShaking,
                     Connected,
-                    Closed
+                    Closed,
+                    WaitClosed
                 };
                 using socket_t = Socket;
 
@@ -78,7 +79,12 @@ namespace cortono::net
                 void close() {
                     // 防止二次关闭
                     if(conn_state_ != ConnState::Closed) {
-                        handle_close();
+                        if(send_buffer_->empty() || sendfile_ == true) {
+                            conn_state_ = ConnState::WaitClosed;
+                        }
+                        else {
+                            handle_close();
+                        }
                     }
                 }
                 void enable_reading() {
@@ -255,6 +261,9 @@ namespace cortono::net
                                 if(write_cb_) {
                                     write_cb_(this->shared_from_this());
                                 }
+                                if(conn_state_ == ConnState::WaitClosed) {
+                                    handle_close();
+                                }
                             }
                         }
                         else {
@@ -264,6 +273,7 @@ namespace cortono::net
                     }
                 }
                 void handle_close() {
+                    log_info("close connection");
                     conn_state_ = ConnState::Closed;
                     socket_.disable_all();
                     if(close_cb_)
@@ -294,6 +304,9 @@ namespace cortono::net
                         sendfile_ = false;
                         filesize_ = 0;
                         fileoffet_ = 0;
+                        if(conn_state_ == ConnState::WaitClosed) {
+                            handle_close();
+                        }
                     }
                 }
             protected:
