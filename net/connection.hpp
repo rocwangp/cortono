@@ -243,21 +243,25 @@ namespace cortono::net
                 // 对于TcpSocket，仅仅检查fd是否可写
                 // 对于SslSocket，还需要执行SSL_connect
                 // FIXME: 对于SslSocket而言，fd的connect是非阻塞的，ssl的connect是阻塞的
-                void handle_handshake() {
+                bool handle_handshake() {
                     if(socket_.handshake()) {
                         log_info("handshake done");
                         conn_state_ = ConnState::Connected;
                         conn_cb_(this->shared_from_this());
+                        return true;
                     }
                     else {
                         log_info("handshake error");
-                        handle_close();
+                        handle_error("handshake error");
+                        return false;
                     }
                 }
                 void handle_read() {
                     // log_info("handle read");
                     if(conn_state_ == ConnState::HandShaking) {
-                        handle_handshake();
+                        if(!handle_handshake()) {
+                            return;
+                        }
                     }
                     auto bytes = socket_.readable();
                     // if(bytes == 0) {
@@ -274,7 +278,8 @@ namespace cortono::net
                             handle_read();
                         }
                         else {
-                            handle_close();
+                            log_info("read -1 bytes and errno != EINTR | EAGAIN, close connection...", name_);
+                            handle_error(std::strerror(errno));
                         }
                     }
                     else {
@@ -336,6 +341,16 @@ namespace cortono::net
                         socket_.disable_all();
                         if(close_cb_)
                             close_cb_(this->shared_from_this());
+                    }
+                }
+                void handle_error(const std::string& error_info) {
+                    log_error(error_info);
+                    if(conn_state_ != ConnState::Closed) {
+                        conn_state_ = ConnState::Closed;
+                        socket_.disable_all();
+                        if(error_cb_) {
+                            error_cb_(this->shared_from_this());
+                        }
                     }
                 }
                 void handle_sendfile() {

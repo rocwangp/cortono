@@ -35,7 +35,8 @@ namespace cortono::net
                             : eventloops_[(++loop_idx_) % eventloops_.size()];
                     },
                     // 建立连接后的回调，这里传入的是Connection::Pointer而非构造Connection的参数
-                    [this](auto&& new_conn_ptr) {
+                    [this](auto&& new_conn_ptr) { 
+                        // called in new_conn_ptr->loop() thread
                         new_conn_ptr->set_conn_state(Connection::ConnState::Connected);
                         new_conn_ptr->on_read([this](const auto& c) {
                             if(msg_cb_) { msg_cb_(c); }

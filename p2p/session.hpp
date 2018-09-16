@@ -34,7 +34,7 @@ public:
         }
     }
     ~Session() {
-        log_info << name() << "destroyed...";
+        // log_info << name() << "destroyed...";
     }
     static std::string name(const std::string& ip, std::uint16_t port) { return cortono::util::format("%s:%u", ip.data(), port); }
     std::string name() const { return name(ip(), port()); }
@@ -166,18 +166,23 @@ class SessionManager : public Manager<Session<Host>, true> {
 public:
     using parent_t = Manager<Session<Host>, true>;
 
-    std::vector<std::pair<std::string, std::uint16_t>> get_all_addresses()  {
-        std::unique_lock lock { this->parent_t::mutex_ };
+    SessionManager() {
+        this->parent_t::set_counter([](const typename parent_t::item_t& item) {
+            return item->with_server();
+        });
+    }
+    std::vector<std::pair<std::string, std::uint16_t>> get_all_addresses() const {
+        auto sessions = this->parent_t::all();
         std::vector<std::pair<std::string, std::uint16_t>> results;
-        for(auto session : this->items_) {
+        for(auto session : sessions) {
             if(session->with_server()) {
                 results.emplace_back(session->ip(), session->port());
             }
         }
         return results;
     }
-    std::size_t server_session_size() {
-        return this->parent_t::count_if([](const auto& item) { return item->with_server(); });
+    std::size_t server_session_size() const {
+        return this->parent_t::count();
     }
 };
 

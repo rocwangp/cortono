@@ -19,7 +19,8 @@ namespace cortono::net
                                                            std::function<void(TcpConnection::Pointer)> read_cb = nullptr,
                                                            std::function<void(TcpConnection::Pointer)> write_cb = nullptr,
                                                            std::function<void(TcpConnection::Pointer)> close_cb = nullptr,
-                                                           std::function<void(TcpConnection::Pointer)> conn_cb = nullptr) {
+                                                           std::function<void(TcpConnection::Pointer)> conn_cb = nullptr,
+                                                           std::function<void(TcpConnection::Pointer)> error_cb = nullptr) {
                 std::string ip_address = ip::address::parse_ip_address(ip);
                 log_info(cortono::util::format("start to connect to server(%s:%u)", ip_address.data(), port));
                 int fd = ip::tcp::sockets::nonblock_socket();
@@ -51,6 +52,7 @@ namespace cortono::net
                 conn_ptr->on_read(std::move(read_cb));
                 conn_ptr->on_write(std::move(write_cb));
                 conn_ptr->on_close(std::move(close_cb));
+                conn_ptr->on_error(std::move(error_cb));
                 if(connected) {
                     if(conn_cb) {
                         conn_cb(conn_ptr);

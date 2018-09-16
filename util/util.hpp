@@ -131,7 +131,7 @@ namespace cortono
                         case level::debug:
                             return "Debug";
                         case level::info:
-                            return "Info ";
+                            return "Info";
                         case level::error:
                             return "Error";
                         case level::fatal:

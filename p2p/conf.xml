@@ -1,6 +1,6 @@
 <p2pconfig>
     <local_ip>127.0.0.1</local_ip>
-    <local_port>9096</local_port>
+    <local_port>9091</local_port>
     <seed_nodes>
         <seed_node>
             <ip>127.0.0.1</ip>
