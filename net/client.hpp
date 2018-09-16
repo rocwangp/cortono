@@ -18,9 +18,10 @@ namespace cortono::net
                                                            unsigned short port,
                                                            std::function<void(TcpConnection::Pointer)> read_cb = nullptr,
                                                            std::function<void(TcpConnection::Pointer)> write_cb = nullptr,
-                                                           std::function<void(TcpConnection::Pointer)> close_cb = nullptr) {
+                                                           std::function<void(TcpConnection::Pointer)> close_cb = nullptr,
+                                                           std::function<void(TcpConnection::Pointer)> conn_cb = nullptr) {
                 std::string ip_address = ip::address::parse_ip_address(ip);
-                log_info("start to connect to server:", ip_address, port);
+                log_info(cortono::util::format("start to connect to server(%s:%u)", ip_address.data(), port));
                 int fd = ip::tcp::sockets::nonblock_socket();
                 bool connected = false;
                 if(!ip::tcp::sockets::connect(fd, ip_address, port)) {
@@ -30,13 +31,17 @@ namespace cortono::net
                         log_error("fail to connect to server...", ip, port, std::strerror(errno));
                         return nullptr;
                     }
-                    log_info("connecting to server socket");
+                    // log_info("connecting to server socket");
                 }
                 else {
                     connected = true;
-                    log_info("connect to server socket done");
+                    // log_info("connect to server socket done");
                 }
                 auto conn_ptr = std::make_shared<TcpConnection>(loop, fd);
+                auto [peer_ip, peer_port] = conn_ptr->peer_endpoint();
+                if(peer_ip != "0.0.0.0" && peer_port != 0) {
+                    connected = true;
+                }
                 if(!connected) {
                     conn_ptr->set_conn_state(ClientConnType::ConnState::HandShaking);
                 }
@@ -46,6 +51,14 @@ namespace cortono::net
                 conn_ptr->on_read(std::move(read_cb));
                 conn_ptr->on_write(std::move(write_cb));
                 conn_ptr->on_close(std::move(close_cb));
+                if(connected) {
+                    if(conn_cb) {
+                        conn_cb(conn_ptr);
+                    }
+                }
+                else {
+                    conn_ptr->on_conn(std::move(conn_cb));
+                }
                 return conn_ptr;
             }
     };

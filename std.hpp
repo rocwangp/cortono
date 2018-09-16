@@ -10,7 +10,9 @@
 #include <set>
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
 #include <any>
+#include <random>
 
 #include <iterator>
 #include <type_traits>
@@ -50,6 +52,8 @@
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <net/if.h>
+#include <ifaddrs.h>
 
 #include <zlib.h>
 

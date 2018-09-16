@@ -47,7 +47,10 @@ namespace cortono::net
                             if(close_cb_) { close_cb_(c); }
                             remove_connection(c);
                         });
-                        connections_[new_conn_ptr->name()] = new_conn_ptr;
+                        {
+                            std::unique_lock lock{ mutex_ };
+                            connections_[new_conn_ptr->name()] = new_conn_ptr;
+                        }
                         if(conn_cb_) {
                             conn_cb_(new_conn_ptr);
                         }
@@ -72,13 +75,22 @@ namespace cortono::net
             void on_error(ErrorCallBack cb) {
                 error_cb_ = std::move(cb);
             }
+            EventLoop* acquire_eventloop() {
+                std::unique_lock lock{ mutex_ };
+                return eventloops_.size() ? eventloops_[(++loop_idx_) % eventloops_.size()]
+                                          : loop_;
+            }
         public:
             void start(int thread_nums = std::thread::hardware_concurrency()) {
+                start_threadpool(thread_nums);
+                start_acceptor();
+            }
+            void start_threadpool(int thread_nums = std::thread::hardware_concurrency()) {
 #ifdef CORTONO_USE_SSL
                 ip::tcp::ssl::init_ssl();
                 ip::tcp::ssl::load_certificate(CA_CERT_FILE, SERVER_CERT_FILE, SERVER_KEY_FILE);
 #endif
-                while(thread_nums--) {
+                for(int i = 0; i < thread_nums; ++i) {
                     // FIXME: thread_nums应为线程池的大小，应该传给instance函数
                     util::threadpool::instance().async([this] {
                         EventLoop loop;
@@ -90,6 +102,8 @@ namespace cortono::net
                     });
                 }
                 util::threadpool::instance().start(thread_nums);
+            }
+            void start_acceptor() {
                 acceptor_.start();
             }
             void stop() {

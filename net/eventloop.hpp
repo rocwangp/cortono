@@ -46,10 +46,14 @@ namespace cortono::net
                 handle_time_func();
             }
             void handle_pending_func() {
-                for(auto& cb : pending_functors_) {
+                std::vector<std::function<void()>> pending_functors;
+                {
+                    std::unique_lock lock { mutex_ };
+                    pending_functors.swap(pending_functors_);
+                }
+                for(auto& cb : pending_functors) {
                     cb();
                 }
-                pending_functors_.clear();
             }
             void handle_time_func() {
                 while(!timers_.empty() && timers_.begin()->is_expires()) {
@@ -116,6 +120,9 @@ namespace cortono::net
                 if(id_to_timers_.count(id)) {
                     timers_.erase(id_to_timers_[id]);
                     id_to_timers_.erase(id);
+                }
+                else {
+                    log_error("cannot find timer:", id);
                 }
             }
         private:

@@ -1,0 +1,16 @@
+<p2pconfig>
+    <local_ip>127.0.0.1</local_ip>
+    <local_port>9096</local_port>
+    <seed_nodes>
+        <seed_node>
+            <ip>127.0.0.1</ip>
+            <port>9090</port>
+        </seed_node>
+    </seed_nodes>
+
+    <concurrency>8</concurrency>
+    <max_connection_count>2</max_connection_count>
+    <max_send_addr_count>10</max_send_addr_count>
+    <heartbeat_timeout>0</heartbeat_timeout>
+</p2pconfig>
+

@@ -55,8 +55,11 @@ namespace cortono::net
                         break;
                     }
                     if(loop_producer_ && conn_cb_) {
-                        auto new_conn_ptr = std::make_shared<TcpConnection>(loop_producer_(), fd);
-                        conn_cb_(std::move(new_conn_ptr));
+                        auto loop = loop_producer_();
+                        loop->safe_call([this, fd, loop]() {
+                            auto new_conn_ptr = std::make_shared<TcpConnection>(loop, fd);
+                            conn_cb_(std::move(new_conn_ptr));
+                        });
                     }
                     else {
                         ip::tcp::sockets::close(fd);

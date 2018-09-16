@@ -106,7 +106,7 @@ namespace cortono::net
     };
 
 
-    std::uint32_t EventPoller::NONE_EVENT = 0;
-    std::uint32_t EventPoller::READ_EVENT = EPOLLIN | EPOLLET;
-    std::uint32_t EventPoller::WRITE_EVENT = EPOLLOUT | EPOLLET;
+    inline std::uint32_t EventPoller::NONE_EVENT = 0;
+    inline std::uint32_t EventPoller::READ_EVENT = EPOLLIN | EPOLLET;
+    inline std::uint32_t EventPoller::WRITE_EVENT = EPOLLOUT | EPOLLET;
 }

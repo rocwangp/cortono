@@ -21,6 +21,11 @@ namespace cortono::ip
             }
 
             static std::string local_address(int fd, bool ip4 = true) {
+                auto [ip, port] = local_endpoint(fd, ip4);
+                return util::format("<%s:%u>", ip.data(), port);
+            }
+
+            static std::pair<std::string, unsigned short> local_endpoint(int fd, bool ip4 = true) {
                 struct sockaddr addr;
                 std::memset(&addr, 0, sizeof(addr));
                 socklen_t len = sizeof(addr);
@@ -28,17 +33,16 @@ namespace cortono::ip
                 char ip[1024] = "\0";
                 unsigned short port = 0;
                 if(ip4) {
-                    ::inet_ntop(AF_INET, &addr, ip, sizeof(ip));
+                    ::inet_ntop(AF_INET, &(((struct sockaddr_in*)(&addr))->sin_addr), ip, sizeof(ip));
                     port = ntohs(((struct sockaddr_in*)(&addr))->sin_port);
                 }
                 else {
-                    ::inet_ntop(AF_INET6, &addr, ip, sizeof(ip));
+                    ::inet_ntop(AF_INET6, &(((struct sockaddr_in6*)(&addr))->sin6_addr), ip, sizeof(ip));
                     port = ntohs(((struct sockaddr_in6*)(&addr))->sin6_port);
                 }
-                return util::format("<%s:%u>", ip, port);
+                return { ip, port };
             }
-
-            static std::string peer_address(int fd, bool ip4 = true) {
+            static std::pair<std::string, unsigned short> peer_endpoint(int fd, bool ip4 = true) {
                 struct sockaddr addr;
                 std::memset(&addr, 0, sizeof(addr));
                 socklen_t len = sizeof(addr);
@@ -46,14 +50,19 @@ namespace cortono::ip
                 char ip[1024] = "\0";
                 unsigned short port = 0;
                 if(ip4) {
-                    inet_ntop(AF_INET, &addr, ip, sizeof(ip));
+                    ::inet_ntop(AF_INET, &(((struct sockaddr_in*)(&addr))->sin_addr), ip, sizeof(ip));
                     port = ntohs(((struct sockaddr_in*)(&addr))->sin_port);
                 }
                 else {
-                    inet_ntop(AF_INET6, &addr, ip, sizeof(ip));
+                    inet_ntop(AF_INET6, &(((struct sockaddr_in6*)(&addr))->sin6_addr), ip, sizeof(ip));
                     port = ntohs(((struct sockaddr_in6*)(&addr))->sin6_port);
                 }
-                return util::format("<%s:%u>", ip, port);
+                return { ip, port };
+            }
+
+            static std::string peer_address(int fd, bool ip4 = true) {
+                auto [ip, port] = peer_endpoint(fd, ip4);
+                return util::format("<%s:%u>", ip.data(), port);
             }
 
             static std::string parse_ip_address(const std::string& host) {
@@ -73,6 +82,29 @@ namespace cortono::ip
                 unsigned short port = ntohs(sockaddr.sin_port);
                 return { std::string{ ip }, port };
             }
+
+            static std::vector<std::string> interface_address() {
+                struct ifaddrs *ifaddr, *ifa;
+                int  s;
+                char host[4096] = "\0";
+                if(::getifaddrs(&ifaddr) == -1) {
+                    return { };
+                }
+
+                std::vector<std::string> results;
+                for(ifa = ifaddr; ifa != nullptr; ifa = ifa->ifa_next) {
+                    if(ifa->ifa_addr == nullptr) {
+                        continue;
+                    }
+                    if(ifa->ifa_addr->sa_family == AF_INET) {
+                        s = ::getnameinfo(ifa->ifa_addr, sizeof(struct sockaddr_in), host, sizeof(host), nullptr, 0, NI_NUMERICHOST);
+                        results.emplace_back(host);
+                    }
+                }
+                ::freeifaddrs(ifaddr);
+                return results;
+            }
+
     };
 
     namespace tcp

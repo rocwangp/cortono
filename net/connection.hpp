@@ -46,6 +46,7 @@ namespace cortono::net
                 typedef std::function<void(Connection::Pointer)> MessageCallBack;
                 typedef Connection::MessageCallBack                     CloseCallBack;
                 typedef Connection::MessageCallBack                     ErrorCallBack;
+                typedef Connection::MessageCallBack                     ConnCallBack;
 
                  // TcpSocket的构造函数接收EventLoop*和fd
                  // SslSocket的构造函数接收EventLoop*，fd和SSL*
@@ -65,6 +66,9 @@ namespace cortono::net
                     socket_.enable_reading();
                     // 由于采用边缘触发，即使打开可读监听也不会无限调用可写回调
                     socket_.enable_writing();
+
+
+                    log_info(name_, " connection created..."); 
                 }
 
                 ConnState conn_state() const {
@@ -72,6 +76,9 @@ namespace cortono::net
                 }
                 bool is_closed() {
                     return conn_state_ == ConnState::Closed;
+                }
+                bool is_connected() const {
+                    return conn_state_ == ConnState::Connected;
                 }
                 void set_conn_state(ConnState state) {
                     conn_state_ = state;
@@ -115,10 +122,49 @@ namespace cortono::net
                 void on_error(ErrorCallBack cb) {
                     error_cb_ = std::move(cb);
                 }
+                void on_conn(ConnCallBack cb) {
+                    conn_cb_ = std::move(cb);
+                }
                 EventLoop* loop() {
                     return loop_;
                 }
-                std::string name() {
+                std::pair<std::string, std::uint16_t> peer_endpoint() {
+                    if(peer_endpoint_.first.empty() || peer_endpoint_.second == 0) {
+                        peer_endpoint_ = socket_.peer_endpoint();
+                    }
+                    return peer_endpoint_;
+                }
+                std::pair<std::string, std::uint16_t> local_endpoint() {
+                    if(local_endpoint_.first.empty() || peer_endpoint_.second == 0) {
+                        local_endpoint_ = socket_.local_endpoint();
+                    }
+                    return local_endpoint_;
+                }
+                std::uint16_t peer_port() {
+                    if(peer_endpoint_.first.empty() || peer_endpoint_.second == 0) {
+                        peer_endpoint_ = socket_.peer_endpoint();
+                    }
+                    return peer_endpoint_.second;
+                }
+                std::string peer_ip() {
+                    if(peer_endpoint_.first.empty() || peer_endpoint_.second == 0) {
+                        peer_endpoint_ = socket_.peer_endpoint();
+                    }
+                    return peer_endpoint_.first;
+                }
+                std::uint16_t local_port() {
+                    if(local_endpoint_.first.empty() || local_endpoint_.second == 0) {
+                        local_endpoint_ = socket_.local_endpoint();
+                    }
+                    return local_endpoint_.second;
+                }
+                std::string local_ip() {
+                    if(local_endpoint_.first.empty() || local_endpoint_.second == 0) {
+                        local_endpoint_ = socket_.local_endpoint();
+                    }
+                    return local_endpoint_.first;
+                }
+                std::string name() const {
                     return name_;
                 }
                 std::string recv_all() {
@@ -137,11 +183,14 @@ namespace cortono::net
                     recv_buffer_->clear();
                 }
                 void send(const char* buffer, int len) {
+                    // log_debug("in send... ", buffer, " ", len);
                     if(len == 0) {
+                        log_error("data length is 0, ignore...");
                         return;
                     }
                     // 如果正处于握手状态（客户端），则将数据添加到缓冲区等待连接建立后再发送
                     if(!send_buffer_->empty() || conn_state_ == ConnState::HandShaking) {
+                        log_info("waiting handshake done, save data to send_buffer...");
                         send_buffer_->append(buffer, len);
                         return;
                     }
@@ -151,13 +200,18 @@ namespace cortono::net
                         handle_close();
                     }
                     else if(bytes == -1) {
+                        log_error("send return -1...");
                         if(errno == EINTR || errno == EAGAIN) {
                             log_info("send is -1 and errno is EINTR | EAGAIN, call send again...");
                             //FIXME: call send again ?
                             /* send(msg); */
                         }
+                        else {
+                            handle_close();
+                        }
                     }
                     else if(bytes != static_cast<int>(len)) {
+                        log_info("send length < data length, set write callback...");
                         //没发完，设回调
                         socket_.set_write_callback(std::bind(&Connection::handle_write, this));
                         send_buffer_->append(buffer + bytes, len - bytes);
@@ -193,6 +247,7 @@ namespace cortono::net
                     if(socket_.handshake()) {
                         log_info("handshake done");
                         conn_state_ = ConnState::Connected;
+                        conn_cb_(this->shared_from_this());
                     }
                     else {
                         log_info("handshake error");
@@ -200,14 +255,14 @@ namespace cortono::net
                     }
                 }
                 void handle_read() {
-                    log_info("handle read");
+                    // log_info("handle read");
                     if(conn_state_ == ConnState::HandShaking) {
                         handle_handshake();
                     }
                     auto bytes = socket_.readable();
-                    if(bytes == 0) {
-                        return;
-                    }
+                    // if(bytes == 0) {
+                        // return;
+                    // }
                     recv_buffer_->enable_bytes(bytes);
                     bytes = socket_.recv(recv_buffer_->end(), bytes);
                     if(bytes == 0) {
@@ -276,10 +331,12 @@ namespace cortono::net
                 }
                 void handle_close() {
                     log_info("close connection");
-                    conn_state_ = ConnState::Closed;
-                    socket_.disable_all();
-                    if(close_cb_)
-                        close_cb_(this->shared_from_this());
+                    if(conn_state_ != ConnState::Closed) {
+                        conn_state_ = ConnState::Closed;
+                        socket_.disable_all();
+                        if(close_cb_)
+                            close_cb_(this->shared_from_this());
+                    }
                 }
                 void handle_sendfile() {
                     if(!sendfile_) {
@@ -327,9 +384,12 @@ namespace cortono::net
                 MessageCallBack read_cb_, write_cb_;
                 ErrorCallBack error_cb_;
                 CloseCallBack close_cb_;
+                ConnCallBack conn_cb_;
                 std::shared_ptr<Buffer> recv_buffer_, send_buffer_;
 
                 ConnState conn_state_ { ConnState::Closed };
+
+                std::pair<std::string, std::uint16_t> local_endpoint_{ "", 0 }, peer_endpoint_{ "", 0 };
         };
 
     using TcpConnection = Connection<TcpSocket>;

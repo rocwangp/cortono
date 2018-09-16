@@ -59,10 +59,12 @@ namespace cortono::net
                 struct pollfd pfd;
                 pfd.fd = fd_;
                 pfd.events = POLLOUT | POLLERR;
-                if(::poll(&pfd, 1, 0) == 1 && ip::tcp::sockets::get_error(fd_) == 0) {
+                int error = 0;
+                if(::poll(&pfd, 1, 0) == 1 && (error = ip::tcp::sockets::get_error(fd_)) == 0) {
                     return true;
                 }
                 else {
+                    log_info(std::strerror(error));
                     return false;
                 }
             }
@@ -114,13 +116,29 @@ namespace cortono::net
                     log_fatal("poller is not exist");
                 }
             }
-
+            std::pair<std::string, std::uint16_t> local_endpoint() const {
+                return ip::address::local_endpoint(fd_);
+            }
+            std::pair<std::string, std::uint16_t> peer_endpoint() const {
+                return ip::address::peer_endpoint(fd_);
+            }
             std::string local_address() const {
                 return ip::address::local_address(fd_);
             }
-
             std::string peer_address() const {
                 return ip::address::peer_address(fd_);
+            }
+            std::string peer_ip() const {
+                return ip::address::peer_endpoint(fd_).first;
+            }
+            std::uint16_t peer_port() const {
+                return ip::address::peer_endpoint(fd_).second;
+            }
+            std::string local_ip() const {
+                return ip::address::local_endpoint(fd_).first;
+            }
+            std::uint16_t local_port() const {
+                return ip::address::local_endpoint(fd_).second;
             }
 
             template <class... Args>
@@ -165,7 +183,7 @@ namespace cortono::net
             static std::map<socket_option, std::function<bool(int)>> opt_functors_;
     };
 
-    std::map<TcpSocket::socket_option, std::function<bool(int)>> TcpSocket::opt_functors_ = {
+    inline std::map<TcpSocket::socket_option, std::function<bool(int)>> TcpSocket::opt_functors_ = {
         { TcpSocket::block,      [](int fd) { return ip::tcp::sockets::set_block(fd); }},
         { TcpSocket::non_block,  [](int fd) { return ip::tcp::sockets::set_nonblock(fd); }},
         { TcpSocket::reuse_addr, [](int fd) { return ip::tcp::sockets::reuse_address(fd); }},

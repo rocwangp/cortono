@@ -82,8 +82,8 @@ namespace cortono
                     if(is_open) {
                         buffer_ << util::current_time()
                                 << " [" << util::current_thread() << "]"
-                                << " [" << file << ":" << func << ":" << line << "]"
-                                << " [" << format_level() << "] ";
+                                << " [" << format_level() << "]"
+                                << " [" << file << ":" << func << ":" << line << "] ";
                     }
                 }
 
@@ -104,7 +104,7 @@ namespace cortono
                     if(!is_open) {
                         return *this;
                     }
-                    buffer_ << msg << " ";
+                    buffer_ << msg;
                     if constexpr(sizeof...(Args) == 0) {
                         return *this;
                     }
@@ -113,6 +113,10 @@ namespace cortono
                     }
                 }
 
+                template <typename... Args>
+                logger& operator<<(Args&&... args) {
+                    return operator()(std::forward<Args>(args)...);
+                }
 
                 static void close_logger() {
                     is_open = false;
@@ -123,17 +127,17 @@ namespace cortono
                 {
                     switch(l_) {
                         case level::trace:
-                            return "trace";
+                            return "Trace";
                         case level::debug:
-                            return "debug";
+                            return "Debug";
                         case level::info:
-                            return "info ";
+                            return "Info ";
                         case level::error:
-                            return "error";
+                            return "Error";
                         case level::fatal:
-                            return "fatal";
+                            return "Fatal";
                         default:
-                            return "";
+                            return "    ";
                     }
                 }
 
@@ -144,12 +148,12 @@ namespace cortono
 
                 static bool is_open;
         };
-        bool logger::is_open = true;
+        inline bool logger::is_open = true;
 
 
 
         template <class... Args>
-        static std::string format(const std::string& f, Args... args) {
+        static std::string format(const std::string& f, Args&&... args) {
             char buffer[1024];
             std::sprintf(buffer, f.c_str(), std::forward<Args>(args)...);
             return std::string(buffer);
@@ -203,6 +207,19 @@ namespace cortono
             else {
                 return filesystem::file_size(p);
             }
+        }
+
+        inline std::vector<std::string_view> split(std::string_view str, char delimiter) {
+            std::vector<std::string_view> results;
+            std::size_t front = 0, back = 0;
+            while(back <= str.length()) {
+                if(back == str.length() || str[back] == delimiter) {
+                    results.emplace_back(str.substr(front, back - front));
+                    front = back + 1;
+                }
+                ++back;
+            }
+            return results;
         }
     }
 

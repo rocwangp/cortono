@@ -112,5 +112,5 @@ namespace cortono::net
 
             static std::uint64_t timer_count;
     };
-    std::uint64_t Timer::timer_count = 0;
+    inline std::uint64_t Timer::timer_count = 0;
 }

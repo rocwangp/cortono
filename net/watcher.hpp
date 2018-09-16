@@ -23,7 +23,7 @@ namespace cortono::net
             }
 
             void clear() {
-                char buffer[2];
+                char buffer[1024];
                 int ret = ::read(fd_[0], buffer, sizeof(buffer));
                 (void)ret;
             }
